@@ -46,13 +46,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
         switch (req.method) {
             case 'GET': {
-                const type = req.query.type as string; // 'inbound' | 'outbound' | undefined
-                const daysParam = parseInt(req.query.days as string, 10) || 60; // Mặc định 60 ngày để an toàn
+                const type = req.query.type as string;
+                const daysParam = parseInt(req.query.days as string, 10) || 60;
                 const limitDate = new Date();
                 limitDate.setDate(limitDate.getDate() - daysParam);
                 const limitDateIso = limitDate.toISOString();
-                
-                // 1. Try Supabase first (Fast)
+
+                // 1. Try Supabase first (Fast) — fallback chỉ khi có lỗi thật
                 try {
                     if (!type) {
                         const [inbound, outbound] = await Promise.all([
@@ -63,20 +63,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                             ...inbound.map(t => ({ ...t, type: 'inbound', date: t.inbound_date })),
                             ...outbound.map(t => ({ ...t, type: 'outbound', date: t.outbound_date }))
                         ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-                        if (merged.length > 0) return res.status(200).json(merged);
+                        // Trả về kể cả khi rỗng — đây là dữ liệu hợp lệ từ Supabase
+                        return res.status(200).json(merged);
                     } else {
                         const table = type === 'outbound' ? 'outbound_transactions' : 'inbound_transactions';
                         const dateField = type === 'inbound' ? 'inbound_date' : 'outbound_date';
                         const data = await fetchAll(table, '*, product:products(*)', (q) => q.gte(dateField, limitDateIso).order(dateField, { ascending: false }));
-                        if (data) return res.status(200).json(data.map(t => ({ ...t, type: type, date: type === 'inbound' ? t.inbound_date : t.outbound_date })));
+                        return res.status(200).json(data.map(t => ({ ...t, type, date: type === 'inbound' ? t.inbound_date : t.outbound_date })));
                     }
-                } catch (e) { console.error('Supabase Error:', e); }
+                } catch (e) {
+                    console.error('Supabase GET Error, falling back to GS:', e);
+                }
 
-                // 2. Fallback to Google Sheets (Reliable but Slow)
+                // 2. Fallback to Google Sheets (khi Supabase lỗi thật)
                 const doc = await getGoogleSheet();
-                const inboundSheet = (doc.sheetsByTitle['inbound_transactions']);
-                const outboundSheet = (doc.sheetsByTitle['outbound_transactions']);
-                const productsSheet = (doc.sheetsByTitle['products']);
+                const inboundSheet = doc.sheetsByTitle['inbound_transactions'];
+                const outboundSheet = doc.sheetsByTitle['outbound_transactions'];
+                const productsSheet = doc.sheetsByTitle['products'];
 
                 const [iRows, oRows, pRows] = await Promise.all([
                     (!type || type === 'inbound') ? inboundSheet.getRows() : Promise.resolve([]),
@@ -120,12 +123,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 const performWrite = async (table: string, items: any[]) => {
                     let sbSuccess = false;
 
-                    // 1. Supabase (Chunked)
+                    // 1. Supabase (Chunked upsert, ignoreDuplicates để an toàn khi retry)
                     try {
                         const chunkSize = 1000;
                         for (let i = 0; i < items.length; i += chunkSize) {
                             const chunk = items.slice(i, i + chunkSize);
-                            // Dùng upsert với ignoreDuplicates: true để tránh lỗi 409 khi retry
                             const { error: sbError } = await supabase
                                 .from(table)
                                 .upsert(chunk, { onConflict: 'id', ignoreDuplicates: true });
@@ -136,7 +138,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                         console.error('SB Write Error (Fallback to GS):', e);
                     }
 
-                    // 2. Google Sheets (Fallback / Sync)
+                    // 2. Google Sheets (Parallel / Fallback)
                     try {
                         const doc = await getGoogleSheet();
                         const sheet = doc.sheetsByTitle[table];
@@ -144,43 +146,43 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                         const nowLocal = formatLocalDate(new Date());
                         const gsItems = items.map(p => ({
                             ...p,
-                            [dateField]: p[dateField] ? (p[dateField].includes('/') ? p[dateField] : formatLocalDate(p[dateField])) : nowLocal,
+                            [dateField]: p[dateField]
+                                ? (p[dateField].includes('/') ? p[dateField] : formatLocalDate(p[dateField]))
+                                : nowLocal,
                             created_at: nowLocal,
                             updated_at: nowLocal
                         }));
-                        
+
                         const gsWritePromise = async () => {
                             const gsChunkSize = 250;
                             for (let i = 0; i < gsItems.length; i += gsChunkSize) {
-                                const chunk = gsItems.slice(i, i + gsChunkSize);
-                                await sheet.addRows(chunk);
+                                await sheet.addRows(gsItems.slice(i, i + gsChunkSize));
                             }
                         };
 
                         if (sbSuccess) {
-                            // Sync mode: Race against timeout
+                            // Sync mode: không block quá 4.5s
                             await Promise.race([
                                 gsWritePromise(),
                                 new Promise((_, reject) => setTimeout(() => reject(new Error('GS Sync Timeout')), 4500))
                             ]);
                         } else {
-                            // Fallback mode: Await fully
+                            // Fallback mode: GS là nguồn lưu chính
                             await gsWritePromise();
                         }
                     } catch (e: any) {
                         console.error('GS Write Error:', e);
                         if (!sbSuccess) {
                             throw new Error('Cả Supabase và Google Sheets đều lưu thất bại!');
-                        } else {
-                            // GS failed but SB succeeded -> Queue for background sync
-                            await supabase.from('gs_sync_queue').insert({
-                                table_name: table,
-                                action: 'insert',
-                                payload: items,
-                                error_message: e.message
-                            });
-                            console.log('Queued GS Insert payload to gs_sync_queue');
                         }
+                        // SB thành công nhưng GS timeout → queue để sync sau
+                        await supabase.from('gs_sync_queue').insert({
+                            table_name: table,
+                            action: 'insert',
+                            payload: items,
+                            error_message: e.message
+                        });
+                        console.log('[Dual-Write] Queued GS Insert to gs_sync_queue');
                     }
 
                     return true;
@@ -191,7 +193,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     const doc = await getGoogleSheet();
                     const qrSheet = doc.sheetsByTitle['Creat_QRcode'];
                     if (!qrSheet) return res.status(404).json({ error: 'Sheet Creat_QRcode not found' });
-                    
+
                     const [qrRows, existingRows, products] = await Promise.all([
                         qrSheet.getRows(),
                         supabase.from('inbound_transactions').select('serial_code'),
@@ -200,7 +202,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
                     const product = products.data;
                     const existingSerials = new Set((existingRows.data || []).map(r => String(r.serial_code || '').trim()).filter(Boolean));
-                    
+
                     const toInsert = qrRows.map(row => {
                         const serial = String(row.get('serial_code') || '').trim();
                         if (!serial || existingSerials.has(serial)) return null;
@@ -221,7 +223,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     const doc = await getGoogleSheet();
                     const stockSheet = doc.sheetsByTitle['in_stock'];
                     if (!stockSheet) return res.status(404).json({ error: 'Sheet in_stock not found' });
-                    
 
                     const [sRows, existingRows, products] = await Promise.all([
                         stockSheet.getRows(),
@@ -230,8 +231,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     ]);
 
                     const productsMap: Record<string, any> = {};
-                    products.forEach(p => { 
-                        productsMap[p.id] = p; 
+                    products.forEach(p => {
+                        productsMap[p.id] = p;
                         productsMap[p.item_code] = p;
                     });
 
@@ -246,25 +247,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
                         const serialRaw = String(row.get('serial_code') || row.get('SERIAL') || row.get('Serial') || '').trim();
                         const isVT = String(row.get('check_loại_hang')).trim() === 'VT-TKM';
-                        
-                        // ONLY VT-TKM can have empty serial (using row ID as fallback)
                         const serial = serialRaw || (isVT ? `VT-${row.get('ID')}` : '');
 
                         if (serial && !existingSerials.has(serial)) {
                             existingSerials.add(serial);
-                            // Parse quantity: remove dots (thousands separator) and commas
                             const qtyStr = String(row.get('quantity') || '').trim();
                             const qty = qtyStr ? parseFloat(qtyStr.replace(/\./g, '').replace(/,/g, '')) : 1;
-                            
+
                             toInsert.push({
-                                id: randomUUID(), 
-                                product_id: product.id, 
-                                serial_code: serial, 
-                                quantity: isNaN(qty) ? 1 : Math.round(qty), 
-                                item_status: row.get('item_status') || row.get('status') || 'Mới', 
-                                district: row.get('district') || row.get('District') || 'Kho Tổng', 
-                                inbound_date: new Date().toISOString(), 
-                                created_by: creator, 
+                                id: randomUUID(),
+                                product_id: product.id,
+                                serial_code: serial,
+                                quantity: isNaN(qty) ? 1 : Math.round(qty),
+                                item_status: row.get('item_status') || row.get('status') || 'Mới',
+                                district: row.get('district') || row.get('District') || 'Kho Tổng',
+                                inbound_date: new Date().toISOString(),
+                                created_by: creator,
                                 unit_price: product.unit_price || 0,
                                 sap_id: row.get('ID_SAP') || '',
                                 tc_id: row.get('ID_TC') || '',
@@ -306,14 +304,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 const { id, type, payload } = req.body;
                 if (!id || !type) return res.status(400).json({ error: 'ID and type required' });
                 const table = type === 'inbound' ? 'inbound_transactions' : 'outbound_transactions';
-                let successCount = 0;
 
                 // 1. Supabase
                 const { error: sbError } = await supabase.from(table).update({ ...payload, updated_at: new Date().toISOString() }).eq('id', id);
                 const sbSuccess = !sbError;
-                if (sbError) console.error('SB Update Error (Fallback to GS):', sbError);
+                if (sbError) console.error('SB Update Error:', sbError);
 
-                // 2. Sheets
+                // 2. Google Sheets
                 try {
                     const updatePromise = async () => {
                         const doc = await getGoogleSheet();
@@ -326,26 +323,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                             await row.save();
                         }
                     };
-                    if (sbSuccess) {
-                        await Promise.race([
-                            updatePromise(),
-                            new Promise((_, reject) => setTimeout(() => reject(new Error('GS Sync Timeout')), 3000))
-                        ]);
-                    } else {
-                        await updatePromise();
-                    }
-                } catch (e: any) { 
-                    console.error('GS Update Error:', e); 
+                    await Promise.race([
+                        updatePromise(),
+                        new Promise((_, reject) => setTimeout(() => reject(new Error('GS Sync Timeout')), 3000))
+                    ]);
+                } catch (e: any) {
+                    console.error('GS Update Error:', e);
                     if (!sbSuccess) {
                         return res.status(500).json({ error: 'Cập nhật thất bại trên cả 2 hệ thống' });
-                    } else {
-                        await supabase.from('gs_sync_queue').insert({
-                            table_name: table,
-                            action: 'update',
-                            payload: { id, updates: payload },
-                            error_message: e.message
-                        });
                     }
+                    await supabase.from('gs_sync_queue').insert({
+                        table_name: table,
+                        action: 'update',
+                        payload: { id, updates: payload },
+                        error_message: e.message
+                    });
                 }
 
                 return res.status(200).json({ message: 'Updated successfully' });
@@ -356,14 +348,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 if (!type) return res.status(400).json({ error: 'Type required' });
                 const table = type === 'inbound' ? 'inbound_transactions' : 'outbound_transactions';
                 const targetIds = Array.isArray(ids) ? ids : [id];
-                let successCount = 0;
 
                 // 1. Supabase
                 const { error: sbError } = await supabase.from(table).delete().in('id', targetIds);
                 const sbSuccess = !sbError;
-                if (sbError) console.error('SB Delete Error (Fallback to GS):', sbError);
+                if (sbError) console.error('SB Delete Error:', sbError);
 
-                // 2. Sheets
+                // 2. Google Sheets
                 try {
                     const deletePromise = async () => {
                         const doc = await getGoogleSheet();
@@ -373,26 +364,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                             if (targetIds.includes(rows[i].get('id'))) await rows[i].delete();
                         }
                     };
-                    if (sbSuccess) {
-                        await Promise.race([
-                            deletePromise(),
-                            new Promise((_, reject) => setTimeout(() => reject(new Error('GS Sync Timeout')), 3000))
-                        ]);
-                    } else {
-                        await deletePromise();
-                    }
-                } catch (e: any) { 
-                    console.error('GS Delete Error:', e); 
+                    await Promise.race([
+                        deletePromise(),
+                        new Promise((_, reject) => setTimeout(() => reject(new Error('GS Sync Timeout')), 3000))
+                    ]);
+                } catch (e: any) {
+                    console.error('GS Delete Error:', e);
                     if (!sbSuccess) {
                         return res.status(500).json({ error: 'Xóa thất bại trên cả 2 hệ thống' });
-                    } else {
-                        await supabase.from('gs_sync_queue').insert({
-                            table_name: table,
-                            action: 'delete',
-                            payload: { ids: targetIds },
-                            error_message: e.message
-                        });
                     }
+                    await supabase.from('gs_sync_queue').insert({
+                        table_name: table,
+                        action: 'delete',
+                        payload: { ids: targetIds },
+                        error_message: e.message
+                    });
                 }
 
                 return res.status(200).json({ message: `Deleted ${targetIds.length} items`, ids: targetIds });

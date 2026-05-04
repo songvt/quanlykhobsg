@@ -37,11 +37,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (req.method === 'GET') {
             try {
                 const data = await fetchAll('employee_returns', '*, product:products(*), employee:employees(*)');
-                if (data && data.length > 0) {
-                    return res.status(200).json(data);
-                }
+                // Trả về kể cả khi rỗng — đây là dữ liệu hợp lệ
+                return res.status(200).json(data);
             } catch (e) {
-                console.warn('Supabase fetch failed, falling back to Google Sheets:', e);
+                console.warn('[EmployeeReturns GET] Supabase failed, falling back to Google Sheets:', e);
             }
         }
 

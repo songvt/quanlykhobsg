@@ -15,13 +15,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
-        // Fetch pending jobs
+        // Fetch pending jobs (chỉ lấy job chưa vượt 3 lần retry)
         const { data: queue, error: fetchError } = await supabase
             .from('gs_sync_queue')
             .select('*')
             .eq('status', 'pending')
+            .lt('retry_count', 3)
             .order('created_at', { ascending: true })
-            .limit(10); // Process 10 at a time to avoid timeout
+            .limit(10);
 
         if (fetchError) throw fetchError;
 

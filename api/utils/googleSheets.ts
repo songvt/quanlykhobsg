@@ -3,7 +3,7 @@ import { JWT } from 'google-auth-library';
 
 let cachedDoc: GoogleSpreadsheet | null = null;
 let lastLoadTime = 0;
-const CACHE_DURATION_MS = 60 * 1000; // 60 seconds cache for doc info
+const CACHE_DURATION_MS = 5 * 60 * 1000; // 5 phút cache
 
 export const getGoogleSheet = async () => {
     try {
@@ -27,43 +27,39 @@ export const getGoogleSheet = async () => {
         }
 
         // Handle private key format from env var
-        // 1. Remove surrounding quotes if they exist
         if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
             privateKey = privateKey.slice(1, -1);
         }
-        // 2. Replace literal \n with actual newlines
         privateKey = privateKey.replace(/\\n/g, '\n');
 
         const serviceAccountAuth = new JWT({
             email: serviceAccountEmail,
             key: privateKey,
-            scopes: [
-                'https://www.googleapis.com/auth/spreadsheets',
-            ],
+            scopes: ['https://www.googleapis.com/auth/spreadsheets'],
         });
 
         const doc = new GoogleSpreadsheet(sheetId, serviceAccountAuth);
         await doc.loadInfo();
-        
+
         cachedDoc = doc;
         lastLoadTime = now;
         return doc;
     } catch (error) {
+        // Reset cache on error so next call retries fresh
+        cachedDoc = null;
+        lastLoadTime = 0;
         console.error('Error initializing Google Sheets:', error);
         throw error;
     }
 };
 
 /**
- * Helper to get or create a sheet by title.
- * Important: Make sure the sheet titles match exactly what you pass here.
+ * Helper to get a sheet by title. Throws if not found.
  */
 export const getSheetByTitle = async (doc: GoogleSpreadsheet, title: string) => {
     const sheet = doc.sheetsByTitle[title];
     if (!sheet) {
         console.warn(`Sheet with title "${title}" not found.`);
-        // Note: Creating sheets programmatically might need specific headers defined, 
-        // so it's safer to require manual creation of the sheets first.
         throw new Error(`Sheet "${title}" not found. Please create it in the Google Sheet.`);
     }
     return sheet;

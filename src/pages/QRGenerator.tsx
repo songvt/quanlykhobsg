@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback } from 'react';
 import {
     Box, Typography, Paper, Button, TextField, Grid, Stack,
     Chip, IconButton, Alert, Table, TableBody, TableCell,
-    TableContainer, TableHead, TableRow
+    TableContainer, TableHead, TableRow, CircularProgress
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import { QRCodeSVG } from 'qrcode.react';
@@ -15,7 +15,6 @@ import PreviewIcon from '@mui/icons-material/Preview';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import InventoryIcon from '@mui/icons-material/Inventory2Outlined';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
-import { useReactToPrint } from 'react-to-print';
 import { readExcelFile } from '../utils/excelUtils';
 import { useNotification } from '../contexts/NotificationContext';
 import { parseSerialInput } from '../utils/serialParser';
@@ -114,13 +113,69 @@ const QRGenerator = () => {
     const [showPreview, setShowPreview] = useState(false);
     const [isDragOver, setIsDragOver] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
+    const [isPrinting, setIsPrinting] = useState(false);
     const printRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handlePrint = useReactToPrint({
-        contentRef: printRef,
-        documentTitle: 'Ma_QR_Code',
-    });
+    const handlePrint = useCallback(() => {
+        const el = printRef.current;
+        if (!el) { notifyError('Không tìm thấy nội dung để in'); return; }
+        setIsPrinting(true);
+        // Chờ một tick để UI cập nhật trạng thái loading trước
+        setTimeout(() => {
+            try {
+                const printWindow = window.open('', '_blank', 'width=1200,height=800');
+                if (!printWindow) {
+                    notifyError('Trình duyệt đã chặn cửa sổ in. Vui lòng cho phép popup và thử lại.');
+                    setIsPrinting(false);
+                    return;
+                }
+                const htmlContent = el.innerHTML;
+                printWindow.document.write(`<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mã QR Code</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    @page { size: A4 landscape; margin: 8mm; }
+    @media print {
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+    table { border-collapse: collapse; width: 100%; }
+    td, th { border: 1px solid #555; padding: 8px 12px; }
+    svg { display: block; }
+  </style>
+</head>
+<body>${htmlContent}</body>
+</html>`);
+                printWindow.document.close();
+                // Chờ tài nguyên (SVG QR) load xong rồi mới in
+                printWindow.onload = () => {
+                    setTimeout(() => {
+                        printWindow.focus();
+                        printWindow.print();
+                        printWindow.close();
+                        setIsPrinting(false);
+                    }, 500);
+                };
+                // Fallback nếu onload không kích hoạt
+                setTimeout(() => {
+                    if (!printWindow.closed) {
+                        printWindow.focus();
+                        printWindow.print();
+                        printWindow.close();
+                    }
+                    setIsPrinting(false);
+                }, 3000);
+            } catch (err) {
+                console.error('Print error:', err);
+                notifyError('Lỗi khi mở cửa sổ in. Vui lòng thử lại.');
+                setIsPrinting(false);
+            }
+        }, 100);
+    }, [notifyError]);
 
     const handleExportPDF = async () => {
         setIsExporting(true);
@@ -280,10 +335,11 @@ const QRGenerator = () => {
                                 sx={{ bgcolor: '#d97706', '&:hover': { bgcolor: '#b45309' } }}>
                                 {isExporting ? 'Đang xuất...' : 'Xuất PDF'}
                             </Button>
-                            <Button size="small" variant="contained" startIcon={<PrintIcon />}
-                                onClick={() => handlePrint()} disabled={isExporting}
+                            <Button size="small" variant="contained"
+                                startIcon={isPrinting ? <CircularProgress size={16} color="inherit" /> : <PrintIcon />}
+                                onClick={handlePrint} disabled={isExporting || isPrinting}
                                 sx={{ bgcolor: '#2563eb', borderRadius: '10px', '&:hover': { bgcolor: '#1d4ed8' }, textTransform: 'none', fontWeight: 600 }}>
-                                In ({totalQRCodes} QR)
+                                {isPrinting ? 'Đang chuẩn bị...' : `In (${totalQRCodes} QR)`}
                             </Button>
                         </>
                     )}
@@ -430,10 +486,11 @@ const QRGenerator = () => {
                                 sx={{ bgcolor: '#2563eb', '&:hover': { bgcolor: '#1d4ed8' }, fontWeight: 600, height: 36 }}>
                                 {isExporting ? 'Đang xuất...' : 'Xuất PDF'}
                             </Button>
-                            <Button variant="contained" startIcon={<PrintIcon />}
-                                onClick={() => handlePrint()} disabled={isExporting}
+                            <Button variant="contained"
+                                startIcon={isPrinting ? <CircularProgress size={16} color="inherit" /> : <PrintIcon />}
+                                onClick={handlePrint} disabled={isExporting || isPrinting}
                                 sx={{ bgcolor: '#2563eb', borderRadius: '10px', '&:hover': { bgcolor: '#1d4ed8' }, fontWeight: 700, height: 40, textTransform: 'none' }}>
-                                In Trực Tiếp
+                                {isPrinting ? 'Đang chuẩn bị...' : 'In Trực Tiếp'}
                             </Button>
                         </Stack>
                     </Box>
@@ -505,12 +562,6 @@ const QRGenerator = () => {
                                                                     </TableCell>
                                                                 ))}
 
-                                                                {/* ─ Fill empty cells (min 3 QR columns look) ─ */}
-                                                                {group.qrChunks.length < 3 && Array.from({ length: 3 - group.qrChunks.length }).map((_, i) => (
-                                                                    <TableCell key={`empty-${i}`} sx={{ minWidth: 180, color: '#e2e8f0', textAlign: 'center', verticalAlign: 'middle' }}>
-                                                                        <QrCode2Icon sx={{ fontSize: 60, opacity: 0.15 }} />
-                                                                    </TableCell>
-                                                                ))}
                                                             </TableRow>
                                                         </TableBody>
                                                     </Table>
