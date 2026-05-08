@@ -181,7 +181,7 @@ const Audit: React.FC = () => {
         try {
             const payload = {
                 title,
-                created_by: user?.email || user?.id,
+                created_by: profile?.email || profile?.id,
                 status: 'completed',
                 details: checkedItems.map(item => ({
                     product_id: item.product_id,
@@ -218,10 +218,10 @@ const Audit: React.FC = () => {
                 name: p.name,
                 category: p.category || '',
                 system_qty: stockMap[p.id] || 0,
-                actual_qty: '',
+                actual_qty: '' as number | '',
                 discrepancy: 0,
                 notes: '',
-                scanned_serials: []
+                scanned_serials: [] as string[]
             })));
 
         } catch (error: any) {
