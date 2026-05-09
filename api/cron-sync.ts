@@ -46,9 +46,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             try {
                 if (action === 'insert') {
                     const items = Array.isArray(payload) ? payload : [payload];
-                    // Add rows incrementally to avoid limits
-                    const chunkSize = 250;
+                    // Add rows incrementally with smaller chunks and delay to avoid limits
+                    const chunkSize = 100;
                     for (let i = 0; i < items.length; i += chunkSize) {
+                        if (i > 0) await new Promise(resolve => setTimeout(resolve, 1000)); // Nghỉ 1s giữa các chunk
                         const chunk = items.slice(i, i + chunkSize);
                         await sheet.addRows(chunk);
                     }
@@ -61,12 +62,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                         Object.keys(updates).forEach(k => { if (updates[k] !== undefined) row.set(k, updates[k]); });
                         if (!updates.updated_at) row.set('updated_at', formatLocalDate(new Date()));
                         await row.save();
+                        await new Promise(resolve => setTimeout(resolve, 300)); // Nghỉ 300ms sau khi save
                     }
                 } else if (action === 'delete') {
                     const rows = await sheet.getRows();
                     const targetIds = payload.ids || [payload.id];
+                    let deletedCount = 0;
                     for (let i = rows.length - 1; i >= 0; i--) {
-                        if (targetIds.includes(rows[i].get('id'))) await rows[i].delete();
+                        if (targetIds.includes(rows[i].get('id'))) {
+                            await rows[i].delete();
+                            deletedCount++;
+                            // Cứ xóa 5 dòng thì nghỉ 1s, còn không thì nghỉ 300ms
+                            if (deletedCount % 5 === 0) await new Promise(resolve => setTimeout(resolve, 1000));
+                            else await new Promise(resolve => setTimeout(resolve, 300));
+                        }
                     }
                 }
 
