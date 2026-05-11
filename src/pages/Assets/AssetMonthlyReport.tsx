@@ -7,7 +7,7 @@ import {
 import PrintIcon from '@mui/icons-material/Print';
 import DownloadIcon from '@mui/icons-material/Download';
 import ExcelJS from 'exceljs';
-import { fetchAssets } from '../../store/slices/assetsSlice';
+import { fetchAssets, fetchAssetLogs } from '../../store/slices/assetsSlice';
 import type { AppDispatch, RootState } from '../../store';
 import type { Asset } from '../../types';
 
@@ -25,13 +25,14 @@ const YEARS = Array.from({ length: 6 }, (_, i) => new Date().getFullYear() - 2 +
 
 const AssetMonthlyReport: React.FC<Props> = ({ reportType }) => {
     const dispatch = useDispatch<AppDispatch>();
-    const { items: allAssets, status } = useSelector((s: RootState) => s.assets);
+    const { items: allAssets, logs: allLogs, status } = useSelector((s: RootState) => s.assets);
 
     useEffect(() => {
-        if (allAssets.length === 0 && status === 'idle') {
+        if (status === 'idle') {
             dispatch(fetchAssets());
+            dispatch(fetchAssetLogs());
         }
-    }, [allAssets.length, status, dispatch]);
+    }, [status, dispatch]);
 
     const now = new Date();
     const [month, setMonth] = useState(now.getMonth() + 1);
@@ -54,7 +55,18 @@ const AssetMonthlyReport: React.FC<Props> = ({ reportType }) => {
         filtered.forEach(a => {
             const key = `${(a.asset_name || 'N/A').trim()}_${(a.asset_type || '').trim()}`;
             if (!groups[key]) {
-                groups[key] = { name: a.asset_name, type: a.asset_type, totalQty: 0, usingQty: 0, brokenQty: 0, unusedQty: 0, repairQty: 0, departments: new Set() };
+                groups[key] = { 
+                    name: a.asset_name, 
+                    type: a.asset_type, 
+                    totalQty: 0, 
+                    usingQty: 0, 
+                    brokenQty: 0, 
+                    unusedQty: 0, 
+                    repairQty: 0, 
+                    increaseQty: 0,
+                    decreaseQty: 0,
+                    departments: new Set() 
+                };
             }
             const qty = a.quantity || 0;
             groups[key].totalQty += qty;
@@ -68,13 +80,46 @@ const AssetMonthlyReport: React.FC<Props> = ({ reportType }) => {
             if (a.user_department_name) groups[key].departments.add(a.user_department_name);
             else if (a.management_unit_name) groups[key].departments.add(a.management_unit_name);
         });
-        return Object.values(groups).map(g => ({ ...g, department: Array.from(g.departments).join(', ') || '-' }));
-    }, [allAssets, reportType]);
+
+        // Add increase/decrease from logs
+        allLogs.forEach(log => {
+            const logDate = new Date(log.created_at);
+            if (logDate.getMonth() + 1 === month && logDate.getFullYear() === year) {
+                const key = `${(log.asset_name || 'N/A').trim()}_${(log.asset_type || '').trim()}`;
+                // We search by name/type since codes might change or be deleted
+                // However, logs usually have name/type. Let's find matching group or create one
+                let targetKey = key;
+                if (!groups[targetKey]) {
+                    // Try to find a group that starts with this name (legacy match)
+                    const foundKey = Object.keys(groups).find(k => k.startsWith((log.asset_name || 'N/A').trim()));
+                    if (foundKey) targetKey = foundKey;
+                }
+
+                if (groups[targetKey]) {
+                    if (log.action === 'Tăng') groups[targetKey].increaseQty += 1;
+                    if (log.action === 'Giảm') groups[targetKey].decreaseQty += 1;
+                }
+            }
+        });
+
+        return Object.values(groups).map(g => ({ 
+            ...g, 
+            openingQty: g.totalQty - g.increaseQty + g.decreaseQty,
+            department: Array.from(g.departments).join(', ') || '-' 
+        }));
+    }, [allAssets, allLogs, reportType, month, year]);
 
     const summary = useMemo(() => {
         return groupedAssets.reduce((acc, g) => ({
-            total: acc.total + g.totalQty, using: acc.using + g.usingQty, broken: acc.broken + g.brokenQty, unused: acc.unused + g.unusedQty, repair: acc.repair + g.repairQty
-        }), { total: 0, using: 0, broken: 0, unused: 0, repair: 0 });
+            opening: acc.opening + (g.openingQty || 0),
+            increase: acc.increase + (g.increaseQty || 0),
+            decrease: acc.decrease + (g.decreaseQty || 0),
+            total: acc.total + g.totalQty, 
+            using: acc.using + g.usingQty, 
+            broken: acc.broken + g.brokenQty, 
+            unused: acc.unused + g.unusedQty, 
+            repair: acc.repair + g.repairQty
+        }), { opening: 0, increase: 0, decrease: 0, total: 0, using: 0, broken: 0, unused: 0, repair: 0 });
     }, [groupedAssets]);
 
     const currentDay   = now.getDate().toString().padStart(2, '0');
@@ -125,11 +170,11 @@ const AssetMonthlyReport: React.FC<Props> = ({ reportType }) => {
             ws.getColumn(i + 1).width = h.width;
         });
 
-        const totRow = ws.addRow(['Tổng','','',summary.total,0,0,summary.total,summary.using,summary.broken,summary.unused,summary.repair,'','']);
+        const totRow = ws.addRow(['Tổng','','',summary.opening,summary.increase,summary.decrease,summary.total,summary.using,summary.broken,summary.unused,summary.repair,'','']);
         totRow.eachCell(c => { c.font = { bold:true }; c.fill = hFill('FFE8E8E8'); c.border = border; });
 
         groupedAssets.forEach((g, idx) => {
-            const r = ws.addRow([idx+1, g.type, g.name, g.totalQty, '-', '-', g.totalQty, g.usingQty, g.brokenQty, g.unusedQty, g.repairQty, g.department, reportType]);
+            const r = ws.addRow([idx+1, g.type, g.name, g.openingQty, g.increaseQty || '-', g.decreaseQty || '-', g.totalQty, g.usingQty, g.brokenQty, g.unusedQty, g.repairQty, g.department, reportType]);
             r.eachCell(c => { c.border = border; c.font = { size:10, name:'Times New Roman' }; });
         });
 
@@ -175,6 +220,9 @@ const AssetMonthlyReport: React.FC<Props> = ({ reportType }) => {
                 .sig-box { width: 32%; display: inline-block; vertical-align: top; }
                 .sig-title { font-weight: bold; font-size: 11pt; }
                 .sig-note { font-style: italic; font-size: 9.5pt; }
+                /* Flex layout for print */
+                .print-header { display: flex; justify-content: space-between; width: 100%; }
+                .print-header-side { text-align: center; width: 45%; }
             </style></head>
             <body>${printContents}</body></html>
         `);
@@ -209,25 +257,25 @@ const AssetMonthlyReport: React.FC<Props> = ({ reportType }) => {
             {status === 'loading' && <CircularProgress sx={{ display: 'block', mx: 'auto', my: 4 }} />}
 
             <Paper elevation={0} sx={{ p: 4, border: '1px solid #ddd', minHeight: '210mm' }} ref={printRef}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'Times New Roman' }}>
-                    <Box textAlign="center">
-                        <Typography fontWeight={700} sx={{ fontSize: '11pt' }}>CÔNG TY CỔ PHẦN VIỄN THÔNG ACT</Typography>
-                        <Typography fontWeight={700} sx={{ textDecoration: 'underline', fontSize: '11pt' }}>TRUNG TÂM ACT BẮC SÀI GÒN</Typography>
-                    </Box>
-                    <Box textAlign="center">
-                        <Typography fontWeight={700} sx={{ fontSize: '11pt' }}>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</Typography>
-                        <Typography fontWeight={700} sx={{ textDecoration: 'underline', fontSize: '11pt' }}>Độc lập - Tự do - Hạnh phúc</Typography>
-                    </Box>
-                </Box>
+                <div className="print-header" style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'Times New Roman', width: '100%' }}>
+                    <div className="print-header-side" style={{ textAlign: 'center', width: '45%' }}>
+                        <div style={{ fontWeight: 'bold', fontSize: '11pt' }}>CÔNG TY CỔ PHẦN VIỄN THÔNG ACT</div>
+                        <div style={{ fontWeight: 'bold', textDecoration: 'underline', fontSize: '11pt' }}>TRUNG TÂM ACT BẮC SÀI GÒN</div>
+                    </div>
+                    <div className="print-header-side" style={{ textAlign: 'center', width: '45%' }}>
+                        <div style={{ fontWeight: 'bold', fontSize: '11pt' }}>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+                        <div style={{ fontWeight: 'bold', textDecoration: 'underline', fontSize: '11pt' }}>Độc lập - Tự do - Hạnh phúc</div>
+                    </div>
+                </div>
 
-                <Box textAlign="center" my={4} sx={{ fontFamily: 'Times New Roman' }}>
-                    <Typography variant="h6" fontWeight={800} sx={{ textTransform: 'uppercase', fontSize: '14pt' }}>
+                <div style={{ textAlign: 'center', margin: '32px 0', fontFamily: 'Times New Roman' }}>
+                    <div style={{ fontWeight: '800', textTransform: 'uppercase', fontSize: '14pt' }}>
                         BÁO CÁO TỔNG HỢP TÀI SẢN {reportType === 'CCDC' ? 'CCDC-TSNT' : 'TBVP'}
-                    </Typography>
-                    <Typography variant="body1" fontStyle="italic" sx={{ fontSize: '11pt' }}>
+                    </div>
+                    <div style={{ fontStyle: 'italic', fontSize: '11pt' }}>
                         Kỳ báo cáo tháng {String(month).padStart(2,'0')} năm {year}
-                    </Typography>
-                </Box>
+                    </div>
+                </div>
 
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Times New Roman' }}>
                     <thead>
@@ -253,7 +301,9 @@ const AssetMonthlyReport: React.FC<Props> = ({ reportType }) => {
                     <tbody>
                         <tr style={{ backgroundColor: '#e0e0e0', fontWeight: 'bold' }}>
                             <td style={colStyle}>Tổng</td><td colSpan={2} style={colStyle}></td>
-                            <td style={colStyle}>{summary.total}</td><td style={colStyle}>0</td><td style={colStyle}>0</td>
+                            <td style={colStyle}>{summary.opening}</td>
+                            <td style={colStyle}>{summary.increase}</td>
+                            <td style={colStyle}>{summary.decrease}</td>
                             <td style={colStyle}>{summary.total}</td><td style={colStyle}>{summary.using}</td>
                             <td style={colStyle}>{summary.broken}</td><td style={colStyle}>{summary.unused}</td><td style={colStyle}>{summary.repair}</td>
                             <td style={colStyle}></td>
@@ -263,8 +313,9 @@ const AssetMonthlyReport: React.FC<Props> = ({ reportType }) => {
                                 <td style={colStyle}>{i + 1}</td>
                                 <td style={{ ...colStyle, textAlign: 'left' }}>{g.type}</td>
                                 <td style={{ ...colStyle, textAlign: 'left' }}>{g.name}</td>
-                                <td style={colStyle}>{g.totalQty}</td>
-                                <td style={colStyle}>-</td><td style={colStyle}>-</td>
+                                <td style={colStyle}>{g.openingQty}</td>
+                                <td style={colStyle}>{g.increaseQty || '-'}</td>
+                                <td style={colStyle}>{g.decreaseQty || '-'}</td>
                                 <td style={colStyle}>{g.totalQty}</td>
                                 <td style={colStyle}>{g.usingQty}</td>
                                 <td style={colStyle}>{g.brokenQty}</td>

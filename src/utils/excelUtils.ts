@@ -233,11 +233,12 @@ export const exportStandardReport = async (
             return item[col.key];
         });
         const row = sheet.addRow(rowValues);
-        row.eachCell((cell, colNum) => {
+        for (let i = 1; i <= totalCols; i++) {
+            const cell = row.getCell(i);
             cell.font = fontNormal;
             cell.border = borderStyle as any;
-            cell.alignment = { vertical: 'middle', wrapText: true, horizontal: columns[colNum - 1].align || 'left' };
-        });
+            cell.alignment = { vertical: 'middle', wrapText: true, horizontal: columns[i - 1].align || 'left' };
+        }
     });
 
     sheet.addRow([]);

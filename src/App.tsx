@@ -30,6 +30,8 @@ const Audit           = lazy(() => import('./pages/Inventory/Audit'));
 const AssetList          = lazy(() => import('./pages/Assets/AssetList'));
 const AssetMonthlyReport = lazy(() => import('./pages/Assets/AssetMonthlyReport'));
 const AssetDetailReport  = lazy(() => import('./pages/Assets/AssetDetailReport'));
+const AssetBrokenReport  = lazy(() => import('./pages/Assets/AssetBrokenReport'));
+
 
 
 const NotFound = lazy(() => import('./pages/NotFound').catch(() => ({
@@ -90,6 +92,8 @@ function App() {
                                     <Route path="assets/report-tbvp" element={<AssetMonthlyReport reportType="TBVP" />} />
                                     <Route path="assets/detail-ccdc" element={<AssetDetailReport reportType="CCDC" />} />
                                     <Route path="assets/detail-tbvp" element={<AssetDetailReport reportType="TBVP" />} />
+                                    <Route path="assets/broken-report" element={<AssetBrokenReport />} />
+
                                 </Route>
 
                                 <Route element={<ProtectedRoute allowedPermissions={['inbound.view', 'inbound.create']} />}>

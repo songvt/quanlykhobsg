@@ -245,6 +245,7 @@ const MainLayout: React.FC = () => {
                             { text: 'Chi tiết tài sản CCDC-TSNT', path: '/assets/detail-ccdc' },
                             { text: 'Báo cáo tổng hợp TBVP', path: '/assets/report-tbvp' },
                             { text: 'Chi tiết tài sản TBVP', path: '/assets/detail-tbvp' },
+                            { text: 'Báo cáo CCDC-TBVP hỏng', path: '/assets/broken-report' },
                         ];
                         const isGroupActive = location.pathname.startsWith('/assets');
                         return (

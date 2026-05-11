@@ -183,6 +183,7 @@ export interface Asset {
     asset_management_type?: string;
     is_rented_asset?: boolean;
     rented_type?: string;
+    status_description?: string;
     created_at?: string;
     updated_at?: string;
 }

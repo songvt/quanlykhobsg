@@ -250,69 +250,110 @@ const Audit: React.FC = () => {
             <head>
                 <title>Biên Bản Kiểm Kê</title>
                 <style>
-                    body { font-family: "Times New Roman", Times, serif; padding: 40px; color: #000; }
-                    .header { text-align: center; margin-bottom: 30px; }
-                    .header h1 { margin: 0; font-size: 24px; text-transform: uppercase; }
-                    .header p { margin: 5px 0; font-size: 16px; }
-                    table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 15px; }
-                    th, td { border: 1px solid #000; padding: 10px; text-align: center; }
-                    th { background-color: #f0f0f0; }
-                    .text-left { text-align: left; }
-                    .signature-section { display: flex; justify-content: space-around; margin-top: 50px; }
-                    .signature-box { text-align: center; }
-                    .signature-box strong { display: block; margin-bottom: 80px; }
+                    body { font-family: "Times New Roman", Times, serif; padding: 20px; color: #000; line-height: 1.4; }
+                    .print-container { width: 100%; max-width: 1000px; margin: 0 auto; }
+                    .company-header { display: flex; justify-content: space-between; margin-bottom: 30px; align-items: flex-start; }
+                    .company-left { text-align: center; width: 45%; }
+                    .company-right { text-align: center; width: 50%; }
+                    .company-name { font-weight: bold; font-size: 13pt; text-transform: uppercase; margin: 0; }
+                    .company-sub { font-weight: bold; font-size: 11pt; margin: 2px 0; }
+                    .header-line { width: 60px; height: 1px; background: #000; margin: 5px auto; }
+                    
+                    .report-title { text-align: center; margin-bottom: 25px; margin-top: 10px; }
+                    .report-title h1 { margin: 0; font-size: 20pt; text-transform: uppercase; font-weight: bold; }
+                    .report-title p { margin: 5px 0; font-size: 12pt; font-style: italic; }
+                    
+                    .info-section { margin-bottom: 20px; font-size: 12pt; }
+                    .info-row { margin-bottom: 5px; }
+                    
+                    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11pt; }
+                    th, td { border: 1px solid #000; padding: 8px 5px; text-align: center; }
+                    th { background-color: #f2f2f2; font-weight: bold; text-transform: uppercase; }
+                    .text-left { text-align: left; padding-left: 8px; }
+                    
+                    .signature-section { display: flex; justify-content: space-between; margin-top: 40px; page-break-inside: avoid; }
+                    .signature-box { text-align: center; width: 30%; }
+                    .signature-title { font-weight: bold; font-size: 12pt; margin-bottom: 80px; }
+                    .signature-name { font-weight: bold; text-transform: uppercase; }
+                    
                     @media print {
-                        @page { size: A4; margin: 20mm; }
+                        @page { size: A4 portrait; margin: 15mm; }
                         body { padding: 0; }
+                        .no-print { display: none; }
                     }
                 </style>
             </head>
             <body>
-                <div class="header">
-                    <h1>BIÊN BẢN KIỂM KÊ VẬT TƯ HÀNG HÓA</h1>
-                    <p>Ngày ${new Date().toLocaleDateString('vi-VN')} - Thời gian: ${new Date().toLocaleTimeString('vi-VN')}</p>
-                    <p><strong>Tiêu đề:</strong> ${title || 'Phiếu kiểm kê định kỳ'}</p>
-                    <p><strong>Người kiểm kê:</strong> ${profile?.full_name || profile?.email || 'Nhân viên'}</p>
-                </div>
-                
-                <table>
-                    <thead>
-                        <tr>
-                            <th width="5%">STT</th>
-                            <th width="15%">Mã VT</th>
-                            <th width="30%" class="text-left">Tên vật tư</th>
-                            <th width="10%">SL HT</th>
-                            <th width="10%">Thực tế</th>
-                            <th width="10%">Lệch</th>
-                            <th width="20%">Ghi chú / Serial</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${itemsToPrint.map((item, index) => `
-                            <tr>
-                                <td>${index + 1}</td>
-                                <td>${item.item_code}</td>
-                                <td class="text-left">${item.name}</td>
-                                <td>${item.system_qty}</td>
-                                <td><strong>${item.actual_qty}</strong></td>
-                                <td>${item.discrepancy !== 0 ? (item.discrepancy > 0 ? `+${item.discrepancy}` : item.discrepancy) : '0'}</td>
-                                <td>
-                                    ${item.notes || ''}
-                                    ${(item.scanned_serials?.length || 0) > 0 ? `<div style="font-size:12px;color:#555;margin-top:4px;">Serial: ${item.scanned_serials.join(', ')}</div>` : ''}
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-
-                <div class="signature-section">
-                    <div class="signature-box">
-                        <strong>Thủ Kho</strong>
-                        <p>(Ký và ghi rõ họ tên)</p>
+                <div class="print-container">
+                    <div class="company-header">
+                        <div class="company-left">
+                            <p class="company-name">CÔNG TY CỔ PHẦN VIỄN THÔNG ACT</p>
+                            <p class="company-sub">TRUNG TÂM ACT BẮC SÀI GÒN</p>
+                            <div class="header-line"></div>
+                        </div>
+                        <div class="company-right">
+                            <p class="company-name">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
+                            <p class="company-sub">Độc lập - Tự do - Hạnh phúc</p>
+                            <div class="header-line"></div>
+                        </div>
                     </div>
-                    <div class="signature-box">
-                        <strong>Nhân Viên Kiểm Kê</strong>
-                        <p>(Ký và ghi rõ họ tên)</p>
+
+                    <div class="report-title">
+                        <h1>BIÊN BẢN KIỂM KÊ VẬT TƯ</h1>
+                        <p>(Thời điểm kiểm kê: ${new Date().toLocaleTimeString('vi-VN')} ngày ${new Date().toLocaleDateString('vi-VN')})</p>
+                    </div>
+                    
+                    <div class="info-section">
+                        <div class="info-row"><strong>Tiêu đề:</strong> ${title || 'Kiểm kê định kỳ'}</div>
+                        <div class="info-row"><strong>Kho/Khu vực:</strong> ${targetDistrict || 'Tổng kho'}</div>
+                        <div class="info-row"><strong>Người thực hiện:</strong> ${profile?.full_name || profile?.email || 'Nhân viên'}</div>
+                    </div>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th width="40">STT</th>
+                                <th width="100">Mã vật tư</th>
+                                <th class="text-left">Tên vật tư hàng hóa</th>
+                                <th width="80">Tồn hệ thống</th>
+                                <th width="80">Thực tế</th>
+                                <th width="60">Chênh lệch</th>
+                                <th width="150">Ghi chú / Serial</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${itemsToPrint.map((item, index) => `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${item.item_code}</td>
+                                    <td class="text-left">${item.name}</td>
+                                    <td>${item.system_qty}</td>
+                                    <td><strong>${item.actual_qty}</strong></td>
+                                    <td style="color: ${item.discrepancy !== 0 ? (item.discrepancy > 0 ? 'blue' : 'red') : 'black'}">
+                                        ${item.discrepancy !== 0 ? (item.discrepancy > 0 ? `+${item.discrepancy}` : item.discrepancy) : '0'}
+                                    </td>
+                                    <td class="text-left" style="font-size: 9pt;">
+                                        ${item.notes || ''}
+                                        ${(item.scanned_serials?.length || 0) > 0 ? `<div style="margin-top:2px;">SN: ${item.scanned_serials.join(', ')}</div>` : ''}
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+
+                    <div class="signature-section">
+                        <div class="signature-box">
+                            <div class="signature-title">Người kiểm kê</div>
+                            <div class="signature-name">${profile?.full_name || ''}</div>
+                        </div>
+                        <div class="signature-box">
+                            <div class="signature-title">Thủ kho</div>
+                            <div class="signature-name"></div>
+                        </div>
+                        <div class="signature-box">
+                            <div class="signature-title">Trưởng đơn vị</div>
+                            <div class="signature-name"></div>
+                        </div>
                     </div>
                 </div>
             </body>

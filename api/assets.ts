@@ -83,6 +83,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     });
                 }
 
+                // 3. Logging for fluctuations
+                try {
+                    const logEntries = processedItems.map((item: any) => ({
+                        asset_code: item.asset_code,
+                        asset_name: item.asset_name,
+                        asset_type: item.asset_type,
+                        asset_group: item.asset_group,
+                        action: 'Tăng',
+                        employee_name: item.user_employee_name || '',
+                        employee_code: item.user_employee_code || '',
+                        department: item.user_department_name || '',
+                        performed_by: 'Hệ thống'
+                    }));
+                    await supabase.from('asset_logs').insert(logEntries);
+                } catch (logErr) {
+                    console.error('Logging increase failed:', logErr);
+                }
+
                 return res.status(201).json(action === 'bulk_insert' ? (sbData || processedItems) : (sbData ? sbData[0] : processedItems[0]));
             }
 
@@ -112,11 +130,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     await supabase.from('asset_logs').insert({
                         asset_code: finalAsset.asset_code || oldData.asset_code,
                         asset_name: finalAsset.asset_name || oldData.asset_name,
+                        asset_type: finalAsset.asset_type || oldData.asset_type,
+                        asset_group: finalAsset.asset_group || oldData.asset_group,
                         action: logAction,
                         employee_name: updatedAsset.user_employee_name ?? oldData.user_employee_name,
                         employee_code: updatedAsset.user_employee_code ?? oldData.user_employee_code,
                         department: updatedAsset.user_department_name ?? oldData.user_department_name,
-                        performed_by: 'Hệ thống' // Can be updated to use actual user session if available
+                        performed_by: 'Hệ thống'
                     });
                 }
 
@@ -149,11 +169,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 const targetIds = ids && Array.isArray(ids) ? ids : [id];
                 if (targetIds.length === 0) return res.status(400).json({ error: 'ID required' });
                 
-                // 1. Supabase
+                // 1. Fetch info before deletion for logging
+                const { data: assetsToDelete } = await supabase.from('assets').select('asset_code, asset_name, asset_type, asset_group').in('id', targetIds);
+
+                // 2. Supabase
                 const { error: sbError } = await supabase.from('assets').delete().in('id', targetIds);
                 if (sbError) {
                     console.error('SB Delete Error:', sbError);
                     return res.status(500).json({ error: 'Supabase Delete Failed' });
+                }
+
+                // 3. Logging for fluctuations (Decrease)
+                if (assetsToDelete && assetsToDelete.length > 0) {
+                    try {
+                        const logEntries = assetsToDelete.map(item => ({
+                            asset_code: item.asset_code,
+                            asset_name: item.asset_name,
+                            asset_type: item.asset_type,
+                            asset_group: item.asset_group,
+                            action: 'Giảm',
+                            performed_by: 'Hệ thống'
+                        }));
+                        await supabase.from('asset_logs').insert(logEntries);
+                    } catch (logErr) {
+                        console.error('Logging decrease failed:', logErr);
+                    }
                 }
 
                 // 2. Google Sheets

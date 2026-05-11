@@ -3,12 +3,14 @@ import type { Asset } from '../../types';
 
 interface AssetsState {
     items: Asset[];
+    logs: any[];
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     error: string | null;
 }
 
 const initialState: AssetsState = {
     items: [],
+    logs: [],
     status: 'idle',
     error: null,
 };
@@ -21,6 +23,15 @@ export const fetchAssets = createAsyncThunk('assets/fetchAssets', async () => {
     }
     const data = await response.json();
     return data as Asset[];
+});
+
+export const fetchAssetLogs = createAsyncThunk('assets/fetchAssetLogs', async () => {
+    const response = await fetch('/api/asset_logs');
+    if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error || 'Failed to fetch asset logs');
+    }
+    return (await response.json()) as any[];
 });
 
 export const addNewAsset = createAsyncThunk('assets/addNewAsset', async (newAsset: Omit<Asset, 'id'>) => {
@@ -97,6 +108,9 @@ const assetsSlice = createSlice({
             .addCase(fetchAssets.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.error.message || 'Failed to fetch assets';
+            })
+            .addCase(fetchAssetLogs.fulfilled, (state, action) => {
+                state.logs = action.payload;
             })
             .addCase(addNewAsset.fulfilled, (state, action) => {
                 state.items.unshift(action.payload);

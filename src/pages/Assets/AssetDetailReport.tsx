@@ -142,6 +142,9 @@ const AssetDetailReport: React.FC<Props> = ({ reportType }) => {
                 .sig-box { width: 32%; display: inline-block; vertical-align: top; }
                 .sig-title { font-weight: bold; font-size: 11pt; }
                 .sig-note { font-style: italic; font-size: 9.5pt; }
+                /* Ensure flex layout works in print */
+                .print-header { display: flex; justify-content: space-between; width: 100%; }
+                .print-header-side { text-align: center; width: 45%; }
             </style></head>
             <body>${printContents}</body></html>
         `);
@@ -176,25 +179,25 @@ const AssetDetailReport: React.FC<Props> = ({ reportType }) => {
             {status === 'loading' && <CircularProgress sx={{ display: 'block', mx: 'auto', my: 4 }} />}
 
             <Paper elevation={0} sx={{ p: 3, border: '1px solid #ddd', minWidth: '1000px' }} ref={printRef}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'Times New Roman' }}>
-                    <Box textAlign="center">
-                        <Typography fontWeight={700} sx={{ fontSize: '11pt' }}>CÔNG TY CỔ PHẦN VIỄN THÔNG ACT</Typography>
-                        <Typography fontWeight={700} sx={{ textDecoration: 'underline', fontSize: '11pt' }}>TRUNG TÂM ACT BẮC SÀI GÒN</Typography>
-                    </Box>
-                    <Box textAlign="center">
-                        <Typography fontWeight={700} sx={{ fontSize: '11pt' }}>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</Typography>
-                        <Typography fontWeight={700} sx={{ textDecoration: 'underline', fontSize: '11pt' }}>Độc lập - Tự do - Hạnh phúc</Typography>
-                    </Box>
-                </Box>
+                <div className="print-header" style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'Times New Roman', width: '100%' }}>
+                    <div className="print-header-side" style={{ textAlign: 'center', width: '45%' }}>
+                        <div style={{ fontWeight: 'bold', fontSize: '11pt' }}>CÔNG TY CỔ PHẦN VIỄN THÔNG ACT</div>
+                        <div style={{ fontWeight: 'bold', textDecoration: 'underline', fontSize: '11pt' }}>TRUNG TÂM ACT BẮC SÀI GÒN</div>
+                    </div>
+                    <div className="print-header-side" style={{ textAlign: 'center', width: '45%' }}>
+                        <div style={{ fontWeight: 'bold', fontSize: '11pt' }}>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+                        <div style={{ fontWeight: 'bold', textDecoration: 'underline', fontSize: '11pt' }}>Độc lập - Tự do - Hạnh phúc</div>
+                    </div>
+                </div>
 
-                <Box textAlign="center" my={3} sx={{ fontFamily: 'Times New Roman' }}>
-                    <Typography variant="h6" fontWeight={800} sx={{ textTransform: 'uppercase', fontSize: '13pt' }}>
+                <div style={{ textAlign: 'center', margin: '24px 0', fontFamily: 'Times New Roman' }}>
+                    <div style={{ fontWeight: '800', textTransform: 'uppercase', fontSize: '13pt' }}>
                         BÁO CÁO CHI TIẾT TÀI SẢN {reportType === 'CCDC' ? 'CCDC-TSNT' : 'TBVP'}
-                    </Typography>
-                    <Typography variant="body1" fontStyle="italic" sx={{ fontSize: '11pt' }}>
+                    </div>
+                    <div style={{ fontStyle: 'italic', fontSize: '11pt' }}>
                         Kỳ báo cáo tháng {String(month).padStart(2,'0')} năm {year}
-                    </Typography>
-                </Box>
+                    </div>
+                </div>
 
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Times New Roman' }}>
                     <thead>

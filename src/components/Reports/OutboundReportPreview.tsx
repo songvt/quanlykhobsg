@@ -23,7 +23,7 @@ const OutboundReportTemplate = ({ data, delivererName, date, receiverName, sende
             bgcolor: 'white', 
             color: '#09090b', 
             minWidth: 800, 
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'Times New Roman', Times, serif",
             '@media print': { p: 0 } 
         }}>
             {/* Header section with split layout */}

@@ -54,9 +54,12 @@ const AssetList = () => {
         open: boolean;
         assetId: string;
         status: string;
-    }>({ open: false, assetId: '', status: '' });
+        description: string;
+    }>({ open: false, assetId: '', status: '', description: '' });
 
+    const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; id: string }>({ open: false, id: '' });
     const [searchEmployee, setSearchEmployee] = useState('');
+
 
     useEffect(() => {
         if (status === 'idle') {
@@ -79,7 +82,10 @@ const AssetList = () => {
         const s = searchEmployee.toLowerCase();
         return assets.filter(a => 
             (a.user_employee_name || '').toLowerCase().includes(s) ||
-            (a.manager_name || '').toLowerCase().includes(s)
+            (a.manager_name || '').toLowerCase().includes(s) ||
+            (a.asset_name || '').toLowerCase().includes(s) ||
+            (a.status || '').toLowerCase().includes(s) ||
+            (a.asset_code || '').toLowerCase().includes(s)
         );
     }, [assets, searchEmployee]);
 
@@ -266,19 +272,37 @@ const AssetList = () => {
     };
 
     const handleEditStatusSubmit = async () => {
+        if (editStatusModal.status === 'Hỏng' && !editStatusModal.description.trim()) {
+            notifyError('Vui lòng nhập mô tả chi tiết tình trạng khi báo hỏng!');
+            return;
+        }
+
         try {
             await dispatch(updateAsset({
                 id: editStatusModal.assetId,
-                status: editStatusModal.status
+                status: editStatusModal.status,
+                status_description: editStatusModal.description
             })).unwrap();
             success('Đã cập nhật tình trạng tài sản!');
-            setEditStatusModal({ open: false, assetId: '', status: '' });
+            setEditStatusModal({ open: false, assetId: '', status: '', description: '' });
         } catch (err: any) {
             notifyError('Lỗi cập nhật: ' + err.message);
         }
     };
 
+    const handleDeleteConfirm = async () => {
+        if (!deleteConfirm.id) return;
+        try {
+            await dispatch(deleteAsset(deleteConfirm.id)).unwrap();
+            success('Đã xóa tài sản thành công!');
+            setDeleteConfirm({ open: false, id: '' });
+        } catch (err: any) {
+            notifyError('Lỗi khi xóa: ' + err.message);
+        }
+    };
+
     return (
+
         <Box p={{ xs: 1, sm: 3 }}>
             <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" mb={3} spacing={2}>
                 <Typography 
@@ -355,9 +379,9 @@ const AssetList = () => {
 
             <Stack direction="row" spacing={2} mb={2}>
                 <TextField
-                    placeholder="Tìm theo tên nhân viên..."
+                    placeholder="Tìm theo tên TS, tình trạng, nhân viên..."
                     size="small"
-                    sx={{ width: 300, bgcolor: 'white' }}
+                    sx={{ width: 350, bgcolor: 'white' }}
                     value={searchEmployee}
                     onChange={(e) => setSearchEmployee(e.target.value)}
                 />
@@ -403,13 +427,23 @@ const AssetList = () => {
                                             <IconButton 
                                                 size="small" 
                                                 color="primary" 
-                                                onClick={() => setEditStatusModal({ open: true, assetId: asset.id, status: asset.status || '' })}
+                                                onClick={() => setEditStatusModal({ 
+                                                    open: true, 
+                                                    assetId: asset.id, 
+                                                    status: asset.status || '',
+                                                    description: asset.status_description || ''
+                                                })}
                                             >
                                                 <EditIcon fontSize="small" />
                                             </IconButton>
-                                            <IconButton size="small" color="error" onClick={() => dispatch(deleteAsset(asset.id))}>
+                                            <IconButton 
+                                                size="small" 
+                                                color="error" 
+                                                onClick={() => setDeleteConfirm({ open: true, id: asset.id })}
+                                            >
                                                 <DeleteIcon fontSize="small" />
                                             </IconButton>
+
                                         </Stack>
                                     </TableCell>
                                 </TableRow>
@@ -480,16 +514,38 @@ const AssetList = () => {
             <Dialog open={editStatusModal.open} onClose={() => setEditStatusModal({ ...editStatusModal, open: false })} maxWidth="xs" fullWidth>
                 <DialogTitle>Sửa tình trạng tài sản</DialogTitle>
                 <DialogContent>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        label="Tình trạng"
-                        fullWidth
-                        size="small"
-                        value={editStatusModal.status}
-                        onChange={(e) => setEditStatusModal({ ...editStatusModal, status: e.target.value })}
-                        sx={{ mt: 1 }}
-                    />
+                        <TextField
+                            select
+                            margin="dense"
+                            label="Tình trạng"
+                            fullWidth
+                            size="small"
+                            value={editStatusModal.status}
+                            onChange={(e) => setEditStatusModal({ ...editStatusModal, status: e.target.value })}
+                            SelectProps={{ native: true }}
+                            sx={{ mt: 1 }}
+                        >
+                            <option value="Mới">Mới</option>
+                            <option value="Đang sử dụng">Đang sử dụng</option>
+                            <option value="Hỏng">Hỏng</option>
+                            <option value="Mất">Mất</option>
+                            <option value="Thanh lý">Thanh lý</option>
+                        </TextField>
+
+                        <TextField
+                            margin="dense"
+                            label="Mô tả chi tiết tình trạng"
+                            fullWidth
+                            multiline
+                            rows={3}
+                            size="small"
+                            value={editStatusModal.description}
+                            onChange={(e) => setEditStatusModal({ ...editStatusModal, description: e.target.value })}
+                            required={editStatusModal.status === 'Hỏng'}
+                            error={editStatusModal.status === 'Hỏng' && !editStatusModal.description.trim()}
+                            helperText={editStatusModal.status === 'Hỏng' && !editStatusModal.description.trim() ? 'Bắt buộc nhập lý do/mô tả khi hỏng' : ''}
+                            sx={{ mt: 2 }}
+                        />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setEditStatusModal({ ...editStatusModal, open: false })}>Hủy</Button>
@@ -497,7 +553,20 @@ const AssetList = () => {
                 </DialogActions>
             </Dialog>
 
+            {/* Delete Confirmation Dialog */}
+            <Dialog open={deleteConfirm.open} onClose={() => setDeleteConfirm({ open: false, id: '' })} maxWidth="xs" fullWidth>
+                <DialogTitle sx={{ color: 'error.main', fontWeight: 700 }}>Xác nhận xóa</DialogTitle>
+                <DialogContent>
+                    <Typography>Bạn có chắc chắn muốn xóa tài sản này khỏi hệ thống? Thao tác này không thể hoàn tác.</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setDeleteConfirm({ open: false, id: '' })}>Hủy</Button>
+                    <Button variant="contained" color="error" onClick={handleDeleteConfirm}>Xác nhận xóa</Button>
+                </DialogActions>
+            </Dialog>
+
             {/* Handover Minutes Print Dialog */}
+
             <AssetHandoverPrint
                 open={handoverPrint.open}
                 onClose={() => setHandoverPrint(prev => ({ ...prev, open: false }))}

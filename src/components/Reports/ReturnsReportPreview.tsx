@@ -20,7 +20,7 @@ const ReturnsReportTemplate = ({ data, employeeName, date, receiverName }: Retur
             color: '#09090b',
             minWidth: 800,
             p: 6,
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'Times New Roman', Times, serif",
             '@media print': { p: 0 }
         }}>
             {/* Header section with split layout */}
