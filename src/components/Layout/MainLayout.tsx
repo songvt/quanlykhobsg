@@ -479,7 +479,10 @@ const MainLayout: React.FC = () => {
                         </Box>
 
                         {/* Org Switcher (Mocked visually) */}
-                        <Box sx={{ display: { xs: 'none', lg: 'flex' }, alignItems: 'center', gap: 1, cursor: 'pointer', '&:hover': { opacity: 0.8 } }}>
+                        <Box 
+                            onClick={() => navigate('/')}
+                            sx={{ display: { xs: 'none', lg: 'flex' }, alignItems: 'center', gap: 1, cursor: 'pointer', '&:hover': { opacity: 0.8 } }}
+                        >
                             <BusinessIcon sx={{ color: '#64748b', fontSize: 20 }} />
                             <Typography sx={{ fontSize: '0.875rem', fontWeight: 500, color: '#475569' }}>Main HQ</Typography>
                             <ExpandMoreIcon sx={{ color: '#94a3b8', fontSize: 16 }} />

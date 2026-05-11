@@ -1,73 +1,44 @@
-# React + TypeScript + Vite
+# Hệ thống Quản Lý Kho GGS (Warehouse Management System)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Ứng dụng quản lý kho tích hợp Google Sheets và Supabase, hỗ trợ quét mã QR, quản lý tài sản, vật tư và báo cáo chuyên sâu.
 
-Currently, two official plugins are available:
+## Công nghệ sử dụng
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Frontend**: React 19, Vite, Material UI (MUI), Redux Toolkit.
+- **Backend**: Vercel Serverless Functions (Node.js/TypeScript).
+- **Database**: Supabase (PostgreSQL).
+- **Integration**: Google Sheets API, Google Drive API.
+- **PWA**: Hỗ trợ cài đặt ứng dụng trên thiết bị di động.
 
-## React Compiler
+## Cấu trúc dự án
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- `/src`: Mã nguồn frontend React.
+- `/api`: Các hàm serverless xử lý logic backend và tích hợp API bên thứ 3.
+- `vercel.json`: Cấu hình triển khai trên Vercel.
 
-## Expanding the ESLint configuration
+## Hướng dẫn cài đặt local
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. Sao chép file `.env.example` thành `.env` và điền đầy đủ thông tin.
+2. Cài đặt dependencies:
+   ```bash
+   npm install
+   ```
+3. Chạy ứng dụng trong môi trường phát triển (cả frontend và local API):
+   ```bash
+   npm run dev
+   ```
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Triển khai lên Vercel
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+1. Đẩy mã nguồn lên GitHub.
+2. Kết nối kho lưu trữ GitHub với Vercel.
+3. Trong cấu hình dự án trên Vercel, thêm các biến môi trường từ file `.env`.
+   - **Lưu ý**: Đối với `GOOGLE_PRIVATE_KEY`, hãy đảm bảo copy toàn bộ chuỗi bao gồm `-----BEGIN PRIVATE KEY-----` và `-----END PRIVATE KEY-----`.
+4. Vercel sẽ tự động nhận diện `vercel.json` và triển khai ứng dụng.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Biến môi trường quan trọng
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Xem chi tiết tại [.env.example](./.env.example).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
+*Phát triển bởi đội ngũ GGS.*

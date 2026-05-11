@@ -25,6 +25,7 @@ import AssetHandoverPrint from './AssetHandoverPrint';
 const AssetList = () => {
     const dispatch = useDispatch<AppDispatch>();
     const { items: assets, status } = useSelector((state: RootState) => state.assets);
+    const { profile } = useSelector((state: RootState) => state.auth);
     const { success, error: notifyError } = useNotification();
 
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -214,7 +215,7 @@ const AssetList = () => {
                 const duplicateCount = mappedData.length - newAssets.length;
 
                 if (newAssets.length > 0) {
-                    await dispatch(importAssets(newAssets as Omit<Asset, 'id'>[])).unwrap();
+                    await dispatch(importAssets({ assets: newAssets as Omit<Asset, 'id'>[], performedBy: profile?.full_name })).unwrap();
                     let msg = `Đã nhập thành công ${newAssets.length} tài sản mới!`;
                     if (duplicateCount > 0) {
                         msg += ` (Đã bỏ qua ${duplicateCount} mã đã tồn tại)`;
@@ -243,11 +244,14 @@ const AssetList = () => {
                 if (actionModal.type === 'transfer') statusUpdate = 'Đã điều chuyển';
 
                 return dispatch(updateAsset({
-                    id,
-                    user_employee_name: actionModal.type === 'revoke' ? '' : employeeName,
-                    user_employee_code: actionModal.type === 'revoke' ? '' : employeeCode,
-                    user_department_name: actionModal.type === 'revoke' ? '' : department,
-                    status: statusUpdate
+                    updatedAsset: {
+                        id,
+                        user_employee_name: actionModal.type === 'revoke' ? '' : employeeName,
+                        user_employee_code: actionModal.type === 'revoke' ? '' : employeeCode,
+                        user_department_name: actionModal.type === 'revoke' ? '' : department,
+                        status: statusUpdate
+                    },
+                    performedBy: profile?.full_name
                 })).unwrap();
             });
 
@@ -282,9 +286,12 @@ const AssetList = () => {
 
         try {
             await dispatch(updateAsset({
-                id: editStatusModal.assetId,
-                status: editStatusModal.status,
-                status_description: editStatusModal.description
+                updatedAsset: {
+                    id: editStatusModal.assetId,
+                    status: editStatusModal.status,
+                    status_description: editStatusModal.description
+                },
+                performedBy: profile?.full_name
             })).unwrap();
             success('Đã cập nhật tình trạng tài sản!');
             setEditStatusModal({ open: false, assetId: '', status: '', description: '' });
@@ -296,7 +303,7 @@ const AssetList = () => {
     const handleDeleteConfirm = async () => {
         if (!deleteConfirm.id) return;
         try {
-            await dispatch(deleteAsset(deleteConfirm.id)).unwrap();
+            await dispatch(deleteAsset({ id: deleteConfirm.id, performedBy: profile?.full_name })).unwrap();
             success('Đã xóa tài sản thành công!');
             setDeleteConfirm({ open: false, id: '' });
         } catch (err: any) {

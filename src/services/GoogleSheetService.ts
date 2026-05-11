@@ -425,5 +425,11 @@ export const GoogleSheetService = {
         return apiRequest('qr_logs', {
             method: 'GET'
         });
+    },
+
+    async getAssetLogs() {
+        return apiRequest('asset_logs', {
+            method: 'GET'
+        });
     }
 };

@@ -27,7 +27,7 @@ const parseLocalDate = (dateStr: any) => {
 
 // --- Helper to send webhook ---
 const sendWebhook = async (type: 'inbound' | 'outbound', data: any) => {
-    const N8N_WEBHOOK_URL = "https://n8n.songvietvn.com/webhook/c3e9894e-2895-4673-9a3d-3652d3a39e3b";
+    const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL;
     if (type === 'inbound' || !N8N_WEBHOOK_URL) return;
     try {
         const payload = Array.isArray(data) ? data : [data];

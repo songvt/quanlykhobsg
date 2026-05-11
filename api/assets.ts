@@ -29,7 +29,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             }
 
             case 'POST': {
-                const { action } = req.body;
+                const { action, performed_by } = req.body;
+                const creator = performed_by || 'Hệ thống';
                 const itemsToInsert = (req.body.payload as any[]).map(item => ({
                     ...item,
                     id: item.id || randomUUID()
@@ -94,7 +95,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                         employee_name: item.user_employee_name || '',
                         employee_code: item.user_employee_code || '',
                         department: item.user_department_name || '',
-                        performed_by: 'Hệ thống'
+                        performed_by: creator
                     }));
                     await supabase.from('asset_logs').insert(logEntries);
                 } catch (logErr) {
@@ -106,7 +107,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
 
             case 'PUT': {
-                const updatedAsset = req.body;
+                const { performed_by, ...updatedAsset } = req.body;
+                const editor = performed_by || 'Hệ thống';
                 if (!updatedAsset.id) return res.status(400).json({ error: 'Asset ID required' });
                 
                 // Fetch old state to detect changes for logging
@@ -119,13 +121,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     return res.status(500).json({ error: 'Supabase Update Failed' });
                 }
 
-                // 2. Logging if status or user changed
-                if (oldData && (updatedAsset.status || updatedAsset.user_employee_name !== undefined)) {
+                // 2. Logging
+                if (oldData) {
                     const finalAsset = sbData ? sbData[0] : updatedAsset;
                     let logAction = 'Cập nhật';
-                    if (updatedAsset.status?.toLowerCase().includes('cấp phát')) logAction = 'Cấp phát';
-                    else if (updatedAsset.status?.toLowerCase().includes('điều chuyển')) logAction = 'Điều chuyển';
-                    else if (updatedAsset.user_employee_name === '' || updatedAsset.status === 'Chưa sử dụng') logAction = 'Thu hồi';
+                    let logDetails = '';
+                    
+                    const oldUser = oldData.user_employee_name || 'Kho';
+                    const newUser = updatedAsset.user_employee_name !== undefined ? (updatedAsset.user_employee_name || 'Kho') : oldUser;
+
+                    if (updatedAsset.status?.toLowerCase().includes('cấp phát')) {
+                        logAction = 'Cấp phát';
+                        logDetails = `Cấp phát cho: ${newUser}`;
+                    } else if (updatedAsset.status?.toLowerCase().includes('điều chuyển')) {
+                        logAction = 'Điều chuyển';
+                        logDetails = `Điều chuyển từ [${oldUser}] sang [${newUser}]`;
+                    } else if (updatedAsset.user_employee_name === '' || updatedAsset.status === 'Chưa sử dụng') {
+                        logAction = 'Thu hồi';
+                        logDetails = `Thu hồi từ [${oldUser}] về kho`;
+                    } else if (updatedAsset.user_employee_name && updatedAsset.user_employee_name !== oldData.user_employee_name) {
+                        logAction = 'Điều chuyển';
+                        logDetails = `Thay đổi người sử dụng: ${oldUser} -> ${newUser}`;
+                    }
 
                     await supabase.from('asset_logs').insert({
                         asset_code: finalAsset.asset_code || oldData.asset_code,
@@ -133,10 +150,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                         asset_type: finalAsset.asset_type || oldData.asset_type,
                         asset_group: finalAsset.asset_group || oldData.asset_group,
                         action: logAction,
+                        details: logDetails,
                         employee_name: updatedAsset.user_employee_name ?? oldData.user_employee_name,
                         employee_code: updatedAsset.user_employee_code ?? oldData.user_employee_code,
                         department: updatedAsset.user_department_name ?? oldData.user_department_name,
-                        performed_by: 'Hệ thống'
+                        performed_by: editor
                     });
                 }
 
@@ -165,7 +183,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             }
 
             case 'DELETE': {
-                const { id, ids } = req.body;
+                const { id, ids, performed_by } = req.body;
+                const remover = performed_by || 'Hệ thống';
                 const targetIds = ids && Array.isArray(ids) ? ids : [id];
                 if (targetIds.length === 0) return res.status(400).json({ error: 'ID required' });
                 
@@ -188,7 +207,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                             asset_type: item.asset_type,
                             asset_group: item.asset_group,
                             action: 'Giảm',
-                            performed_by: 'Hệ thống'
+                            performed_by: remover
                         }));
                         await supabase.from('asset_logs').insert(logEntries);
                     } catch (logErr) {

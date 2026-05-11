@@ -9,8 +9,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const { text } = req.body;
         if (!text) return res.status(400).json({ error: 'Missing text' });
 
-        const token = process.env.TELEGRAM_BOT_TOKEN || '6446138704:AAG7eFdMA7cWOubGcbard0zsM-fD2_wlsTk';
-        const chatId = process.env.TELEGRAM_CHAT_ID || '-4080685922';
+        const token = process.env.TELEGRAM_BOT_TOKEN;
+        const chatId = process.env.TELEGRAM_CHAT_ID;
+        if (!token || !chatId) {
+            return res.status(500).json({ error: 'Telegram configuration missing' });
+        }
         const url = `https://api.telegram.org/bot${token}/sendMessage`;
 
         const response = await fetch(url, {
