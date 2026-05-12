@@ -5,7 +5,7 @@ import {
     TableContainer, TableHead, TableRow, CircularProgress
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
-import { QRCodeCanvas } from 'qrcode.react';
+import { QRCodeSVG } from 'qrcode.react';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import PrintIcon from '@mui/icons-material/Print';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -621,7 +621,7 @@ const QRGeneratorHCM = () => {
                                                 {group.qrChunks[0] && (
                                                     <>
                                                         {group.qrChunks.length > 1 && <div className="qr-label-small">{group.qrChunks[0].label}</div>}
-                                                        <QRCodeCanvas value={group.qrChunks[0].qrValue} size={group.qrChunks.length > 1 ? 180 : 280} level="M" />
+                                                        <QRCodeSVG value={group.qrChunks[0].qrValue} size={group.qrChunks.length > 1 ? 180 : 280} level="M" />
                                                     </>
                                                 )}
                                             </div>
@@ -637,7 +637,7 @@ const QRGeneratorHCM = () => {
                                             {group.qrChunks.length > 1 ? (
                                                 <div className="grid-cell grid-cell-qr" style={{ gridRow: 'span 2', borderBottom: 'none' }}>
                                                     <div className="qr-label-small">{group.qrChunks[1].label}</div>
-                                                    <QRCodeCanvas value={group.qrChunks[1].qrValue} size={180} level="M" />
+                                                    <QRCodeSVG value={group.qrChunks[1].qrValue} size={180} level="M" />
                                                 </div>
                                             ) : (
                                                 null // Spanned from Row 1
