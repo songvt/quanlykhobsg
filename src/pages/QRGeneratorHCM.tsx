@@ -205,10 +205,11 @@ const QRGeneratorHCM = () => {
             font-weight: bold;
             border-right: 2px solid #334155;
             z-index: 5;
+            text-transform: uppercase;
         }
         .grid-cell-value {
             background-color: #facc15 !important;
-            font-size: 30pt; 
+            font-size: 34pt; 
             font-weight: bold; 
             text-align: center;
             padding: 0 10px;
@@ -217,10 +218,11 @@ const QRGeneratorHCM = () => {
             print-color-adjust: exact;
             z-index: 10;
             white-space: nowrap;
+            text-transform: uppercase;
         }
         .grid-cell-value-lg {
             background-color: #facc15 !important;
-            font-size: 42pt; 
+            font-size: 50pt; 
             font-weight: bold; 
             text-align: center;
             border-right: 2px solid #334155;
@@ -228,6 +230,7 @@ const QRGeneratorHCM = () => {
             print-color-adjust: exact;
             z-index: 10;
             white-space: nowrap;
+            text-transform: uppercase;
         }
         .grid-cell-qr {
             flex-direction: column;
@@ -634,7 +637,7 @@ const QRGeneratorHCM = () => {
                                                 <div className="label-body">
                                                     {/* Row 1 */}
                                                     <div className="grid-cell grid-cell-label">THÙNG</div>
-                                                    <div className="grid-cell grid-cell-value-lg" style={{ fontSize: getShrinkFontSize(group.thung, 42) }}>
+                                                    <div className="grid-cell grid-cell-value-lg" style={{ fontSize: getShrinkFontSize(group.thung, 50) }}>
                                                         {group.thung}
                                                     </div>
                                                     <div className="grid-cell grid-cell-qr" style={{ gridRow: group.qrChunks.length > 1 ? 'span 2' : 'span 4', borderBottom: group.qrChunks.length > 1 ? '2px solid #334155' : 'none' }}>
@@ -648,14 +651,14 @@ const QRGeneratorHCM = () => {
 
                                                     {/* Row 2 */}
                                                     <div className="grid-cell grid-cell-label">Số lượng</div>
-                                                    <div className="grid-cell grid-cell-value-lg" style={{ fontSize: getShrinkFontSize(group.totalQuantity, 42) }}>
+                                                    <div className="grid-cell grid-cell-value-lg" style={{ fontSize: getShrinkFontSize(group.totalQuantity, 50) }}>
                                                         {group.totalQuantity}
                                                     </div>
                                                     {/* Col 3 is spanned from Row 1 */}
 
                                                     {/* Row 3 */}
                                                     <div className="grid-cell grid-cell-label">Thiết bị</div>
-                                                    <div className="grid-cell grid-cell-value" style={{ fontSize: getShrinkFontSize(group.thiet_bi, 30) }}>
+                                                    <div className="grid-cell grid-cell-value" style={{ fontSize: getShrinkFontSize(group.thiet_bi, 34) }}>
                                                         {group.thiet_bi}
                                                     </div>
                                                     {group.qrChunks.length > 1 ? (
@@ -669,7 +672,7 @@ const QRGeneratorHCM = () => {
 
                                                     {/* Row 4 */}
                                                     <div className="grid-cell grid-cell-label">Tình trạng</div>
-                                                    <div className="grid-cell grid-cell-value" style={{ fontSize: getShrinkFontSize(group.tinh_trang, 30) }}>
+                                                    <div className="grid-cell grid-cell-value" style={{ fontSize: getShrinkFontSize(group.tinh_trang, 34) }}>
                                                         {group.tinh_trang}
                                                     </div>
                                                 </div>
