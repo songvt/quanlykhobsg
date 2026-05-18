@@ -35,6 +35,42 @@
     ],
     "rewrites": [
         {
+            "source": "/api/settlement_history",
+            "destination": "/api/settlements?type=history"
+        },
+        {
+            "source": "/api/settlement_inventory",
+            "destination": "/api/settlements?type=inventory"
+        },
+        {
+            "source": "/api/settlement_outbound",
+            "destination": "/api/settlements?type=outbound"
+        },
+        {
+            "source": "/api/stats",
+            "destination": "/api/settlements?type=stats"
+        },
+        {
+            "source": "/api/asset_logs",
+            "destination": "/api/assets?type=logs"
+        },
+        {
+            "source": "/api/asset_handovers",
+            "destination": "/api/assets?type=handovers"
+        },
+        {
+            "source": "/api/drive_upload",
+            "destination": "/api/system_utils?type=drive_upload"
+        },
+        {
+            "source": "/api/telegram",
+            "destination": "/api/system_utils?type=telegram"
+        },
+        {
+            "source": "/api/qr_logs",
+            "destination": "/api/audits?type=qr"
+        },
+        {
             "source": "/api/(.*)",
             "destination": "/api/$1"
         },
