@@ -60,7 +60,6 @@ interface SettlementRow {
 import { STANDARD_GOODS_31_DATA, STANDARD_GOODS_31_NAMES as STANDARD_GOODS_31 } from '../../config/settlementData';
 
 const goodsFindStandardKey = createGoodsFindStandardKey(STANDARD_GOODS_31_DATA);
-const goodsFindStandardKey = createGoodsFindStandardKey(STANDARD_GOODS_31_DATA);
 
 const GoodsSettlementReport: React.FC = () => {
     const dispatch = useDispatch();

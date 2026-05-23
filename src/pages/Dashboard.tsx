@@ -101,7 +101,6 @@ const MetricCard = ({ title, value, subtitle, icon, color, trend, onClick }: any
                     color: '#64748b', 
                     fontWeight: 800, 
                     letterSpacing: '1px',
-                    fontFamily: '"Times New Roman", Times, serif',
                     textTransform: 'uppercase',
                     fontSize: '0.85rem'
                 }}>
@@ -114,8 +113,7 @@ const MetricCard = ({ title, value, subtitle, icon, color, trend, onClick }: any
                 color: '#0f172a', 
                 mb: 1.5, 
                 fontSize: '2.75rem', 
-                letterSpacing: '-1px',
-                fontFamily: '"Times New Roman", Times, serif'
+                letterSpacing: '-1px'
             }}>
                 {value}
             </Typography>
@@ -140,8 +138,7 @@ const MetricCard = ({ title, value, subtitle, icon, color, trend, onClick }: any
                     <Typography variant="body2" sx={{ 
                         color: '#64748b', 
                         fontWeight: 600,
-                        fontSize: '0.9rem',
-                        fontFamily: '"Times New Roman", Times, serif'
+                        fontSize: '0.9rem'
                     }}>
                         {subtitle}
                     </Typography>
@@ -277,10 +274,10 @@ const Dashboard = () => {
         return (
             <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" p={4} minHeight="50vh">
                 <WarningIcon sx={{ fontSize: 60, color: '#94a3b8', mb: 2 }} />
-                <Typography variant="h6" color="#475569" gutterBottom sx={{ fontFamily: '"Times New Roman", Times, serif', fontWeight: 700 }}>
+                <Typography variant="h6" color="#475569" gutterBottom sx={{ fontWeight: 700 }}>
                     Không có dữ liệu
                 </Typography>
-                <Typography variant="body2" color="#64748b" align="center" sx={{ maxWidth: 400, fontFamily: '"Times New Roman", Times, serif' }}>
+                <Typography variant="body2" color="#64748b" align="center" sx={{ maxWidth: 400 }}>
                     Chưa có sản phẩm hoặc giao dịch nào trong hệ thống.
                 </Typography>
             </Box>
@@ -322,12 +319,11 @@ const Dashboard = () => {
                         background: 'linear-gradient(135deg, #0f172a 0%, #3b82f6 100%)',
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent',
-                        fontSize: { xs: '2rem', md: '2.75rem' },
-                        fontFamily: '"Times New Roman", Times, serif'
+                        fontSize: { xs: '2rem', md: '2.75rem' }
                     }}>
                         Trung tâm điều khiển
                     </Typography>
-                    <Typography variant="body1" sx={{ color: '#64748b', mt: 0.8, fontWeight: 600, fontFamily: '"Times New Roman", Times, serif', display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Typography variant="body1" sx={{ color: '#64748b', mt: 0.8, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: COLORS.success, animation: 'pulse 2s infinite' }} />
                         {lastUpdated
                             ? `Dữ liệu cập nhật lúc ${lastUpdated.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}`
@@ -430,10 +426,10 @@ const Dashboard = () => {
                         }}
                     >
                         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3.5}>
-                            <Typography variant="h6" sx={{ fontWeight: 800, color: '#0f172a', letterSpacing: '-0.5px', fontFamily: '"Times New Roman", Times, serif' }}>
+                            <Typography variant="h6" sx={{ fontWeight: 800, color: '#0f172a', letterSpacing: '-0.5px' }}>
                                 Biến động giao dịch
                             </Typography>
-                            <Chip size="small" label="7 ngày qua" sx={{ bgcolor: alpha(COLORS.primary, 0.06), color: COLORS.primary, fontWeight: 800, borderRadius: '8px', px: 1.5, py: 1.8, fontSize: '0.75rem', fontFamily: '"Times New Roman", Times, serif' }} />
+                            <Chip size="small" label="7 ngày qua" sx={{ bgcolor: alpha(COLORS.primary, 0.06), color: COLORS.primary, fontWeight: 800, borderRadius: '8px', px: 1.5, py: 1.8, fontSize: '0.75rem' }} />
                         </Box>
                         <Box sx={{ height: 320, width: '100%' }}>
                             <ResponsiveContainer width="100%" height="100%">
@@ -449,13 +445,13 @@ const Dashboard = () => {
                                         </linearGradient>
                                     </defs>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12, fontFamily: '"Times New Roman", Times, serif', fontWeight: 500 }} dy={10} />
-                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12, fontFamily: '"Times New Roman", Times, serif', fontWeight: 500 }} />
+                                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12, fontFamily: "'Inter', sans-serif", fontWeight: 600 }} dy={10} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12, fontFamily: "'Inter', sans-serif", fontWeight: 600 }} />
                                     <RechartsTooltip 
-                                        contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.05)', backgroundColor: 'white', fontFamily: '"Times New Roman", Times, serif' }} 
+                                        contentStyle={{ borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 12px 24px rgba(0, 0, 0, 0.06)', backgroundColor: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(10px)', fontFamily: "'Inter', sans-serif" }} 
                                         itemStyle={{ fontWeight: 700 }}
                                     />
-                                    <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '13px', color: '#475569', fontFamily: '"Times New Roman", Times, serif', fontWeight: 600 }} iconType="circle" />
+                                    <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '13px', color: '#475569', fontFamily: "'Inter', sans-serif", fontWeight: 600 }} iconType="circle" />
                                     <Area type="monotone" dataKey="inbound" name="Nhập kho" stroke={COLORS.success} fillOpacity={1} fill="url(#colorIn)" strokeWidth={3} />
                                     <Area type="monotone" dataKey="outbound" name="Xuất kho" stroke={COLORS.primary} fillOpacity={1} fill="url(#colorOut)" strokeWidth={3} />
                                 </AreaChart>
@@ -478,7 +474,7 @@ const Dashboard = () => {
                             boxShadow: '0 10px 25px -5px rgba(15, 23, 42, 0.02)'
                         }}
                     >
-                        <Typography variant="h6" sx={{ fontWeight: 800, color: '#0f172a', mb: 1, letterSpacing: '-0.5px', fontFamily: '"Times New Roman", Times, serif' }}>
+                        <Typography variant="h6" sx={{ fontWeight: 800, color: '#0f172a', mb: 1, letterSpacing: '-0.5px' }}>
                             Phân bổ tồn kho
                         </Typography>
                         <Box sx={{ height: 310, position: 'relative' }}>
@@ -498,18 +494,18 @@ const Dashboard = () => {
                                             <Cell key={`cell-${index}`} fill={entry.color} />
                                         ))}
                                     </Pie>
-                                    <RechartsTooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.08)', fontFamily: '"Times New Roman", Times, serif' }} />
-                                    <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: '12px', color: '#475569', fontFamily: '"Times New Roman", Times, serif', fontWeight: 600 }} />
+                                    <RechartsTooltip contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 12px 24px rgba(0, 0, 0, 0.06)', backgroundColor: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(10px)', fontFamily: "'Inter', sans-serif" }} />
+                                    <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: '12px', color: '#475569', fontFamily: "'Inter', sans-serif", fontWeight: 600 }} />
                                 </PieChart>
                             </ResponsiveContainer>
                             <Box sx={{
                                 position: 'absolute', top: '44%', left: '50%', transform: 'translate(-50%, -50%)',
                                 textAlign: 'center'
                             }}>
-                                <Typography variant="h3" sx={{ fontWeight: 900, color: '#0f172a', fontFamily: '"Times New Roman", Times, serif', letterSpacing: '-1px' }}>
+                                <Typography variant="h3" sx={{ fontWeight: 900, color: '#0f172a', letterSpacing: '-1px' }}>
                                     {formatNumber(stats.total_inventory)}
                                 </Typography>
-                                <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.7rem', fontFamily: '"Times New Roman", Times, serif' }}>
+                                <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.7rem' }}>
                                     Tồn kho
                                 </Typography>
                             </Box>
@@ -534,15 +530,15 @@ const Dashboard = () => {
                         }}
                     >
                         <Box sx={{ px: 4, py: 3, borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Typography variant="h6" sx={{ fontWeight: 800, color: '#0f172a', letterSpacing: '-0.5px', fontFamily: '"Times New Roman", Times, serif' }}>
+                            <Typography variant="h6" sx={{ fontWeight: 800, color: '#0f172a', letterSpacing: '-0.5px' }}>
                                 Lịch sử hoạt động gần đây
                             </Typography>
-                            <Chip label="Real-time" size="small" sx={{ bgcolor: alpha(COLORS.success, 0.08), color: COLORS.success, fontWeight: 800, borderRadius: '8px', px: 1.5, fontSize: '0.72rem', fontFamily: '"Times New Roman", Times, serif' }} />
+                            <Chip label="Real-time" size="small" sx={{ bgcolor: alpha(COLORS.success, 0.08), color: COLORS.success, fontWeight: 800, borderRadius: '8px', px: 1.5, fontSize: '0.72rem' }} />
                         </Box>
                         <List sx={{ p: 0 }}>
                             {stats.recent_transactions.length === 0 ? (
                                 <ListItem>
-                                    <ListItemText primary="Không tìm thấy giao dịch gần đây" sx={{ color: '#64748b', textAlign: 'center', py: 4, fontFamily: '"Times New Roman", Times, serif', fontWeight: 500 }} />
+                                    <ListItemText primary="Không tìm thấy giao dịch gần đây" sx={{ color: '#64748b', textAlign: 'center', py: 4, fontWeight: 500 }} />
                                 </ListItem>
                             ) : stats.recent_transactions.map((t, idx) => (
                                 <ListItem 
@@ -564,25 +560,25 @@ const Dashboard = () => {
                                     </Avatar>
                                     <ListItemText
                                         primary={
-                                            <Typography sx={{ fontWeight: 700, color: '#0f172a', fontSize: '0.975rem', fontFamily: '"Times New Roman", Times, serif' }}>
+                                            <Typography sx={{ fontWeight: 700, color: '#0f172a', fontSize: '0.975rem' }}>
                                                 {t.product?.name || (t as any).product_name || `Sản phẩm #${t.product_id}`}
                                             </Typography>
                                         }
                                         secondary={
-                                            <Typography variant="caption" sx={{ color: '#64748b', fontSize: '0.8rem', mt: 0.5, display: 'inline-flex', alignItems: 'center', gap: 1, fontWeight: 500, fontFamily: '"Times New Roman", Times, serif' }}>
+                                            <Typography variant="caption" sx={{ color: '#64748b', fontSize: '0.8rem', mt: 0.5, display: 'inline-flex', alignItems: 'center', gap: 1, fontWeight: 500 }}>
                                                 {t.date ? formatDate(t.date) : 'N/A'}
                                             </Typography>
                                         }
                                     />
                                     <Box textAlign="right">
-                                        <Typography variant="body1" sx={{ fontWeight: 800, color: t.type === 'inbound' ? COLORS.success : '#0f172a', fontFamily: '"Times New Roman", Times, serif', fontSize: '1.15rem' }}>
+                                        <Typography variant="body1" sx={{ fontWeight: 800, color: t.type === 'inbound' ? COLORS.success : '#0f172a', fontSize: '1.15rem' }}>
                                             {t.type === 'inbound' ? '+' : '-'}{formatNumber(t.quantity)} sản phẩm
                                         </Typography>
                                         <Box display="flex" flexDirection="column" gap={0.2} sx={{ mt: 0.5 }}>
-                                            <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600, display: 'block', fontSize: '0.75rem', fontFamily: '"Times New Roman", Times, serif' }}>
+                                            <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600, display: 'block', fontSize: '0.75rem' }}>
                                                 {t.group_name || 'Kho chính'}
                                             </Typography>
-                                            <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '0.7rem', fontWeight: 500, fontFamily: '"Times New Roman", Times, serif' }}>
+                                            <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '0.7rem', fontWeight: 500 }}>
                                                 Nhân viên: {stats.employeeMap[(t as any).created_by] || (t as any).created_by || 'Khuyết danh'}
                                             </Typography>
                                         </Box>
