@@ -292,15 +292,6 @@ const modulesData = [
         path: '/action-history'
     },
     {
-        id: 'employees',
-        title: 'Nhân viên',
-        desc: 'Quản lý danh sách nhân viên kỹ thuật, phân quyền tài khoản.',
-        color: '#10b981', // Emerald
-        icon: <PeopleIcon sx={{ fontSize: 28 }} />,
-        type: 'route',
-        path: '/employees'
-    },
-    {
         id: 'admin-hr',
         title: 'Hành chính',
         desc: 'Quản lý chấm công, bảng lương, đánh giá KPI, và hòm thư góp ý.',
@@ -308,6 +299,7 @@ const modulesData = [
         icon: <PeopleIcon sx={{ fontSize: 28 }} />,
         type: 'submenu',
         submenus: [
+            { title: 'Nhân viên', path: '/employees', desc: 'Quản lý danh sách nhân viên kỹ thuật, phân quyền tài khoản.', icon: <PeopleIcon sx={{ fontSize: 20 }} /> },
             { title: 'Chấm công', path: '/attendance', desc: 'Quản lý chấm công, ca làm việc.', icon: <FactCheckIcon sx={{ fontSize: 20 }} /> },
             { title: 'Tổng hợp chấm công', path: '/attendance-summary', desc: 'Tổng hợp và báo cáo chấm công theo nhân viên.', icon: <AssessmentIcon sx={{ fontSize: 20 }} /> },
             { title: 'Phiếu hành chính', path: '/admin-requests', desc: 'Phiếu đề xuất, xác nhận hành chính.', icon: <ReturnIcon sx={{ fontSize: 20 }} /> },

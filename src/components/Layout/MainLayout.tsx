@@ -79,7 +79,7 @@ const MainLayout: React.FC = () => {
         if (['/inventory-report', '/detailed-outbound-report', '/monthly-settlement', '/goods-settlement'].includes(location.pathname)) {
             setExpandSettlement(true);
         }
-        if (['/attendance', '/attendance-summary', '/admin-requests', '/kpi-grades', '/payroll', '/bonus-penalty', '/payroll-settings', '/feedback-box'].includes(location.pathname)) {
+        if (['/employees', '/attendance', '/attendance-summary', '/admin-requests', '/kpi-grades', '/payroll', '/bonus-penalty', '/payroll-settings', '/feedback-box'].includes(location.pathname)) {
             setExpandAdminHr(true);
         }
     }, [location.pathname]);
@@ -151,9 +151,6 @@ const MainLayout: React.FC = () => {
         ...(hasAnyPermission(['reports.view_all', 'reports.handover']) ? [
             { text: 'Báo cáo', icon: <AssessmentIcon />, path: '/reports' },
             { text: 'Lịch sử tác động', icon: <HistoryIcon />, path: '/action-history' }
-        ] : []),
-        ...(hasPermission('employees.view') ? [
-            { text: 'Nhân viên', icon: <PeopleIcon />, path: '/employees' }
         ] : []),
         ...(profile?.role === 'admin' || profile?.role === 'manager' ? [
             { text: 'Hành chính', icon: <PeopleIcon sx={{ color: '#059669' }} />, path: '/admin-hr' }
@@ -372,6 +369,7 @@ const MainLayout: React.FC = () => {
                     // ── Special: expandable "Hành chính" group
                     if (item.path === '/admin-hr') {
                         const adminHrSubItems = [
+                            { text: 'Nhân viên', path: '/employees' },
                             { text: 'Chấm công', path: '/attendance' },
                             { text: 'Tổng hợp chấm công', path: '/attendance-summary' },
                             { text: 'Phiếu hành chính', path: '/admin-requests' },
@@ -381,7 +379,7 @@ const MainLayout: React.FC = () => {
                             { text: 'Thiết lập công lương', path: '/payroll-settings' },
                             { text: 'Hòm thư góp ý', path: '/feedback-box' },
                         ];
-                        const isGroupActive = ['/attendance', '/attendance-summary', '/admin-requests', '/kpi-grades', '/payroll', '/bonus-penalty', '/payroll-settings', '/feedback-box'].includes(location.pathname);
+                        const isGroupActive = ['/employees', '/attendance', '/attendance-summary', '/admin-requests', '/kpi-grades', '/payroll', '/bonus-penalty', '/payroll-settings', '/feedback-box'].includes(location.pathname);
                         return (
                             <React.Fragment key="admin-hr-group">
                                 <ListItem disablePadding sx={{ mb: 0.5 }}>
