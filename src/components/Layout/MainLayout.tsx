@@ -152,7 +152,7 @@ const MainLayout: React.FC = () => {
             { text: 'Báo cáo', icon: <AssessmentIcon />, path: '/reports' },
             { text: 'Lịch sử tác động', icon: <HistoryIcon />, path: '/action-history' }
         ] : []),
-        ...(profile?.role === 'admin' || profile?.role === 'manager' ? [
+        ...(profile?.role === 'admin' || profile?.role === 'manager' || hasPermission('employees.view') ? [
             { text: 'Hành chính', icon: <PeopleIcon sx={{ color: '#059669' }} />, path: '/admin-hr' }
         ] : []),
         ...(hasPermission('*') ? [
@@ -366,18 +366,21 @@ const MainLayout: React.FC = () => {
                         );
                     }
 
-                    // ── Special: expandable "Hành chính" group
                     if (item.path === '/admin-hr') {
                         const adminHrSubItems = [
-                            { text: 'Nhân viên', path: '/employees' },
-                            { text: 'Chấm công', path: '/attendance' },
-                            { text: 'Tổng hợp chấm công', path: '/attendance-summary' },
-                            { text: 'Phiếu hành chính', path: '/admin-requests' },
-                            { text: 'Chấm điểm KPI', path: '/kpi-grades' },
-                            { text: 'Bảng lương', path: '/payroll' },
-                            { text: 'Điểm cộng trừ', path: '/bonus-penalty' },
-                            { text: 'Thiết lập công lương', path: '/payroll-settings' },
-                            { text: 'Hòm thư góp ý', path: '/feedback-box' },
+                            ...(hasPermission('employees.view') ? [
+                                { text: 'Nhân viên', path: '/employees' }
+                            ] : []),
+                            ...(profile?.role === 'admin' || profile?.role === 'manager' ? [
+                                { text: 'Chấm công', path: '/attendance' },
+                                { text: 'Tổng hợp chấm công', path: '/attendance-summary' },
+                                { text: 'Phiếu hành chính', path: '/admin-requests' },
+                                { text: 'Chấm điểm KPI', path: '/kpi-grades' },
+                                { text: 'Bảng lương', path: '/payroll' },
+                                { text: 'Điểm cộng trừ', path: '/bonus-penalty' },
+                                { text: 'Thiết lập công lương', path: '/payroll-settings' },
+                                { text: 'Hòm thư góp ý', path: '/feedback-box' }
+                            ] : [])
                         ];
                         const isGroupActive = ['/employees', '/attendance', '/attendance-summary', '/admin-requests', '/kpi-grades', '/payroll', '/bonus-penalty', '/payroll-settings', '/feedback-box'].includes(location.pathname);
                         return (
