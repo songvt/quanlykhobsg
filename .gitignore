@@ -36,3 +36,7 @@ test_*.ts
 test_*.js
 migrate_*.js
 res.text*
+
+# Embedded repos and scratch files
+quanlykhobsg/
+scratch/
