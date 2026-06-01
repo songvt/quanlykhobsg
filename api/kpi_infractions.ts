@@ -186,8 +186,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 const feReport = req.body;
                 if (!feReport.id) return res.status(400).json({ error: 'Report ID required' });
                 
-                const dbReport = mapToDatabase(feReport);
-                dbReport.updated_at = new Date().toISOString();
+                const dbReport = {
+                    ...mapToDatabase(feReport),
+                    updated_at: new Date().toISOString()
+                };
 
                 // 1. Supabase
                 const { data: sbData, error: sbError } = await supabase
