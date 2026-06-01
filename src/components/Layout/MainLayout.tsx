@@ -58,6 +58,7 @@ import {
     HomeOutlined as HomeIcon,
     Close as CloseIcon,
     AppsOutlined as AppsIcon,
+    WarehouseOutlined as WarehouseIcon,
 } from '@mui/icons-material';
 import AIChatbot from '../Chatbot/AIChatbot';
 
@@ -77,6 +78,7 @@ const MainLayout: React.FC = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [expandAssets, setExpandAssets] = useState(false);
+    const [expandXnk, setExpandXnk] = useState(false);
     const [expandSettlement, setExpandSettlement] = useState(false);
     const [expandAdminHr, setExpandAdminHr] = useState(false);
     const [notificationAnchorEl, setNotificationAnchorEl] = useState<null | HTMLElement>(null);
@@ -129,17 +131,8 @@ const MainLayout: React.FC = () => {
         ...(hasAnyPermission(['assets.view', 'assets.manage', 'assets.list_only', '*']) ? [
             { text: 'Tài sản', icon: <DevicesOtherIcon />, path: '/assets' }
         ] : []),
-        ...(hasPermission('inventory.view') ? [
-            { text: 'Hàng hóa', icon: <InventoryIcon />, path: '/products' }
-        ] : []),
-        ...(hasAnyPermission(['audit.view', 'audit.create']) ? [
-            { text: 'Kiểm kê kho', icon: <FactCheckIcon />, path: '/audit' }
-        ] : []),
-        ...(hasAnyPermission(['audit.view', 'audit.create']) ? [
-            { text: 'Quyết toán', icon: <AssessmentIcon />, path: '/settlement' }
-        ] : []),
-        ...(hasPermission('inbound.view') ? [
-            { text: 'Nhập kho', icon: <InputIcon />, path: '/inbound' }
+        ...(hasAnyPermission(['inventory.view', 'audit.view', 'audit.create', 'inbound.view', 'orders.create', 'orders.view_own', 'outbound.view', 'returns.view', 'returns.create', 'reports.view_all', 'reports.handover']) ? [
+            { text: 'Xuất nhập kho', icon: <WarehouseIcon />, path: '/xnk-cdbr' }
         ] : []),
         ...(hasPermission('qr.view') ? [
             { text: 'Tạo QR code', icon: <QrCode2Icon />, path: '/qr-generator' }
@@ -147,17 +140,7 @@ const MainLayout: React.FC = () => {
         ...(hasPermission('qr_hcm.view') ? [
             { text: 'QR HCM', icon: <QrCode2Icon sx={{ color: '#1e4b9b' }} />, path: '/qr-generator-hcm' }
         ] : []),
-        ...(hasPermission('orders.create') || hasPermission('orders.view_own') ? [
-            { text: 'Đặt hàng', icon: <OrderIcon />, path: '/orders' }
-        ] : []),
-        ...(hasPermission('outbound.view') ? [
-            { text: 'Xuất kho', icon: <OutputIcon />, path: '/outbound' }
-        ] : []),
-        ...(hasAnyPermission(['returns.view', 'returns.create']) ? [
-            { text: 'Trả hàng', icon: <ReturnIcon />, path: '/employee-returns' }
-        ] : []),
         ...(hasAnyPermission(['reports.view_all', 'reports.handover']) ? [
-            { text: 'Báo cáo', icon: <AssessmentIcon />, path: '/reports' },
             { text: 'Lịch sử', icon: <HistoryIcon />, path: '/action-history' }
         ] : []),
         ...(hasPermission('*') ? [
@@ -168,15 +151,15 @@ const MainLayout: React.FC = () => {
     // Bottom navigation items (top 5 most important for mobile)
     const bottomNavItems = useMemo(() => {
         const items = [];
-        if (menuItems.find(i => i.path === '/')) items.push({ label: 'Trang chủ', icon: <HomeIcon />, path: '/' });
-        if (menuItems.find(i => i.path === '/inbound')) items.push({ label: 'Nhập kho', icon: <InputIcon />, path: '/inbound' });
-        if (menuItems.find(i => i.path === '/outbound')) items.push({ label: 'Xuất kho', icon: <OutputIcon />, path: '/outbound' });
-        if (menuItems.find(i => i.path === '/products')) items.push({ label: 'Hàng hóa', icon: <InventoryIcon />, path: '/products' });
-        if (menuItems.find(i => i.path === '/orders')) items.push({ label: 'Đặt hàng', icon: <OrderIcon />, path: '/orders' });
+        if (profile?.role === 'admin' || profile?.role === 'staff') items.push({ label: 'Trang chủ', icon: <HomeIcon />, path: '/' });
+        if (hasPermission('inbound.view')) items.push({ label: 'Nhập kho', icon: <InputIcon />, path: '/inbound' });
+        if (hasPermission('outbound.view')) items.push({ label: 'Xuất kho', icon: <OutputIcon />, path: '/outbound' });
+        if (hasPermission('inventory.view')) items.push({ label: 'Hàng hóa', icon: <InventoryIcon />, path: '/products' });
+        if (hasPermission('orders.create') || hasPermission('orders.view_own')) items.push({ label: 'Đặt hàng', icon: <OrderIcon />, path: '/orders' });
         // Always add "More" button
         items.push({ label: 'Thêm', icon: <AppsIcon />, path: '__menu__' });
         return items.slice(0, 5); // max 5 items
-    }, [menuItems]);
+    }, [profile, hasPermission]);
 
     // Redirect if current path is hidden for this user
     useEffect(() => {
@@ -373,38 +356,102 @@ const MainLayout: React.FC = () => {
                             );
                         }
 
-                        // ── Expandable Settlement group
-                        if (item.path === '/settlement') {
+                        // ── Expandable Xuất nhập kho group
+                        if (item.path === '/xnk-cdbr') {
+                            const xnkSubItems = [
+                                ...(hasPermission('orders.create') || hasPermission('orders.view_own') ? [{ text: 'Đặt hàng', path: '/orders', icon: <OrderIcon sx={{fontSize: 20}} /> }] : []),
+                                ...(hasPermission('outbound.view') ? [{ text: 'Xuất kho', path: '/outbound', icon: <OutputIcon sx={{fontSize: 20}} /> }] : []),
+                                ...(hasAnyPermission(['returns.view', 'returns.create']) ? [{ text: 'Trả hàng', path: '/employee-returns', icon: <ReturnIcon sx={{fontSize: 20}} /> }] : []),
+                                ...(hasAnyPermission(['reports.view_all', 'reports.handover']) ? [{ text: 'Báo cáo', path: '/reports', icon: <AssessmentIcon sx={{fontSize: 20}} /> }] : []),
+                                ...(hasPermission('inventory.view') ? [{ text: 'Hàng hóa', path: '/products', icon: <InventoryIcon sx={{fontSize: 20}} /> }] : []),
+                                ...(hasAnyPermission(['audit.view', 'audit.create']) ? [{ text: 'Kiểm kê kho', path: '/audit', icon: <FactCheckIcon sx={{fontSize: 20}} /> }] : []),
+                                ...(hasAnyPermission(['audit.view', 'audit.create']) ? [{ text: 'Quyết toán', path: '/settlement', icon: <AssessmentIcon sx={{fontSize: 20}} /> }] : []),
+                                ...(hasPermission('inbound.view') ? [{ text: 'Nhập kho', path: '/inbound', icon: <InputIcon sx={{fontSize: 20}} /> }] : []),
+                            ];
+
                             const settlementSubItems = [
                                 { text: 'Báo cáo 17 - XNT', path: '/inventory-report' },
                                 { text: 'Báo cáo Xuất trong kỳ', path: '/detailed-outbound-report' },
                                 { text: 'Quyết toán vật tư', path: '/monthly-settlement' },
                                 { text: 'Quyết toán hàng hóa', path: '/goods-settlement' },
                             ];
-                            const isGroupActive = ['/inventory-report', '/detailed-outbound-report', '/monthly-settlement', '/goods-settlement'].includes(location.pathname);
+                            const isSettlementGroupActive = ['/inventory-report', '/detailed-outbound-report', '/monthly-settlement', '/goods-settlement'].includes(location.pathname);
+
+                            const isGroupActive = xnkSubItems.some(sub => location.pathname === sub.path) || isSettlementGroupActive;
+                            
                             return (
-                                <React.Fragment key="settlement-group">
+                                <React.Fragment key="xnk-group">
                                     <ListItem disablePadding sx={{ mb: 0.5 }}>
                                         <ListItemButton
-                                            onClick={() => setExpandSettlement(p => !p)}
-                                            selected={isGroupActive && !expandSettlement}
+                                            onClick={() => setExpandXnk(p => !p)}
+                                            selected={isGroupActive && !expandXnk}
                                             sx={menuItemSx(isGroupActive)}
                                         >
                                             <ListItemIcon sx={menuIconSx(isGroupActive)}>
-                                                {React.isValidElement(item.icon) ? React.cloneElement(item.icon as React.ReactElement<any>, { sx: { fontSize: 20 } }) : item.icon}
+                                                {React.cloneElement(item.icon as React.ReactElement<any>, { sx: { fontSize: 20 } })}
                                             </ListItemIcon>
                                             <ListItemText
                                                 primary={item.text}
                                                 primaryTypographyProps={{ fontWeight: isGroupActive ? 700 : 500, fontSize: '0.875rem' }}
                                             />
-                                            {expandSettlement
+                                            {expandXnk
                                                 ? <ExpandLessIcon sx={{ fontSize: 16, color: '#94a3b8' }} />
                                                 : <ChevronRightIcon sx={{ fontSize: 16, color: '#94a3b8' }} />}
                                         </ListItemButton>
                                     </ListItem>
-                                    <Collapse in={expandSettlement} timeout="auto" unmountOnExit>
+                                    <Collapse in={expandXnk} timeout="auto" unmountOnExit>
                                         <List disablePadding sx={{ pl: 1.5, mb: 0.5 }}>
-                                            {settlementSubItems.map(sub => {
+                                            {xnkSubItems.map(sub => {
+                                                if (sub.path === '/settlement') {
+                                                    return (
+                                                        <React.Fragment key="settlement-sub-group">
+                                                            <ListItem disablePadding sx={{ mb: 0.5 }}>
+                                                                <ListItemButton
+                                                                    onClick={() => setExpandSettlement(p => !p)}
+                                                                    selected={isSettlementGroupActive && !expandSettlement}
+                                                                    sx={subItemSx(isSettlementGroupActive)}
+                                                                >
+                                                                    <ListItemIcon sx={{ minWidth: 32, color: isSettlementGroupActive ? '#2563eb' : '#64748b' }}>
+                                                                        {sub.icon}
+                                                                    </ListItemIcon>
+                                                                    <ListItemText
+                                                                        primary={sub.text}
+                                                                        primaryTypographyProps={{ fontSize: '0.8rem', fontWeight: isSettlementGroupActive ? 700 : 500, color: isSettlementGroupActive ? '#2563eb' : '#475569' }}
+                                                                    />
+                                                                    {expandSettlement
+                                                                        ? <ExpandLessIcon sx={{ fontSize: 14, color: '#94a3b8' }} />
+                                                                        : <ChevronRightIcon sx={{ fontSize: 14, color: '#94a3b8' }} />}
+                                                                </ListItemButton>
+                                                            </ListItem>
+                                                            <Collapse in={expandSettlement} timeout="auto" unmountOnExit>
+                                                                <List disablePadding sx={{ pl: 1.5 }}>
+                                                                    {settlementSubItems.map(sSub => {
+                                                                        const sSubActive = location.pathname === sSub.path;
+                                                                        return (
+                                                                            <ListItem key={sSub.path} disablePadding sx={{ mb: 0.5 }}>
+                                                                                <ListItemButton
+                                                                                    onClick={() => { navigate(sSub.path); setMobileOpen(false); }}
+                                                                                    selected={sSubActive}
+                                                                                    sx={subItemSx(sSubActive)}
+                                                                                >
+                                                                                    <Box sx={{
+                                                                                        width: 4, height: 4, borderRadius: '50%', mr: 1.5, flexShrink: 0,
+                                                                                        bgcolor: sSubActive ? '#2563eb' : '#cbd5e1'
+                                                                                    }} />
+                                                                                    <ListItemText
+                                                                                        primary={sSub.text}
+                                                                                        primaryTypographyProps={{ fontSize: '0.75rem', fontWeight: sSubActive ? 700 : 400, color: sSubActive ? '#2563eb' : '#475569' }}
+                                                                                    />
+                                                                                </ListItemButton>
+                                                                            </ListItem>
+                                                                        );
+                                                                    })}
+                                                                </List>
+                                                            </Collapse>
+                                                        </React.Fragment>
+                                                    );
+                                                }
+                                                
                                                 const subActive = location.pathname === sub.path;
                                                 return (
                                                     <ListItem key={sub.path} disablePadding sx={{ mb: 0.5 }}>
@@ -413,13 +460,12 @@ const MainLayout: React.FC = () => {
                                                             selected={subActive}
                                                             sx={subItemSx(subActive)}
                                                         >
-                                                            <Box sx={{
-                                                                width: 6, height: 6, borderRadius: '50%', mr: 1.5, flexShrink: 0,
-                                                                bgcolor: subActive ? '#2563eb' : '#cbd5e1'
-                                                            }} />
+                                                            <ListItemIcon sx={{ minWidth: 32, color: subActive ? '#2563eb' : '#64748b' }}>
+                                                                {sub.icon}
+                                                            </ListItemIcon>
                                                             <ListItemText
                                                                 primary={sub.text}
-                                                                primaryTypographyProps={{ fontSize: '0.8rem', fontWeight: subActive ? 700 : 400, color: subActive ? '#2563eb' : '#475569' }}
+                                                                primaryTypographyProps={{ fontSize: '0.8rem', fontWeight: subActive ? 700 : 500, color: subActive ? '#2563eb' : '#475569' }}
                                                             />
                                                         </ListItemButton>
                                                     </ListItem>

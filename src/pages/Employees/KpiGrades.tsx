@@ -348,7 +348,7 @@ const KpiGrades = () => {
         customClause: '',
         description: 'Không thực hiện CÔNG VIỆC đúng thời gian qui định, nhắc nhở nhiều lần',
         mitigationReq: '',
-        explanation: 'Tôi cam kết nếu tái phạm sẽ không nhận hàng hóa cho đến khi khắc phục xong\nNếu còn tái phạm tôi sẽ không nhận hàng hóa vật tư. Mọi vấn đề quá hạn KPI tôi hoàn toàn chịu trách nhiệm',
+        explanation: '',
         conclusion: '',
         status: 'approved' as 'draft' | 'approved' | 'closed'
     });
@@ -509,27 +509,27 @@ const KpiGrades = () => {
 
         switch (category) {
             case 'mild':
-                explanation = `Tôi nhận thức sâu sắc lỗi đi muộn/tác phong chưa chuẩn mực đã gây ảnh hưởng chung đến kỷ luật và tác phong của cả đơn vị. Tôi xin nghiêm túc rút kinh nghiệm và cam kết từ nay về sau sẽ chấp hành đúng nội quy giờ giấc, tác phong của Công ty. Nếu còn tái phạm, tôi xin chịu mọi hình thức kỷ luật.`;
+                explanation = '';
                 conclusion = `Đồng chí ${violatorNameUpper} vi phạm nội quy về giờ giấc/tác phong làm việc tại điều ${clauseValue}. Ban giám đốc nhắc nhở phê bình nghiêm túc trước tập thể đơn vị, yêu cầu đồng chí chấn chỉnh ngay lập tức, nếu tái phạm sẽ chuyển Hội đồng kỷ luật xử lý hạ thi đua.`;
                 mitigationReq = `Yêu cầu đồng chí ${violatorNameUpper} chấn chỉnh ngay tác phong làm việc, nghiêm túc tuân thủ quy định thời gian làm việc của Công ty (đi làm đúng giờ, không tự ý rời vị trí). Mọi trường hợp vắng mặt hoặc đi muộn phải có lý do chính đáng và báo cáo xin phép Chỉ huy trực tiếp trước theo đúng quy trình.`;
                 break;
                 
             case 'property':
-                explanation = `Tôi thừa nhận sai sót trong việc quản lý và sử dụng thiết bị/vật tư công ty dẫn đến ${firstPersonDesc || 'hao hụt hoặc lãng phí tài sản chung'}. Tôi xin nhận thức được trách nhiệm của bản thân, cam kết bồi thường thiệt hại (nếu có) và tuân thủ đúng định mức, kỹ thuật quy định. Nếu tiếp tục vi phạm tôi xin chịu mọi hình thức xử lý cao nhất.`;
+                explanation = '';
                 conclusion = `Đồng chí ${violatorNameUpper} vi phạm quy trình kỹ thuật và quản lý tài sản, vật tư theo điều ${clauseValue}. Yêu cầu đồng chí thực hiện khắc phục hoàn toàn hậu quả, bồi hoàn thiết bị (nếu có) dưới sự giám sát chặt chẽ của Chỉ huy trực tiếp. Nếu tiếp tục tái phạm sẽ xử lý kỷ luật sa thải.`;
                 mitigationReq = `Yêu cầu đồng chí ${violatorNameUpper} nghiêm túc kiểm điểm sai sót trong quản lý thiết bị/vật tư, thực hiện ngay các biện pháp khắc phục thiệt hại và bàn giao, bảo quản tài sản công ty đúng quy định. Tuân thủ tuyệt đối quy trình kỹ thuật để tránh hao hụt, thất thoát tài sản chung.`;
                 break;
                 
             case 'critical':
-                explanation = `Tôi hoàn toàn thừa nhận hành vi vi phạm nghiêm trọng kỷ luật lao động của mình liên quan đến điều ${clauseValue}. Tôi đã hiểu rõ mức độ nghiêm trọng và hậu quả của hành vi này đối với danh tiếng và hoạt động của Công ty. Tôi xin cam kết chấp hành mọi quyết định xử lý kỷ luật từ Ban Giám đốc và hứa tuyệt đối không tái phạm.`;
+                explanation = '';
                 conclusion = `Hành vi vi phạm của đồng chí ${violatorNameUpper} tại điều ${clauseValue} là đặc biệt nghiêm trọng, gây ảnh hưởng xấu trực tiếp đến danh tiếng và hoạt động của đơn vị. Ban Giám đốc quyết định lập hồ sơ chuyển toàn bộ sự việc lên Hội đồng Kỷ luật Công ty để xem xét áp dụng hình thức xử lý kỷ luật ở mức cao nhất (Sa thải/Đình chỉ công tác/Truy cứu trách nhiệm).`;
                 mitigationReq = `Yêu cầu đồng chí ${violatorNameUpper} lập tức dừng các hành vi vi phạm kỷ luật lao động, thực hiện bàn giao đầy đủ công việc, hồ sơ và tài sản liên quan cho Chỉ huy trực tiếp. Có mặt tại văn phòng đơn vị để giải trình chi tiết sự việc và chịu sự xử lý trực tiếp từ Hội đồng kỷ luật Công ty.`;
                 break;
                 
             case 'performance':
             default:
-                explanation = `Tôi nhận thức rõ việc ${firstPersonDesc || 'chưa hoàn thành công việc đúng khối lượng, chất lượng được giao'} là do bản thân chưa sắp xếp thời gian hợp lý và thiếu tập trung. Tôi cam kết sẽ tập trung tối đa, nỗ lực hết mình để giải quyết dứt điểm các lỗi phát sinh và hoàn thành mọi chỉ tiêu đúng thời hạn. Nếu tiếp tục chậm trễ làm ảnh hưởng đến KPI chung của đơn vị, tôi xin hoàn toàn chịu trách nhiệm.`;
-                conclusion = `Đồng chí ${violatorNameUpper} chưa hoàn thành nhiệm vụ theo điều ${clauseValue}. Yêu cầu đồng chí chấn chỉnh ngay tinh thần làm việc, tập trung khắc phục nhanh các tồn đọng dưới sự kèm cặp sát sao của Chỉ huy trực tiếp. Trừ điểm đánh giá KPI tháng này của đồng chí, nếu còn tái phạm sẽ chuyển lên hội đồng xem xét kỷ luật bậc tiếp theo.`;
+                explanation = '';
+                conclusion = `Đồng chí ${violatorNameUpper} chưa hoàn thành nhiệm vụ theo điều ${clauseValue}. Yêu cầu đồng chí chấn chỉnh ngay tinh thần làm việc, tập trung khắc phục nhanh các tồn đọng . Trừ điểm đánh giá KPI tháng này của đồng chí, nếu còn tái phạm sẽ chuyển lên hội đồng xem xét kỷ luật bậc tiếp theo.`;
                 mitigationReq = `Yêu cầu đồng chí ${violatorNameUpper} tập trung cải thiện tinh thần làm việc, khẩn trương hoàn thành đúng tiến độ và chất lượng các công việc được giao để đảm bảo chỉ tiêu KPI chung của đơn vị. Chỉ huy trực tiếp sẽ tăng cường giám sát, đánh giá hiệu quả hàng ngày để hỗ trợ đồng chí khắc phục lỗi.`;
                 break;
         }
@@ -558,7 +558,7 @@ const KpiGrades = () => {
                 `Đồng chí [TÊN NHÂN VIÊN] vi phạm nội quy về giờ giấc/tác phong làm việc tại điều [Mục vi phạm]. Ban giám đốc nhắc nhở phê bình nghiêm túc trước tập thể đơn vị, yêu cầu đồng chí chấn chỉnh ngay lập tức, nếu tái phạm sẽ chuyển Hội đồng kỷ luật xử lý hạ thi đua.`,
                 `Đồng chí [TÊN NHÂN VIÊN] vi phạm quy trình kỹ thuật và quản lý tài sản, vật tư theo điều [Mục vi phạm]. Yêu cầu đồng chí thực hiện khắc phục hoàn toàn hậu quả, bồi hoàn thiết bị (nếu có) dưới sự giám sát chặt chẽ của Chỉ huy trực tiếp. Nếu tiếp tục tái phạm sẽ xử lý kỷ luật sa thải.`,
                 `Hành vi vi phạm của đồng chí [TÊN NHÂN VIÊN] tại điều [Mục vi phạm] là đặc biệt nghiêm trọng, gây ảnh hưởng xấu trực tiếp đến danh tiếng và hoạt động của đơn vị. Ban Giám đốc quyết định lập hồ sơ chuyển toàn bộ sự việc lên Hội đồng Kỷ luật Công ty để xem xét áp dụng hình thức xử lý kỷ luật ở mức cao nhất (Sa thải/Đình chỉ công tác/Truy cứu trách nhiệm).`,
-                `Đồng chí [TÊN NHÂN VIÊN] chưa hoàn thành nhiệm vụ theo điều [Mục vi phạm]. Yêu cầu đồng chí chấn chỉnh ngay tinh thần làm việc, tập trung khắc phục nhanh các tồn đọng dưới sự kèm cặp sát sao của Chỉ huy trực tiếp. Trừ điểm đánh giá KPI tháng này của đồng chí, nếu còn tái phạm sẽ chuyển lên hội đồng xem xét kỷ luật bậc tiếp theo.`
+                `Đồng chí [TÊN NHÂN VIÊN] chưa hoàn thành nhiệm vụ theo điều [Mục vi phạm]. Yêu cầu đồng chí chấn chỉnh ngay tinh thần làm việc, tập trung khắc phục nhanh các tồn đọng . Trừ điểm đánh giá KPI tháng này của đồng chí, nếu còn tái phạm sẽ chuyển lên hội đồng xem xét kỷ luật bậc tiếp theo.`
             ];
 
             // Normalize current fields by replacing ANY employee's name with placeholders
@@ -728,7 +728,7 @@ const KpiGrades = () => {
                 customClause: '',
                 description: 'Không thực hiện CÔNG VIỆC đúng thời gian qui định, nhắc nhở nhiều lần',
                 mitigationReq: '',
-                explanation: 'Tôi cam kết nếu tái phạm sẽ không nhận hàng hóa cho đến khi khắc phục xong\nNếu còn tái phạm tôi sẽ không nhận hàng hóa vật tư. Mọi vấn đề quá hạn KPI tôi hoàn toàn chịu trách nhiệm',
+                explanation: '',
                 conclusion: '',
                 status: 'approved'
             });

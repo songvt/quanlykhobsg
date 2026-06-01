@@ -100,8 +100,12 @@ const AssetMonthlyReport: React.FC<Props> = ({ reportType }) => {
                 }
 
                 if (groups[targetKey]) {
-                    if (log.action === 'Tăng') groups[targetKey].increaseQty += 1;
-                    if (log.action === 'Giảm') groups[targetKey].decreaseQty += 1;
+                    const action = (log.action || '').toLowerCase();
+                    const isIncrease = ['tăng', 'thêm mới', 'thêm', 'tạo mới', 'insert', 'create', 'add'].some(a => action.includes(a));
+                    const isDecrease = ['giảm', 'xóa', 'delete', 'remove'].some(a => action.includes(a));
+                    
+                    if (isIncrease) groups[targetKey].increaseQty += 1;
+                    if (isDecrease) groups[targetKey].decreaseQty += 1;
                 }
             }
         });

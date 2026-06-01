@@ -130,10 +130,7 @@ const AssetBrokenPrint: React.FC<Props> = ({ open, onClose, assets }) => {
                         <div style={{ fontStyle: 'italic', fontSize: '11pt' }}>(Số: ........./BBBG)</div>
                     </div>
 
-                    {/* Doc Ref */}
-                    <div style={{ margin: '15px 0', fontSize: '11.5pt', textAlign: 'justify' }}>
-                        - Căn cứ vào: Phiếu yêu cầu kiểm tra đánh giá chất lượng tài sản trước khi bảo hành, sửa chữa Số : 7858 /YCKCS-BSG-T03-2025
-                    </div>
+                    {/* Doc Ref Removed */}
 
                     <div style={{ marginBottom: 10, fontSize: '11.5pt' }}>
                         Hôm nay, ngày ...... tháng {now.getMonth() + 1} năm {now.getFullYear()}, Chúng tôi gồm:
