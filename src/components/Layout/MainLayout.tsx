@@ -59,6 +59,7 @@ import {
     Close as CloseIcon,
     AppsOutlined as AppsIcon,
     WarehouseOutlined as WarehouseIcon,
+    MessageOutlined as MessageIcon,
 } from '@mui/icons-material';
 import AIChatbot from '../Chatbot/AIChatbot';
 
@@ -154,6 +155,9 @@ const MainLayout: React.FC = () => {
         ] : []),
         ...(hasAnyPermission(['reports.view_all', 'reports.handover']) ? [
             { text: 'Lịch sử', icon: <HistoryIcon />, path: '/action-history' }
+        ] : []),
+        ...(profile?.role === 'admin' ? [
+            { text: 'Thông báo Zalo', icon: <MessageIcon sx={{ color: '#0ea5e9' }} />, path: '/zalo' }
         ] : []),
         ...(hasPermission('*') ? [
             { text: 'Thiết lập', icon: <SettingsIcon />, path: '/settings' }
@@ -544,6 +548,65 @@ const MainLayout: React.FC = () => {
                                                             <ListItemText
                                                                 primary={sub.text}
                                                                 primaryTypographyProps={{ fontSize: '0.8rem', fontWeight: subActive ? 700 : 400, color: subActive ? '#059669' : '#475569' }}
+                                                            />
+                                                        </ListItemButton>
+                                                    </ListItem>
+                                                );
+                                            })}
+                                        </List>
+                                    </Collapse>
+                                </React.Fragment>
+                            );
+                        }
+
+
+                        // ── Expandable Zalo Notification group
+                        if (item.path === '/zalo') {
+                            const zaloSubItems = [
+                                { text: 'Cấu hình OA', path: '/zalo/config' },
+                                { text: 'Template ZNS', path: '/zalo/templates' },
+                                { text: 'Chiến dịch gửi', path: '/zalo/campaigns' },
+                                { text: 'Lịch sử gửi', path: '/zalo/logs' }
+                            ];
+                            const isGroupActive = location.pathname.startsWith('/zalo');
+                            return (
+                                <React.Fragment key="zalo-group">
+                                    <ListItem disablePadding sx={{ mb: 0.5 }}>
+                                        <ListItemButton
+                                            onClick={() => setExpandZalo(p => !p)}
+                                            selected={isGroupActive && !expandZalo}
+                                            sx={menuItemSx(isGroupActive, '#0ea5e9')}
+                                        >
+                                            <ListItemIcon sx={menuIconSx(isGroupActive, '#0ea5e9')}>
+                                                {React.isValidElement(item.icon) ? React.cloneElement(item.icon as React.ReactElement<any>, { sx: { fontSize: 20 } }) : item.icon}
+                                            </ListItemIcon>
+                                            <ListItemText
+                                                primary={item.text}
+                                                primaryTypographyProps={{ fontWeight: isGroupActive ? 700 : 500, fontSize: '0.875rem' }}
+                                            />
+                                            {expandZalo
+                                                ? <ExpandLessIcon sx={{ fontSize: 16, color: '#94a3b8' }} />
+                                                : <ChevronRightIcon sx={{ fontSize: 16, color: '#94a3b8' }} />}
+                                        </ListItemButton>
+                                    </ListItem>
+                                    <Collapse in={expandZalo} timeout="auto" unmountOnExit>
+                                        <List disablePadding sx={{ pl: 1.5, mb: 0.5 }}>
+                                            {zaloSubItems.map(sub => {
+                                                const subActive = location.pathname === sub.path;
+                                                return (
+                                                    <ListItem key={sub.path} disablePadding sx={{ mb: 0.5 }}>
+                                                        <ListItemButton
+                                                            onClick={() => { navigate(sub.path); setMobileOpen(false); }}
+                                                            selected={subActive}
+                                                            sx={subItemSx(subActive, '#0ea5e9')}
+                                                        >
+                                                            <Box sx={{
+                                                                width: 6, height: 6, borderRadius: '50%', mr: 1.5, flexShrink: 0,
+                                                                bgcolor: subActive ? '#0ea5e9' : '#cbd5e1'
+                                                            }} />
+                                                            <ListItemText
+                                                                primary={sub.text}
+                                                                primaryTypographyProps={{ fontSize: '0.8rem', fontWeight: subActive ? 700 : 400, color: subActive ? '#0ea5e9' : '#475569' }}
                                                             />
                                                         </ListItemButton>
                                                     </ListItem>
