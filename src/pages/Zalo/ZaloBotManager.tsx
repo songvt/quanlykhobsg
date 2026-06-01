@@ -50,7 +50,6 @@ interface ZaloContact {
     zalo_user_id: string;
     bot_api_token: string;
     bot_name: string;
-    bot_name: string;
     notes: string;
     status: string;
 }
@@ -440,11 +439,11 @@ const ZaloBotManager: React.FC = () => {
                 <Typography variant="body2" sx={{ color: '#6b7280', mb: 2 }}>Tạo nhiều nhóm token để gửi tin theo từng tài khoản bot khác nhau.</Typography>
                 
                 <Grid container spacing={2} sx={{ mb: 2 }}>
-                    <Grid item xs={12} md={3}><TextField fullWidth size="small" label="Mã API token (vd: 18626...:oJU...)" value={newToken.token} onChange={e => setNewToken({...newToken, token: e.target.value})} /></Grid>
-                    <Grid item xs={12} md={3}><TextField fullWidth size="small" label="Tên nhóm token (vd: Nhóm Q12)" value={newToken.group_name} onChange={e => setNewToken({...newToken, group_name: e.target.value})} /></Grid>
-                    <Grid item xs={12} md={3}><TextField fullWidth size="small" label="API token Zalo (Tên bot hiển thị)" value={newToken.bot_name} onChange={e => setNewToken({...newToken, bot_name: e.target.value})} /></Grid>
-                    <Grid item xs={12} md={2}><TextField fullWidth size="small" label="Ghi chú nhóm" value={newToken.notes} onChange={e => setNewToken({...newToken, notes: e.target.value})} /></Grid>
-                    <Grid item xs={12} md={1}>
+                    <Grid size={{ xs: 12, md: 3 }}><TextField fullWidth size="small" label="Mã API token (vd: 18626...:oJU...)" value={newToken.token} onChange={e => setNewToken({...newToken, token: e.target.value})} /></Grid>
+                    <Grid size={{ xs: 12, md: 3 }}><TextField fullWidth size="small" label="Tên nhóm token (vd: Nhóm Q12)" value={newToken.group_name} onChange={e => setNewToken({...newToken, group_name: e.target.value})} /></Grid>
+                    <Grid size={{ xs: 12, md: 3 }}><TextField fullWidth size="small" label="API token Zalo (Tên bot hiển thị)" value={newToken.bot_name} onChange={e => setNewToken({...newToken, bot_name: e.target.value})} /></Grid>
+                    <Grid size={{ xs: 12, md: 2 }}><TextField fullWidth size="small" label="Ghi chú nhóm" value={newToken.notes} onChange={e => setNewToken({...newToken, notes: e.target.value})} /></Grid>
+                    <Grid size={{ xs: 12, md: 1 }}>
                         <Button fullWidth variant="contained" color="success" onClick={handleAddToken} startIcon={<AddIcon />}>Lưu</Button>
                     </Grid>
                 </Grid>
@@ -476,11 +475,11 @@ const ZaloBotManager: React.FC = () => {
                 <Typography variant="body2" sx={{ color: '#6b7280', mb: 2 }}>Thêm liên hệ nhận tin qua Zalo Bot.</Typography>
 
                 <Grid container spacing={2} sx={{ mb: 2 }}>
-                    <Grid item xs={12} md={2}><TextField fullWidth size="small" label="Mã nhân viên" value={newContact.employee_id} onChange={e => setNewContact({...newContact, employee_id: e.target.value})} /></Grid>
-                    <Grid item xs={12} md={2}><TextField fullWidth size="small" label="Tên người nhận" value={newContact.receiver_name} onChange={e => setNewContact({...newContact, receiver_name: e.target.value})} /></Grid>
-                    <Grid item xs={12} md={2}><TextField fullWidth size="small" label="Điện thoại" value={newContact.phone} onChange={e => setNewContact({...newContact, phone: e.target.value})} /></Grid>
-                    <Grid item xs={12} md={2}><TextField fullWidth size="small" label="Zalo user_id" value={newContact.zalo_user_id} onChange={e => setNewContact({...newContact, zalo_user_id: e.target.value})} /></Grid>
-                    <Grid item xs={12} md={2}>
+                    <Grid size={{ xs: 12, md: 2 }}><TextField fullWidth size="small" label="Mã nhân viên" value={newContact.employee_id} onChange={e => setNewContact({...newContact, employee_id: e.target.value})} /></Grid>
+                    <Grid size={{ xs: 12, md: 2 }}><TextField fullWidth size="small" label="Tên người nhận" value={newContact.receiver_name} onChange={e => setNewContact({...newContact, receiver_name: e.target.value})} /></Grid>
+                    <Grid size={{ xs: 12, md: 2 }}><TextField fullWidth size="small" label="Điện thoại" value={newContact.phone} onChange={e => setNewContact({...newContact, phone: e.target.value})} /></Grid>
+                    <Grid size={{ xs: 12, md: 2 }}><TextField fullWidth size="small" label="Zalo user_id" value={newContact.zalo_user_id} onChange={e => setNewContact({...newContact, zalo_user_id: e.target.value})} /></Grid>
+                    <Grid size={{ xs: 12, md: 2 }}>
                         <FormControl fullWidth size="small">
                             <InputLabel>Chọn nhóm token</InputLabel>
                             <Select label="Chọn nhóm token" value={newContact.bot_api_token} onChange={e => setNewContact({...newContact, bot_api_token: e.target.value})}>
@@ -488,8 +487,8 @@ const ZaloBotManager: React.FC = () => {
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid item xs={12} md={1}><TextField fullWidth size="small" label="Ghi chú" value={newContact.notes} onChange={e => setNewContact({...newContact, notes: e.target.value})} /></Grid>
-                    <Grid item xs={12} md={1}>
+                    <Grid size={{ xs: 12, md: 1 }}><TextField fullWidth size="small" label="Ghi chú" value={newContact.notes} onChange={e => setNewContact({...newContact, notes: e.target.value})} /></Grid>
+                    <Grid size={{ xs: 12, md: 1 }}>
                         <Button fullWidth variant="contained" color="success" onClick={handleSaveContact} startIcon={<AddIcon />}>Thêm</Button>
                     </Grid>
                 </Grid>

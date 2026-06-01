@@ -7,7 +7,7 @@ const API_BASE = '/api/zalo?action=config';
 const API_TEST = '/api/zalo?action=test_connection';
 
 const ZaloConfig: React.FC = () => {
-    const { showNotification } = useNotification();
+    const { notify, success, error: notifyError } = useNotification();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [testing, setTesting] = useState(false);
@@ -34,7 +34,7 @@ const ZaloConfig: React.FC = () => {
             }
         } catch (error) {
             console.error("Failed to fetch Zalo config", error);
-            showNotification('Không thể tải cấu hình Zalo', 'error');
+            notifyError('Không thể tải cấu hình Zalo');
         } finally {
             setLoading(false);
         }
@@ -64,13 +64,13 @@ const ZaloConfig: React.FC = () => {
             const json = await res.json();
 
             if (json.success) {
-                showNotification('Lưu cấu hình thành công', 'success');
+                success('Lưu cấu hình thành công');
                 setConfig(prev => ({ ...prev, ...json.data }));
             } else {
-                showNotification(json.error || 'Lỗi khi lưu cấu hình', 'error');
+                notifyError(json.error || 'Lỗi khi lưu cấu hình');
             }
         } catch (error) {
-            showNotification('Lỗi kết nối máy chủ', 'error');
+            notifyError('Lỗi kết nối máy chủ');
         } finally {
             setSaving(false);
         }
@@ -82,14 +82,14 @@ const ZaloConfig: React.FC = () => {
             const res = await fetch(API_TEST, { method: 'POST' });
             const json = await res.json();
             if (json.success) {
-                showNotification('Kết nối Zalo OA thành công!', 'success');
+                success('Kết nối Zalo OA thành công!');
                 fetchConfig(); // Reload to get updated status
             } else {
-                showNotification(`Lỗi kết nối: ${json.error}`, 'error');
+                notifyError(`Lỗi kết nối: ${json.error}`);
                 setConfig(prev => ({ ...prev, last_check_status: 'FAILED', is_active: false }));
             }
         } catch (error) {
-            showNotification('Lỗi kết nối máy chủ', 'error');
+            notifyError('Lỗi kết nối máy chủ');
         } finally {
             setTesting(false);
         }
@@ -118,7 +118,7 @@ const ZaloConfig: React.FC = () => {
                 </Box>
 
                 <Grid container spacing={3}>
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             label="Zalo OA ID"
@@ -129,7 +129,7 @@ const ZaloConfig: React.FC = () => {
                             size="small"
                         />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             label="App ID"
@@ -140,7 +140,7 @@ const ZaloConfig: React.FC = () => {
                             size="small"
                         />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid size={{ xs: 12 }}>
                         <TextField
                             fullWidth
                             label="Secret Key"
@@ -152,7 +152,7 @@ const ZaloConfig: React.FC = () => {
                             size="small"
                         />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid size={{ xs: 12 }}>
                         <TextField
                             fullWidth
                             label="Access Token (Cấp mới từ Zalo for Developers)"
@@ -165,7 +165,7 @@ const ZaloConfig: React.FC = () => {
                             rows={3}
                         />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid size={{ xs: 12 }}>
                         <TextField
                             fullWidth
                             label="Refresh Token (Tùy chọn)"

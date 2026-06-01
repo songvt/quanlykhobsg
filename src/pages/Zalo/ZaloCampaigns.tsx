@@ -18,7 +18,7 @@ interface Campaign {
 }
 
 const ZaloCampaigns: React.FC = () => {
-    const { showNotification } = useNotification();
+    const { notify, success, warning, error: notifyError } = useNotification();
     const [campaigns, setCampaigns] = useState<Campaign[]>([]);
     const [templates, setTemplates] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -50,7 +50,7 @@ const ZaloCampaigns: React.FC = () => {
             if (campJson.success) setCampaigns(campJson.data);
             if (tempJson.success) setTemplates(tempJson.data.filter((t: any) => t.is_active));
         } catch (error) {
-            showNotification('Lỗi khi tải dữ liệu', 'error');
+            notifyError('Lỗi khi tải dữ liệu');
         } finally {
             setLoading(false);
         }
@@ -58,17 +58,17 @@ const ZaloCampaigns: React.FC = () => {
 
     const handleCreate = async () => {
         if (!form.name || !form.template_id || !form.phones) {
-            return showNotification('Vui lòng điền đủ thông tin', 'warning');
+            return warning('Vui lòng điền đủ thông tin');
         }
 
         const phoneList = form.phones.split(/[\n,]+/).map(p => p.trim()).filter(p => p);
-        if (phoneList.length === 0) return showNotification('Không có số điện thoại hợp lệ', 'warning');
+        if (phoneList.length === 0) return warning('Không có số điện thoại hợp lệ');
 
         let template_data = {};
         try {
             template_data = JSON.parse(form.params_json);
         } catch {
-            return showNotification('JSON tham số không hợp lệ', 'error');
+            return notifyError('JSON tham số không hợp lệ');
         }
 
         setSending(true);
@@ -88,15 +88,15 @@ const ZaloCampaigns: React.FC = () => {
             const json = await res.json();
 
             if (json.success) {
-                showNotification('Đã tạo chiến dịch gửi ZNS', 'success');
+                success('Đã tạo chiến dịch gửi ZNS');
                 setShowForm(false);
                 setForm({ name: '', template_id: '', phones: '', params_json: '{}' });
                 fetchData();
             } else {
-                showNotification(json.error || 'Lỗi tạo chiến dịch', 'error');
+                notifyError(json.error || 'Lỗi tạo chiến dịch');
             }
         } catch (error) {
-            showNotification('Lỗi kết nối máy chủ', 'error');
+            notifyError('Lỗi kết nối máy chủ');
         } finally {
             setSending(false);
         }
@@ -129,7 +129,7 @@ const ZaloCampaigns: React.FC = () => {
                 <Paper sx={{ p: 3, mb: 4, borderRadius: 2, border: '1px solid #e2e8f0', boxShadow: 'none' }}>
                     <Typography variant="h6" mb={3} fontWeight={600}>Tạo chiến dịch mới</Typography>
                     <Grid container spacing={3}>
-                        <Grid item xs={12} md={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <TextField
                                 fullWidth
                                 label="Tên chiến dịch"
@@ -138,7 +138,7 @@ const ZaloCampaigns: React.FC = () => {
                                 size="small"
                             />
                         </Grid>
-                        <Grid item xs={12} md={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <TextField
                                 select
                                 fullWidth
@@ -152,7 +152,7 @@ const ZaloCampaigns: React.FC = () => {
                                 ))}
                             </TextField>
                         </Grid>
-                        <Grid item xs={12} md={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <TextField
                                 fullWidth
                                 multiline
@@ -163,7 +163,7 @@ const ZaloCampaigns: React.FC = () => {
                                 placeholder="84912345678, 84987654321"
                             />
                         </Grid>
-                        <Grid item xs={12} md={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <TextField
                                 fullWidth
                                 multiline
@@ -214,7 +214,7 @@ const ZaloCampaigns: React.FC = () => {
                         ) : (
                             campaigns.map(c => (
                                 <TableRow key={c.id}>
-                                    <TableCell fontWeight={500}>{c.name}</TableCell>
+                                    <TableCell sx={{ fontWeight: 500 }}>{c.name}</TableCell>
                                     <TableCell>{c.zalo_templates?.template_name}</TableCell>
                                     <TableCell>{c.total_recipients}</TableCell>
                                     <TableCell>

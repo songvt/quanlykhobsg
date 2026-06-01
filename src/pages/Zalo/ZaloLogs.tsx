@@ -17,7 +17,7 @@ interface Log {
 }
 
 const ZaloLogs: React.FC = () => {
-    const { showNotification } = useNotification();
+    const { notify, success, error: notifyError } = useNotification();
     const [logs, setLogs] = useState<Log[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -34,7 +34,7 @@ const ZaloLogs: React.FC = () => {
                 setLogs(json.data);
             }
         } catch (error) {
-            showNotification('Lỗi tải lịch sử', 'error');
+            notifyError('Lỗi tải dữ liệu logs');
         } finally {
             setLoading(false);
         }

@@ -16,7 +16,7 @@ interface Template {
 }
 
 const ZaloTemplates: React.FC = () => {
-    const { showNotification } = useNotification();
+    const { notify, success, error: notifyError } = useNotification();
     const [loading, setLoading] = useState(true);
     const [syncing, setSyncing] = useState(false);
     const [templates, setTemplates] = useState<Template[]>([]);
@@ -34,7 +34,7 @@ const ZaloTemplates: React.FC = () => {
                 setTemplates(json.data);
             }
         } catch (error) {
-            showNotification('Không thể tải danh sách template', 'error');
+            notify('Không thể tải danh sách template', 'error');
         } finally {
             setLoading(false);
         }
@@ -46,13 +46,13 @@ const ZaloTemplates: React.FC = () => {
             const res = await fetch(API_SYNC, { method: 'POST' });
             const json = await res.json();
             if (json.success) {
-                showNotification(json.message, 'success');
+                success('Đã tải và lưu danh sách Template thành công!');
                 fetchTemplates();
             } else {
-                showNotification(json.error || 'Lỗi khi đồng bộ', 'error');
+                notifyError(json.error || 'Lỗi khi tải template');
             }
         } catch (error) {
-            showNotification('Lỗi kết nối máy chủ', 'error');
+            notifyError('Lỗi kết nối máy chủ');
         } finally {
             setSyncing(false);
         }
