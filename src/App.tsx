@@ -41,6 +41,7 @@ const AssetHandoverBhl   = lazy(() => import('./pages/Assets/AssetHandoverBhl'))
 
 // Zalo Module
 const ZaloConfig     = lazy(() => import('./pages/Zalo/ZaloConfig'));
+const ZaloBotManager = lazy(() => import('./pages/Zalo/ZaloBotManager'));
 const ZaloTemplates  = lazy(() => import('./pages/Zalo/ZaloTemplates'));
 const ZaloCampaigns  = lazy(() => import('./pages/Zalo/ZaloCampaigns'));
 const ZaloLogs       = lazy(() => import('./pages/Zalo/ZaloLogs'));
@@ -146,6 +147,7 @@ function App() {
                                 </Route>
 
                                 <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+                                    <Route path="zalo/contacts" element={<ZaloBotManager />} />
                                     <Route path="zalo/config" element={<ZaloConfig />} />
                                     <Route path="zalo/templates" element={<ZaloTemplates />} />
                                     <Route path="zalo/campaigns" element={<ZaloCampaigns />} />

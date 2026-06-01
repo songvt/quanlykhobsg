@@ -563,8 +563,7 @@ const MainLayout: React.FC = () => {
                         // ── Expandable Zalo Notification group
                         if (item.path === '/zalo') {
                             const zaloSubItems = [
-                                { text: 'Cấu hình OA', path: '/zalo/config' },
-                                { text: 'Template ZNS', path: '/zalo/templates' },
+                                { text: 'Quản lý Bot', path: '/zalo/contacts' },
                                 { text: 'Chiến dịch gửi', path: '/zalo/campaigns' },
                                 { text: 'Lịch sử gửi', path: '/zalo/logs' }
                             ];

@@ -186,6 +186,59 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return res.status(200).json({ success: true, processed });
         }
 
+        // --- ZALO PERSONAL BOT ---
+        if (action === 'send_personal') {
+            if (req.method === 'POST') {
+                const { contact_ids, message } = req.body;
+                
+                // Lấy danh sách contact
+                const { data: contacts, error: contactError } = await supabase
+                    .from('zalo_personal_contacts')
+                    .select('*')
+                    .in('id', contact_ids);
+                
+                if (contactError) throw contactError;
+                if (!contacts || contacts.length === 0) return res.status(400).json({ error: 'Không tìm thấy liên hệ' });
+
+                // Import service (dynamically if needed, or assume it's imported at the top)
+                const { sendPersonalZaloMessage } = await import('./_utils/zaloPersonalService.js');
+
+                let successCount = 0;
+                let failCount = 0;
+
+                // Gửi tuần tự để tránh rate limit
+                for (const contact of contacts) {
+                    try {
+                        let finalMessage = message;
+                        if (contact.receiver_name) {
+                            finalMessage = finalMessage.replace(/\{name\}/g, contact.receiver_name);
+                        }
+
+                        await sendPersonalZaloMessage(contact.bot_api_token, contact.zalo_user_id, finalMessage);
+                        
+                        // Cập nhật trạng thái
+                        await supabase.from('zalo_personal_contacts')
+                            .update({ status: 'Đã gửi' })
+                            .eq('id', contact.id);
+                        
+                        successCount++;
+                    } catch (e: any) {
+                        console.error(`Lỗi gửi tin cho ${contact.receiver_name}:`, e.message);
+                        failCount++;
+                        // Có thể ghi log vào zalo_notification_logs nếu muốn
+                    }
+                    
+                    // Delay 500ms
+                    await new Promise(r => setTimeout(r, 500));
+                }
+
+                return res.status(200).json({ 
+                    success: true, 
+                    message: `Đã gửi xong. Thành công: ${successCount}, Thất bại: ${failCount}` 
+                });
+            }
+        }
+
         // --- ZALO WEBHOOK ---
         if (action === 'webhook') {
             // Zalo sends status updates here
