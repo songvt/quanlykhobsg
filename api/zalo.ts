@@ -187,6 +187,85 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
 
         // --- ZALO PERSONAL BOT ---
+        if (action === 'bot_webhook') {
+            if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
+            
+            // Lấy token từ query param (webhook URL format: /api/zalo?action=bot_webhook&token=BOT_TOKEN)
+            const bot_token = req.query.token as string;
+            
+            // Hoặc kiểm tra event từ req.body
+            const payload = req.body;
+            console.log('[Zalo Webhook Payload]:', JSON.stringify(payload));
+            
+            // Xử lý event tin nhắn mới
+            // Payload webhook của Zalo giống hệt format của 1 update trong getUpdates
+            // Hoặc có thể là { event_name: 'user_send_text', sender: { id: '...' }, message: { text: '...' } }
+            // Cần parse đúng chuẩn của Webhook!
+            
+            let zalo_user_id = '';
+            let message_id = '';
+            let sender_name = '';
+            let message_content = '';
+
+            // Trường hợp 1: Giống Telegram Bot API (update.message)
+            if (payload.message && payload.message.from) {
+                const from = payload.message.from;
+                zalo_user_id = from.id?.toString();
+                message_id = payload.message.message_id?.toString() || `${zalo_user_id}_${Date.now()}`;
+                sender_name = from.first_name || from.username || `User ${zalo_user_id}`;
+                message_content = payload.message.text || '';
+            } 
+            // Trường hợp 2: Format Zalo OA Webhook chuẩn (sender.id, message.text)
+            else if (payload.sender && payload.sender.id) {
+                zalo_user_id = payload.sender.id.toString();
+                message_id = payload.message?.msg_id || `${zalo_user_id}_${Date.now()}`;
+                sender_name = `User ${zalo_user_id}`; // Webhook thường ko gửi tên, hoặc gửi trong profile
+                message_content = payload.message?.text || '';
+            }
+            // Trường hợp 3: Nằm trong mảng (Telegram gửi mảng?)
+            else if (Array.isArray(payload) && payload.length > 0 && payload[0].message) {
+                const update = payload[0];
+                const from = update.message.from;
+                zalo_user_id = from.id?.toString();
+                message_id = update.message.message_id?.toString() || `${zalo_user_id}_${Date.now()}`;
+                sender_name = from.first_name || from.username || `User ${zalo_user_id}`;
+                message_content = update.message.text || '';
+            }
+
+            if (zalo_user_id && message_id) {
+                // Lưu vào zalo_bot_inbox
+                await supabase.from('zalo_bot_inbox').upsert([{
+                    zalo_user_id: zalo_user_id,
+                    message_id: message_id,
+                    sender_name: sender_name,
+                    message_content: message_content,
+                    bot_token: bot_token || 'unknown_token' // Nếu ko truyền token thì để unknown
+                }], { onConflict: 'message_id' });
+
+                // Lưu vào danh bạ (personal_contacts)
+                const { data: existing } = await supabase
+                    .from('zalo_personal_contacts')
+                    .select('id')
+                    .eq('zalo_user_id', zalo_user_id)
+                    .eq('bot_api_token', bot_token)
+                    .single();
+                
+                if (!existing && bot_token) {
+                    await supabase.from('zalo_personal_contacts').insert({
+                        employee_id: `webhook_${zalo_user_id}`,
+                        receiver_name: sender_name,
+                        zalo_user_id: zalo_user_id,
+                        bot_api_token: bot_token,
+                        bot_name: 'Bot Webhook',
+                        notes: 'Đồng bộ từ Webhook',
+                        status: 'Hoạt động'
+                    });
+                }
+            }
+
+            return res.status(200).json({ success: true, message: 'Webhook received' });
+        }
+
         if (action === 'sync_contacts') {
             if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
             const { bot_token, bot_name } = req.body;
