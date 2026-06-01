@@ -392,13 +392,21 @@ const ZaloBotManager: React.FC = () => {
                 </Grid>
 
                 {tokens.map(t => (
-                    <Box key={t.id} sx={{ display: 'inline-flex', alignItems: 'center', bgcolor: '#f3f4f6', p: 1, borderRadius: 1, mr: 2, mb: 1 }}>
-                        <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.75rem', color: '#374151' }}>
-                            {t.token.substring(0, 15)}...{t.token.substring(t.token.length - 10)} - {t.group_name} - {t.bot_name}
+                    <Box key={t.id} sx={{ display: 'inline-flex', alignItems: 'center', bgcolor: '#f3f4f6', p: 1, borderRadius: 1, mr: 2, mb: 1, gap: 1 }}>
+                        <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.75rem', color: '#374151', mr: 1 }}>
+                            {t.token.substring(0, 15)}... - {t.group_name} - {t.bot_name}
                         </Typography>
-                        <IconButton size="small" color="primary" onClick={() => handleSyncBot(t)} sx={{ ml: 1, p: 0.5 }} disabled={loadingSync === t.id} title="Đồng bộ danh bạ từ tin nhắn mới nhất">
-                            {loadingSync === t.id ? <CircularProgress size={16} /> : <SyncIcon fontSize="small" />}
-                        </IconButton>
+                        <Button 
+                            variant="outlined" 
+                            color="info" 
+                            size="small" 
+                            onClick={() => handleSyncBot(t)} 
+                            disabled={loadingSync === t.id}
+                            startIcon={loadingSync === t.id ? <CircularProgress size={16} /> : <SyncIcon fontSize="small" />}
+                            sx={{ textTransform: 'none', px: 1, py: 0.25, minWidth: 'auto', fontSize: '0.75rem' }}
+                        >
+                            Lấy ID Chat (Tự động)
+                        </Button>
                         <IconButton size="small" color="error" onClick={() => handleDeleteToken(t.id)} sx={{ p: 0.5 }}><DeleteIcon fontSize="small" /></IconButton>
                     </Box>
                 ))}
