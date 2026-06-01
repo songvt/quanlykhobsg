@@ -3,11 +3,22 @@ import { getGoogleSheet, getSheetByTitle } from './utils/googleSheets.js';
 import { supabase } from './utils/supabase.js';
 import crypto from 'crypto';
 
+import hrProfilesHandler from './_hr_profiles.js';
+import kpiInfractionsHandler from './_kpi_infractions.js';
+import employeeReturnsHandler from './_employee_returns.js';
+import districtStorekeepersHandler from './_district_storekeepers.js';
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     const allowedMethods = ['GET', 'POST', 'PUT', 'DELETE'];
     if (!allowedMethods.includes(req.method || '')) {
         return res.status(405).json({ error: 'Method Not Allowed' });
     }
+
+    const { type } = req.query;
+    if (type === 'hr_profiles') return hrProfilesHandler(req, res);
+    if (type === 'kpi_infractions') return kpiInfractionsHandler(req, res);
+    if (type === 'employee_returns') return employeeReturnsHandler(req, res);
+    if (type === 'district_storekeepers') return districtStorekeepersHandler(req, res);
 
     try {
         switch (req.method) {

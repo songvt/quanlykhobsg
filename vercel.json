@@ -71,6 +71,22 @@
             "destination": "/api/audits?type=qr"
         },
         {
+            "source": "/api/hr_profiles",
+            "destination": "/api/employees?type=hr_profiles"
+        },
+        {
+            "source": "/api/kpi_infractions",
+            "destination": "/api/employees?type=kpi_infractions"
+        },
+        {
+            "source": "/api/district_storekeepers",
+            "destination": "/api/employees?type=district_storekeepers"
+        },
+        {
+            "source": "/api/employee_returns",
+            "destination": "/api/employees?type=employee_returns"
+        },
+        {
             "source": "/api/(.*)",
             "destination": "/api/$1"
         },

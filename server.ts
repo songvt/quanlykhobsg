@@ -5,14 +5,11 @@ import cors from 'cors';
 import productsHandler from './api/products.js';
 import employeesHandler from './api/employees.js';
 import transactionsHandler from './api/transactions.js';
-import returnsHandler from './api/employee_returns.js';
 import ordersHandler from './api/orders.js';
-import districtStorekeepersHandler from './api/district_storekeepers.js';
 import assetsHandler from './api/assets.js';
 import auditsHandler from './api/audits.js';
 import settlementsHandler from './api/settlements.js';
 import systemUtilsHandler from './api/system_utils.js';
-import hrProfilesHandler from './api/hr_profiles.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -38,12 +35,9 @@ const createVercelHandler = (handler: any) => {
 app.all('/api/products', createVercelHandler(productsHandler));
 app.all('/api/employees', createVercelHandler(employeesHandler));
 app.all('/api/transactions', createVercelHandler(transactionsHandler));
-app.all('/api/employee_returns', createVercelHandler(returnsHandler));
 app.all('/api/orders', createVercelHandler(ordersHandler));
-app.all('/api/district_storekeepers', createVercelHandler(districtStorekeepersHandler));
 app.all('/api/assets', createVercelHandler(assetsHandler));
 app.all('/api/audits', createVercelHandler(auditsHandler));
-app.all('/api/hr_profiles', createVercelHandler(hrProfilesHandler));
 
 // Helper to safely override Express prototype query getter
 const setQueryType = (req: express.Request, type: string) => {
@@ -91,6 +85,22 @@ app.all('/api/telegram', (req, res) => {
 app.all('/api/drive_upload', (req, res) => {
     setQueryType(req, 'drive_upload');
     return createVercelHandler(systemUtilsHandler)(req, res);
+});
+app.all('/api/hr_profiles', (req, res) => {
+    setQueryType(req, 'hr_profiles');
+    return createVercelHandler(employeesHandler)(req, res);
+});
+app.all('/api/kpi_infractions', (req, res) => {
+    setQueryType(req, 'kpi_infractions');
+    return createVercelHandler(employeesHandler)(req, res);
+});
+app.all('/api/employee_returns', (req, res) => {
+    setQueryType(req, 'employee_returns');
+    return createVercelHandler(employeesHandler)(req, res);
+});
+app.all('/api/district_storekeepers', (req, res) => {
+    setQueryType(req, 'district_storekeepers');
+    return createVercelHandler(employeesHandler)(req, res);
 });
 
 app.get('/api/diagnose', (req, res) => {
