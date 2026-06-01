@@ -91,6 +91,7 @@ const MainLayout: React.FC = () => {
     const [expandXnk, setExpandXnk] = useState(false);
     const [expandSettlement, setExpandSettlement] = useState(false);
     const [expandAdminHr, setExpandAdminHr] = useState(false);
+    const [expandZalo, setExpandZalo] = useState(false);
     const [notificationAnchorEl, setNotificationAnchorEl] = useState<null | HTMLElement>(null);
 
     // Auto-expand menu groups based on current URL
@@ -98,6 +99,7 @@ const MainLayout: React.FC = () => {
         if (location.pathname.startsWith('/assets')) setExpandAssets(true);
         if (['/inventory-report', '/detailed-outbound-report', '/monthly-settlement', '/goods-settlement'].includes(location.pathname)) setExpandSettlement(true);
         if (['/employees', '/attendance', '/attendance-summary', '/admin-requests', '/kpi-grades', '/payroll', '/bonus-penalty', '/payroll-settings', '/feedback-box'].includes(location.pathname)) setExpandAdminHr(true);
+        if (location.pathname.startsWith('/zalo')) setExpandZalo(true);
     }, [location.pathname]);
 
     // Close drawer on navigation (mobile)

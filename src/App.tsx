@@ -39,7 +39,11 @@ const AssetDetailReport  = lazy(() => import('./pages/Assets/AssetDetailReport')
 const AssetBrokenReport  = lazy(() => import('./pages/Assets/AssetBrokenReport'));
 const AssetHandoverBhl   = lazy(() => import('./pages/Assets/AssetHandoverBhl'));
 
-
+// Zalo Module
+const ZaloConfig     = lazy(() => import('./pages/Zalo/ZaloConfig'));
+const ZaloTemplates  = lazy(() => import('./pages/Zalo/ZaloTemplates'));
+const ZaloCampaigns  = lazy(() => import('./pages/Zalo/ZaloCampaigns'));
+const ZaloLogs       = lazy(() => import('./pages/Zalo/ZaloLogs'));
 
 const NotFound = lazy(() => import('./pages/NotFound').catch(() => ({
     default: () => <Box p={6} textAlign="center" sx={{ color: 'text.secondary', fontSize: 24 }}>404 — Không tìm thấy trang</Box>
@@ -139,6 +143,13 @@ function App() {
 
                                 <Route element={<ProtectedRoute allowedPermissions={['*']} />}>
                                     <Route path="settings" element={<Settings />} />
+                                </Route>
+
+                                <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+                                    <Route path="zalo/config" element={<ZaloConfig />} />
+                                    <Route path="zalo/templates" element={<ZaloTemplates />} />
+                                    <Route path="zalo/campaigns" element={<ZaloCampaigns />} />
+                                    <Route path="zalo/logs" element={<ZaloLogs />} />
                                 </Route>
 
                                 <Route path="*" element={<NotFound />} />

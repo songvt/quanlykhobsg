@@ -10,6 +10,7 @@ import assetsHandler from './api/assets.js';
 import auditsHandler from './api/audits.js';
 import settlementsHandler from './api/settlements.js';
 import systemUtilsHandler from './api/system_utils.js';
+import zaloHandler from './api/zalo.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -38,6 +39,7 @@ app.all('/api/transactions', createVercelHandler(transactionsHandler));
 app.all('/api/orders', createVercelHandler(ordersHandler));
 app.all('/api/assets', createVercelHandler(assetsHandler));
 app.all('/api/audits', createVercelHandler(auditsHandler));
+app.all('/api/zalo', createVercelHandler(zaloHandler));
 
 // Helper to safely override Express prototype query getter
 const setQueryType = (req: express.Request, type: string) => {
