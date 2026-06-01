@@ -84,6 +84,7 @@ const ZaloBotManager: React.FC = () => {
     const [filterToken, setFilterToken] = useState('all');
 
     const [loadingSync, setLoadingSync] = useState<string | null>(null);
+    const [syncingAll, setSyncingAll] = useState(false);
 
     const fetchData = async () => {
         setLoading(true);
@@ -152,6 +153,35 @@ const ZaloBotManager: React.FC = () => {
             setError(err.message);
         } finally {
             setLoadingSync(null);
+        }
+    };
+
+    const handleSyncAllBots = async () => {
+        setSyncingAll(true);
+        setError(null);
+        let totalCount = 0;
+        let successCount = 0;
+        try {
+            for (const t of tokens) {
+                try {
+                    const res = await fetch('/api/zalo?action=sync_contacts', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ bot_token: t.token, bot_name: t.bot_name })
+                    });
+                    const data = await res.json();
+                    if (res.ok) {
+                        successCount++;
+                        if (data.count > 0) totalCount += data.count;
+                    }
+                } catch (e) {}
+            }
+            setSuccess(`Đã quét xong ${successCount}/${tokens.length} bot. ${totalCount > 0 ? `Tìm thấy ${totalCount} liên hệ mới.` : 'Không có tin nhắn mới.'}`);
+            fetchData();
+        } catch (err: any) {
+            setError('Lỗi đồng bộ tất cả bot');
+        } finally {
+            setSyncingAll(false);
         }
     };
 
@@ -435,7 +465,22 @@ const ZaloBotManager: React.FC = () => {
 
             {/* SECTION 1: Token Management */}
             <Paper sx={{ p: 3, mb: 3, borderRadius: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#111827' }}>Nhóm API token Zalo</Typography>
+                <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                    <Typography variant="h6" sx={{ fontWeight: 700, color: '#111827' }}>Nhóm API token Zalo</Typography>
+                    {tokens.length > 0 && (
+                        <Button 
+                            variant="contained" 
+                            color="primary" 
+                            size="small" 
+                            startIcon={syncingAll ? <CircularProgress size={16} color="inherit" /> : <SyncIcon />}
+                            onClick={handleSyncAllBots}
+                            disabled={syncingAll}
+                            sx={{ textTransform: 'none' }}
+                        >
+                            Đồng bộ TẤT CẢ Bot
+                        </Button>
+                    )}
+                </Box>
                 <Typography variant="body2" sx={{ color: '#6b7280', mb: 2 }}>Tạo nhiều nhóm token để gửi tin theo từng tài khoản bot khác nhau.</Typography>
                 
                 <Grid container spacing={2} sx={{ mb: 2 }}>
