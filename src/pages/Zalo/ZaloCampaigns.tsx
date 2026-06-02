@@ -5,35 +5,10 @@ import { useNotification } from '../../contexts/NotificationContext';
 import { supabase } from '../../config/supabase';
 import * as ExcelJS from 'exceljs';
 
-const API_CAMPAIGNS = '/api/zalo?action=campaigns';
-const API_TEMPLATES = '/api/zalo?action=templates';
-
-interface Campaign {
-    id: string;
-    name: string;
-    total_recipients: number;
-    status: string;
-    created_at: string;
-    zalo_templates: {
-        template_name: string;
-    };
-}
-
 const ZaloCampaigns: React.FC = () => {
     const { notify, success, warning, error: notifyError } = useNotification();
 
-    const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-    const [templates, setTemplates] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [sendingZns, setSendingZns] = useState(false);
-    const [showForm, setShowForm] = useState(false);
-
-    const [form, setForm] = useState({
-        name: '',
-        template_id: '',
-        phones: '',
-        params_json: '{}'
-    });
 
     // Bulk Send States
     const [tokens, setTokens] = useState<any[]>([]);
@@ -51,66 +26,21 @@ const ZaloCampaigns: React.FC = () => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [campRes, tempRes, tokensRes, contactsRes] = await Promise.all([
-                fetch(API_CAMPAIGNS),
-                fetch(API_TEMPLATES),
+            const [tokensRes, contactsRes] = await Promise.all([
                 supabase.from('zalo_bot_tokens').select('*').order('created_at', { ascending: false }),
                 supabase.from('zalo_personal_contacts').select('*').order('created_at', { ascending: false })
             ]);
             
-            if (campRes.ok) {
-                const campJson = await campRes.json();
-                if (campJson.success) setCampaigns(campJson.data);
-            }
-            if (tempRes.ok) {
-                const tempJson = await tempRes.json();
-                if (tempJson.success) setTemplates(tempJson.data.filter((t: any) => t.is_active));
-            }
+            if (tokensRes.error) throw tokensRes.error;
+            if (contactsRes.error) throw contactsRes.error;
             
-            if (!tokensRes.error) setTokens(tokensRes.data || []);
-            if (!contactsRes.error) setContacts(contactsRes.data || []);
+            setTokens(tokensRes.data || []);
+            setContacts(contactsRes.data || []);
             
-        } catch (error) {
-            notifyError('Lỗi khi tải dữ liệu');
+        } catch (error: any) {
+            notifyError(error.message || 'Lỗi khi tải dữ liệu');
         } finally {
             setLoading(false);
-        }
-    };
-
-    const handleCreateZns = async () => {
-        if (!form.name || !form.template_id || !form.phones) {
-            return warning('Vui lòng điền đủ thông tin');
-        }
-        const phoneList = form.phones.split(/[\n,]+/).map(p => p.trim()).filter(p => p);
-        if (phoneList.length === 0) return warning('Không có số điện thoại hợp lệ');
-
-        let template_data = {};
-        try {
-            template_data = JSON.parse(form.params_json);
-        } catch {
-            return notifyError('JSON tham số không hợp lệ');
-        }
-
-        setSendingZns(true);
-        try {
-            const res = await fetch(API_CAMPAIGNS, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: form.name, template_id: form.template_id, recipients: phoneList.map(phone => ({ phone })), template_data })
-            });
-            const json = await res.json();
-            if (json.success) {
-                success('Đã tạo chiến dịch gửi ZNS');
-                setShowForm(false);
-                setForm({ name: '', template_id: '', phones: '', params_json: '{}' });
-                fetchData();
-            } else {
-                notifyError(json.error || 'Lỗi tạo chiến dịch');
-            }
-        } catch (error) {
-            notifyError('Lỗi kết nối máy chủ');
-        } finally {
-            setSendingZns(false);
         }
     };
 
