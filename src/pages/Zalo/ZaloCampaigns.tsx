@@ -399,7 +399,6 @@ const handleDownloadSendTemplate = async () => {
                 </TableContainer>
             </Box>
         </Box>
-        </Box>
     );
 };
 
