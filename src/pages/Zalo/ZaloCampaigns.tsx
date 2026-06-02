@@ -40,6 +40,7 @@ const ZaloCampaigns: React.FC = () => {
     const [tokens, setTokens] = useState<any[]>([]);
     const [contacts, setContacts] = useState<any[]>([]);
     const [filterToken, setFilterToken] = useState('all');
+    const [filterNote, setFilterNote] = useState('all');
     const [messageContent, setMessageContent] = useState('');
     const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
     const [sendingBulk, setSendingBulk] = useState(false);
@@ -114,7 +115,13 @@ const ZaloCampaigns: React.FC = () => {
         }
     };
 
-    const filteredContacts = filterToken === 'all' ? contacts : contacts.filter(c => c.bot_api_token === filterToken);
+    const filteredContacts = contacts.filter(c => {
+        const matchToken = filterToken === 'all' || c.bot_api_token === filterToken;
+        const matchNote = filterNote === 'all' || (c.notes && c.notes === filterNote);
+        return matchToken && matchNote;
+    });
+
+    const uniqueNotes = Array.from(new Set(contacts.map(c => c.notes).filter(Boolean)));
 
     const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.checked) setSelectedContacts(filteredContacts.map(c => c.id));
@@ -416,6 +423,12 @@ const handleDownloadSendTemplate = async () => {
                             <Select value={filterToken} onChange={e => setFilterToken(e.target.value)}>
                                 <MenuItem value="all">Tất cả nhóm token</MenuItem>
                                 {tokens.map(t => <MenuItem key={t.id} value={t.token}>{t.group_name} ({t.bot_name})</MenuItem>)}
+                            </Select>
+                        </FormControl>
+                        <FormControl size="small" sx={{ minWidth: 200 }}>
+                            <Select value={filterNote} onChange={e => setFilterNote(e.target.value)} displayEmpty>
+                                <MenuItem value="all">Tất cả nhóm (Ghi chú)</MenuItem>
+                                {uniqueNotes.map(n => <MenuItem key={n} value={n}>{n}</MenuItem>)}
                             </Select>
                         </FormControl>
                         <Typography variant="body2" sx={{ color: '#6b7280' }}>
