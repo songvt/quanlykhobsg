@@ -340,7 +340,7 @@ const handleDownloadSendTemplate = async () => {
                 <Box>
                     <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                         <Typography variant="h6" fontWeight={600}>Chiến dịch ZNS</Typography>
-                        {!showForm && <Button variant="contained" startIcon={<Add />} onClick={() => setShowForm(true)} sx={{ boxShadow: 'none' }}>Tạo chiến dịch mới</Button>}
+                        {!showForm && <Button variant="contained" startIcon={<Add />} onClick={() => setShowForm(true)} sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, boxShadow: '0 4px 14px 0 rgba(59, 130, 246, 0.39)', background: 'linear-gradient(90deg, #3b82f6, #6366f1)', '&:hover': { boxShadow: '0 6px 20px rgba(59, 130, 246, 0.23)' } }}>Tạo chiến dịch mới</Button>}
                     </Box>
 
                     {showForm && (
@@ -364,14 +364,14 @@ const handleDownloadSendTemplate = async () => {
                             </Grid>
                             <Box mt={3} display="flex" gap={2} justifyContent="flex-end">
                                 <Button onClick={() => setShowForm(false)} disabled={sendingZns}>Hủy</Button>
-                                <Button variant="contained" startIcon={sendingZns ? <CircularProgress size={20} color="inherit" /> : <Send />} onClick={handleCreateZns} disabled={sendingZns} sx={{ boxShadow: 'none' }}>Tạo và gửi</Button>
+                                <Button variant="contained" startIcon={sendingZns ? <CircularProgress size={20} color="inherit" /> : <Send />} onClick={handleCreateZns} disabled={sendingZns} sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, boxShadow: '0 4px 14px 0 rgba(59, 130, 246, 0.39)', background: 'linear-gradient(90deg, #3b82f6, #6366f1)' }}>Tạo và gửi</Button>
                             </Box>
                         </Paper>
                     )}
 
                     <TableContainer component={Paper} sx={{ borderRadius: 2, border: '1px solid #e2e8f0', boxShadow: 'none' }}>
                         <Table size="small" sx={{ '& .MuiTableCell-root': { borderColor: '#f1f5f9', py: 1.5 } }}>
-                            <TableHead sx={{ '& th': { bgcolor: '#f8fafc', color: '#475569', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', borderBottom: '2px solid #e2e8f0' } }}>
+                            <TableHead sx={{ '& th': { bgcolor: '#eff6ff', color: '#1e40af', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', borderBottom: '2px solid #e2e8f0' } }}>
                                 <TableRow>
                                     <TableCell sx={{ fontWeight: 600 }}>Chiến dịch</TableCell>
                                     <TableCell sx={{ fontWeight: 600 }}>Template</TableCell>
@@ -412,7 +412,7 @@ const handleDownloadSendTemplate = async () => {
                                 Import Gửi Bằng Excel
                                 <input type="file" hidden accept=".xlsx,.xls,.csv" onChange={handleImportSendExcel} />
                             </Button>
-                            <Button variant="contained" color="success" onClick={handleSendBulkBot} disabled={sendingBulk || selectedContacts.length === 0} startIcon={sendingBulk ? <CircularProgress size={16} color="inherit"/> : <Send />}>
+                            <Button variant="contained" color="success" onClick={handleSendBulkBot} disabled={sendingBulk || selectedContacts.length === 0} startIcon={sendingBulk ? <CircularProgress size={16} color="inherit"/> : <Send />} sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, boxShadow: '0 4px 14px 0 rgba(16, 185, 129, 0.39)', background: 'linear-gradient(90deg, #10b981, #059669)', '&:hover': { boxShadow: '0 6px 20px rgba(16, 185, 129, 0.23)' } }}>
                                 Gửi đã chọn ({selectedContacts.length})
                             </Button>
                         </Box>
@@ -440,7 +440,7 @@ const handleDownloadSendTemplate = async () => {
 
                     <TableContainer component={Paper} sx={{ maxHeight: 500, borderRadius: 2, border: '1px solid #e2e8f0', boxShadow: 'none' }}>
                         <Table stickyHeader size="small" sx={{ '& .MuiTableCell-root': { borderColor: '#f1f5f9', py: 1.5 } }}>
-                            <TableHead sx={{ '& th': { bgcolor: '#f8fafc', color: '#475569', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', borderBottom: '2px solid #e2e8f0' } }}>
+                            <TableHead sx={{ '& th': { bgcolor: '#eff6ff', color: '#1e40af', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', borderBottom: '2px solid #e2e8f0' } }}>
                                 <TableRow>
                                     <TableCell padding="checkbox">
                                         <Checkbox checked={filteredContacts.length > 0 && selectedContacts.length === filteredContacts.length} indeterminate={selectedContacts.length > 0 && selectedContacts.length < filteredContacts.length} onChange={handleSelectAll} />
