@@ -217,7 +217,7 @@ const ZaloBotManager: React.FC = () => {
                 // If silent but found messages, still notify
                 setSuccess(`Tự động đồng bộ: Tìm thấy ${totalCount} tin nhắn mới.`);
             }
-            if (totalCount > 0 || !isSilent) fetchData();
+            fetchData(); // Luôn luôn fetchData lại để lấy tin nhắn từ Webhook đổ về
         } catch (err: any) {
             if (!isSilent) setError('Lỗi đồng bộ tất cả bot');
         } finally {
