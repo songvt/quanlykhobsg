@@ -274,26 +274,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     message_content: message_content,
                     bot_token: bot_token || 'unknown_token' // Nếu ko truyền token thì để unknown
                 }], { onConflict: 'message_id' });
-
-                // Lưu vào danh bạ (personal_contacts)
-                const { data: existing } = await supabase
-                    .from('zalo_personal_contacts')
-                    .select('id')
-                    .eq('zalo_user_id', zalo_user_id)
-                    .eq('bot_api_token', bot_token)
-                    .single();
-                
-                if (!existing && bot_token) {
-                    await supabase.from('zalo_personal_contacts').insert({
-                        employee_id: `webhook_${zalo_user_id}`,
-                        receiver_name: sender_name,
-                        zalo_user_id: zalo_user_id,
-                        bot_api_token: bot_token,
-                        bot_name: 'Bot Webhook',
-                        notes: 'Đồng bộ từ Webhook',
-                        status: 'Hoạt động'
-                    });
-                }
             }
 
             return res.status(200).json({ success: true, message: 'Webhook received' });
@@ -342,35 +322,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     await supabase.from('zalo_bot_inbox').upsert(inboxMessages, { onConflict: 'message_id' });
                 }
 
-                if (uniqueUsers.size === 0) {
-                    return res.status(200).json({ success: true, count: 0, message: 'Không tìm thấy ID người dùng trong các tin nhắn mới' });
+                if (inboxMessages.length === 0) {
+                    return res.status(200).json({ success: true, count: 0, message: 'Không tìm thấy tin nhắn mới' });
                 }
 
-                let addedCount = 0;
-                for (const [id, user] of uniqueUsers.entries()) {
-                    // Check if exists
-                    const { data: existing } = await supabase
-                        .from('zalo_personal_contacts')
-                        .select('id')
-                        .eq('zalo_user_id', id)
-                        .eq('bot_api_token', bot_token)
-                        .single();
-                    
-                    if (!existing) {
-                        await supabase.from('zalo_personal_contacts').insert({
-                            employee_id: `sync_${id}`,
-                            receiver_name: user.receiver_name,
-                            zalo_user_id: user.zalo_user_id,
-                            bot_api_token: bot_token,
-                            bot_name: bot_name || 'Bot Đồng Bộ',
-                            notes: 'Đồng bộ từ tin nhắn',
-                            status: 'Hoạt động'
-                        });
-                        addedCount++;
-                    }
-                }
-
-                return res.status(200).json({ success: true, count: addedCount, message: `Đã đồng bộ thành công ${addedCount} liên hệ mới!` });
+                return res.status(200).json({ success: true, count: inboxMessages.length, message: `Đã đồng bộ ${inboxMessages.length} tin nhắn mới.` });
             } catch (err: any) {
                 return res.status(500).json({ error: err.message });
             }
