@@ -332,7 +332,7 @@ const handleDownloadSendTemplate = async () => {
 
             <Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                    <Typography variant="h6" sx={{ fontWeight: 600 }}>Gửi tin nhắn qua Bot cá nhân</Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 600 }}>Gửi tin nhắn Zalo</Typography>
                     <Box sx={{ display: 'flex', gap: 1 }}>
                         <Button variant="outlined" startIcon={<Description />} onClick={handleDownloadSendTemplate}>Mẫu gửi Excel</Button>
                         <Button variant="outlined" color="primary" component="label" disabled={sendingBulk} startIcon={sendingBulk ? <CircularProgress size={16} color="inherit"/> : <UploadFile />}>
