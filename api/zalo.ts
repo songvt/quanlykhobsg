@@ -186,6 +186,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return res.status(200).json({ success: true, processed });
         }
 
+        if (action === 'register_webhook') {
+            if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
+            const { bot_token, webhook_url } = req.body;
+            if (!bot_token || !webhook_url) return res.status(400).json({ error: 'Missing bot_token or webhook_url' });
+
+            const endpoint = `https://bot-api.zapps.me/bot${bot_token}/setWebhook`;
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        url: webhook_url,
+                        secret_token: 'ggs123456'
+                    })
+                });
+                const data = await response.json();
+                return res.status(200).json({ success: true, data });
+            } catch (err: any) {
+                return res.status(500).json({ error: err.message });
+            }
+        }
+
         // --- ZALO PERSONAL BOT ---
         if (action === 'bot_webhook') {
             if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });

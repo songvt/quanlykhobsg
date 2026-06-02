@@ -170,6 +170,26 @@ const ZaloBotManager: React.FC = () => {
         }
     };
 
+    const handleRegisterWebhook = async (tokenObj: any) => {
+        setLoadingSync(tokenObj.id + '_webhook');
+        setError(null);
+        try {
+            const webhookUrl = `${window.location.origin}/api/zalo?action=bot_webhook&token=${tokenObj.token}`;
+            const res = await fetch('/api/zalo?action=register_webhook', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ bot_token: tokenObj.token, webhook_url: webhookUrl })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Lỗi đăng ký webhook');
+            setSuccess('Đã đăng ký Webhook thành công cho bot này!');
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoadingSync(null);
+        }
+    };
+
     const handleSyncAllBots = async (isSilent = false) => {
         if (!isSilent) setSyncingAll(true);
         if (!isSilent) setError(null);
@@ -619,7 +639,18 @@ const ZaloBotManager: React.FC = () => {
                             startIcon={loadingSync === t.id ? <CircularProgress size={16} /> : <SyncIcon fontSize="small" />}
                             sx={{ textTransform: 'none', px: 1, py: 0.25, minWidth: 'auto', fontSize: '0.75rem' }}
                         >
-                            Lấy ID Chat (Tự động)
+                            Lấy ID Chat
+                        </Button>
+                        <Button 
+                            variant="outlined" 
+                            color="secondary" 
+                            size="small" 
+                            onClick={() => handleRegisterWebhook(t)} 
+                            disabled={loadingSync === t.id + '_webhook'}
+                            startIcon={loadingSync === t.id + '_webhook' ? <CircularProgress size={16} /> : <SyncIcon fontSize="small" />}
+                            sx={{ textTransform: 'none', px: 1, py: 0.25, minWidth: 'auto', fontSize: '0.75rem' }}
+                        >
+                            Đăng ký Webhook
                         </Button>
                         <IconButton size="small" color="error" onClick={() => handleDeleteToken(t.id)} sx={{ p: 0.5 }}><DeleteIcon fontSize="small" /></IconButton>
                     </Box>
