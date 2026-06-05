@@ -176,11 +176,11 @@ const ModernSidebar: React.FC<ModernSidebarProps> = ({ isMobile, handleDrawerTog
                     <Typography sx={{
                         fontWeight: 800,
                         color: UI.text,
-                        fontSize: '1.1rem',
+                        fontSize: '0.95rem',
                         lineHeight: 1.2,
-                        letterSpacing: '-0.02em',
+                        letterSpacing: '-0.01em',
                     }}>
-                        GGS APP
+                        Hệ thống quản lý kho
                     </Typography>
                     <Typography sx={{
                         color: UI.muted,
