@@ -53,7 +53,7 @@ const OrderList = () => {
     const canDelete = hasPermission('orders.delete');
 
     // Legacy isAdmin for logic not strictly covered by basic permissions if any, or just strictly replaced
-    const isAdmin = canViewAll; // For backward compatibility in this file mostly meant view_all or manage
+    const isAdmin = profile?.role === 'admin' || profile?.role === 'manager';
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));

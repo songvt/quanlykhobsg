@@ -47,7 +47,7 @@ interface LeaveRequest {
     endTime: string;
     totalDays: number;
     
-    leaveType: 'compensatory' | 'annual' | 'other';
+    leaveType: string;
     customLeaveType: string;
     reason: string;
     location: string;
@@ -162,6 +162,26 @@ const getDefaultHandovers = () => DEFAULT_HANDOVER_TASKS.map(task => ({
     recipientName: ''
 }));
 
+const LEAVE_TYPES = [
+    { value: 'annual', label: 'Nghỉ phép' },
+    { value: 'sick', label: 'Nghỉ ốm' },
+    { value: 'maternity', label: 'Nghỉ thai sản' },
+    { value: 'unpaid', label: 'Nghỉ không lương' },
+    { value: 'compensatory', label: 'Nghỉ bù' },
+    { value: 'accident', label: 'Nghỉ tai nạn' },
+    { value: 'personal_paid', label: 'Nghỉ việc riêng có hưởng lương' },
+    { value: 'holiday', label: 'Nghỉ mát' },
+    { value: 'public_holiday', label: 'Nghỉ Lễ' },
+    { value: 'half_day', label: 'Nghỉ phép nửa ngày' },
+    { value: 'saturday', label: 'Nghỉ phép ngày thứ bảy' },
+    { value: 'other', label: 'Nghỉ khác' },
+];
+
+const getLeaveTypeLabel = (value: string) => {
+    const found = LEAVE_TYPES.find(t => t.value === value);
+    return found ? found.label : value;
+};
+
 const AdminRequests = () => {
     const dispatch = useDispatch<AppDispatch>();
     
@@ -201,7 +221,7 @@ const AdminRequests = () => {
         endDate: new Date().toISOString().split('T')[0],
         endTime: '17:30',
         totalDays: 1,
-        leaveType: 'annual' as 'compensatory' | 'annual' | 'other',
+        leaveType: 'annual' as string,
         customLeaveType: '',
         reason: 'Nghỉ giải quyết việc gia đình',
         location: 'Thành phố Hồ Chí Minh',
@@ -753,11 +773,13 @@ const AdminRequests = () => {
                                             <Select
                                                 value={leaveFormData.leaveType}
                                                 label="Loại nghỉ"
-                                                onChange={(e) => setLeaveFormData(prev => ({ ...prev, leaveType: e.target.value as any }))}
+                                                onChange={(e) => setLeaveFormData(prev => ({ ...prev, leaveType: e.target.value as string }))}
                                             >
-                                                <MenuItem value="compensatory">Nghỉ Bù</MenuItem>
-                                                <MenuItem value="annual">Nghỉ phép</MenuItem>
-                                                <MenuItem value="other">Loại khác (Tự nhập)</MenuItem>
+                                                {LEAVE_TYPES.map((type) => (
+                                                    <MenuItem key={type.value} value={type.value}>
+                                                        {type.label}
+                                                    </MenuItem>
+                                                ))}
                                             </Select>
                                         </FormControl>
                                     </Grid>
@@ -1145,27 +1167,15 @@ const PrintableLeaveRequestTemplate = ({ leaveRequest }: { leaveRequest: any }) 
                             <span style={{ flexGrow: 1 }} />
                         </Box>
 
-                        <Box sx={{ display: 'flex', width: '100%', alignItems: 'center', mt: 1, gap: 3 }}>
+                        <Box sx={{ display: 'flex', width: '100%', alignItems: 'flex-end', mt: 1 }}>
                             <span style={{ whiteSpace: 'nowrap' }}>Loại nghỉ:</span>
-                            <span style={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <span style={{ fontSize: '14pt', lineHeight: 1 }}>{leaveRequest.leaveType === 'compensatory' ? '☑' : '☐'}</span>
-                                <span>Nghỉ Bù;</span>
-                            </span>
-                            <span style={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <span style={{ fontSize: '14pt', lineHeight: 1 }}>{leaveRequest.leaveType === 'annual' ? '☑' : '☐'}</span>
-                                <span>Nghỉ phép;</span>
-                            </span>
-                            <span style={{ display: 'flex', alignItems: 'center', gap: 1, flexGrow: 1 }}>
-                                <span style={{ fontSize: '14pt', lineHeight: 1 }}>{leaveRequest.leaveType === 'other' ? '☑' : '☐'}</span>
-                                <span style={{ whiteSpace: 'nowrap' }}>Khác:</span>
-                                <span style={{ 
-                                    borderBottom: '1px dotted #000', 
-                                    flexGrow: 1, 
-                                    paddingLeft: '8px',
-                                    fontWeight: leaveRequest.leaveType === 'other' ? 'bold' : 'normal'
-                                }}>
-                                    {leaveRequest.leaveType === 'other' ? leaveRequest.customLeaveType : '\u00A0'}
-                                </span>
+                            <span style={{ 
+                                borderBottom: '1px dotted #000', 
+                                flexGrow: 1, 
+                                paddingLeft: '8px',
+                                fontWeight: 'bold'
+                            }}>
+                                {leaveRequest.leaveType === 'other' ? (leaveRequest.customLeaveType || 'Khác') : getLeaveTypeLabel(leaveRequest.leaveType)}
                             </span>
                         </Box>
 

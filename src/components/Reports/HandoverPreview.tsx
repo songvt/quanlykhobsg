@@ -37,7 +37,7 @@ const HandoverTemplate = ({ data, employeeName, date, reporterName, senderPhone,
                 </Box>
 
                 <Box textAlign="center" sx={{ flexGrow: 1, px: 2 }}>
-                    <Typography sx={{ fontWeight: 900, fontSize: '22pt', color: '#09090b', textTransform: 'uppercase', letterSpacing: '-0.02em' }}>
+                    <Typography sx={{ fontWeight: 900, fontSize: '22pt', color: '#09090b', textTransform: 'uppercase', letterSpacing: '-0.02em', whiteSpace: 'nowrap' }}>
                         BIÊN BẢN BÀN GIAO
                     </Typography>
                     <Typography sx={{ fontSize: '11pt', color: '#64748b', mt: 1, fontWeight: 500 }}>
@@ -88,40 +88,41 @@ const HandoverTemplate = ({ data, employeeName, date, reporterName, senderPhone,
             {/* Table */}
             <Table size="small" sx={{ 
                 borderCollapse: 'collapse', 
-                '& td, & th': { border: '1px solid #e2e8f0', fontSize: '10pt', padding: '10px 12px' } 
+                border: '1.5px solid #000000',
+                '& td, & th': { border: '1.5px solid #000000', fontSize: '10pt', padding: '10px 12px', color: '#000000' } 
             }}>
                 <TableHead>
                     <TableRow sx={{ bgcolor: '#f8fafc' }}>
-                        <TableCell align="center" sx={{ fontWeight: 700, color: '#475569' }}>STT</TableCell>
-                        <TableCell sx={{ fontWeight: 700, color: '#475569' }}>TÊN HÀNG HÓA, VẬT TƯ</TableCell>
-                        <TableCell align="center" sx={{ fontWeight: 700, color: '#475569' }}>ĐVT</TableCell>
-                        <TableCell align="center" sx={{ fontWeight: 700, color: '#475569' }}>SL</TableCell>
-                        <TableCell align="right" sx={{ fontWeight: 700, color: '#475569' }}>ĐƠN GIÁ</TableCell>
-                        <TableCell align="right" sx={{ fontWeight: 700, color: '#475569' }}>THÀNH TIỀN</TableCell>
-                        <TableCell sx={{ fontWeight: 700, color: '#475569' }}>GHI CHÚ / SERIAL</TableCell>
+                        <TableCell align="center" sx={{ fontWeight: 700, color: '#000000' }}>STT</TableCell>
+                        <TableCell sx={{ fontWeight: 700, color: '#000000' }}>TÊN HÀNG HÓA, VẬT TƯ</TableCell>
+                        <TableCell align="center" sx={{ fontWeight: 700, color: '#000000' }}>ĐVT</TableCell>
+                        <TableCell align="center" sx={{ fontWeight: 700, color: '#000000' }}>SL</TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 700, color: '#000000' }}>ĐƠN GIÁ</TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 700, color: '#000000' }}>THÀNH TIỀN</TableCell>
+                        <TableCell sx={{ fontWeight: 700, color: '#000000' }}>GHI CHÚ / SERIAL</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {data.map((item, index) => (
                         <TableRow key={index}>
-                            <TableCell align="center">{index + 1}</TableCell>
-                            <TableCell sx={{ fontWeight: 600 }}>{item.product_name}</TableCell>
-                            <TableCell align="center">{item.unit || 'Cái'}</TableCell>
-                            <TableCell align="center" sx={{ fontWeight: 700, color: '#2563eb' }}>{item.quantity.toLocaleString('vi-VN')}</TableCell>
-                            <TableCell align="right">
+                            <TableCell align="center" sx={{ color: '#000000' }}>{index + 1}</TableCell>
+                            <TableCell sx={{ fontWeight: 600, color: '#000000' }}>{item.product_name}</TableCell>
+                            <TableCell align="center" sx={{ color: '#000000' }}>{item.unit || 'Cái'}</TableCell>
+                            <TableCell align="center" sx={{ fontWeight: 700, color: '#000000' }}>{item.quantity.toLocaleString('vi-VN')}</TableCell>
+                            <TableCell align="right" sx={{ color: '#000000' }}>
                                 {new Intl.NumberFormat('vi-VN').format(item.unit_price)}
                             </TableCell>
-                            <TableCell align="right" sx={{ fontWeight: 600 }}>
+                            <TableCell align="right" sx={{ fontWeight: 600, color: '#000000' }}>
                                 {new Intl.NumberFormat('vi-VN').format(item.unit_price * item.quantity)}
                             </TableCell>
-                            <TableCell sx={{ maxWidth: 180, fontSize: '9pt', color: '#64748b' }}>{item.serial_code || '-'}</TableCell>
+                            <TableCell sx={{ maxWidth: 180, fontSize: '9pt', color: '#000000', wordBreak: 'break-all' }}>{item.serial_code || '-'}</TableCell>
                         </TableRow>
                     ))}
                     {/* Total Row */}
                     <TableRow sx={{ bgcolor: '#f1f5f9' }}>
-                        <TableCell colSpan={3} align="right" sx={{ fontWeight: 800, textTransform: 'uppercase' }}>Tổng cộng</TableCell>
-                        <TableCell align="center" sx={{ fontWeight: 800, color: '#2563eb' }}>{data.reduce((acc, i) => acc + i.quantity, 0).toLocaleString('vi-VN')}</TableCell>
-                        <TableCell colSpan={2} align="right" sx={{ fontWeight: 800, fontSize: '11pt' }}>
+                        <TableCell colSpan={3} align="right" sx={{ fontWeight: 800, textTransform: 'uppercase', color: '#000000' }}>Tổng cộng</TableCell>
+                        <TableCell align="center" sx={{ fontWeight: 800, color: '#000000' }}>{data.reduce((acc, i) => acc + i.quantity, 0).toLocaleString('vi-VN')}</TableCell>
+                        <TableCell colSpan={2} align="right" sx={{ fontWeight: 800, fontSize: '11pt', color: '#000000' }}>
                             {new Intl.NumberFormat('vi-VN').format(totalAmount)}
                         </TableCell>
                         <TableCell></TableCell>

@@ -132,6 +132,14 @@ export const Outbound = () => {
             setSelectedOrder(null);
             dispatch(fetchInventory());
             dispatch(fetchTransactions());
+
+            // Tự động chọn các giao dịch vừa tạo và mở khung in biên bản nhanh
+            const newTxIds = createdTransactions.map(t => t.id).filter(Boolean);
+            if (newTxIds.length > 0) {
+                setSelectedPrintIds(newTxIds);
+                setResolvedDelivererName(profile?.full_name || 'Staff');
+                setOpenPrintPreview(true);
+            }
         } catch (err: any) { notifyError(err.message); }
     };
 
