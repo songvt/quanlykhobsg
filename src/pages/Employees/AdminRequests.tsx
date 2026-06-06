@@ -22,6 +22,9 @@ import { exportStandardReport } from '../../utils/excelUtils';
 import { fetchHRProfiles } from '../../store/slices/hrProfilesSlice';
 import { fetchEmployees } from '../../store/slices/employeesSlice';
 import type { RootState, AppDispatch } from '../../store';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
 // Interfaces
 interface LeaveHandoverRow {
@@ -211,6 +214,7 @@ const AdminRequests = () => {
     const [isLeaveFormOpen, setIsLeaveFormOpen] = useState(false);
     const [isLeavePreviewOpen, setIsLeavePreviewOpen] = useState(false);
     const [selectedLeaveRequest, setSelectedLeaveRequest] = useState<LeaveRequest | null>(null);
+    const [isExportingPDF, setIsExportingPDF] = useState(false);
     const [leaveFormMode, setLeaveFormMode] = useState<'create' | 'edit'>('create');
     const [leaveFormData, setLeaveFormData] = useState({
         id: '',
@@ -385,6 +389,40 @@ const AdminRequests = () => {
         setTimeout(() => {
             window.print();
         }, 150);
+    };
+
+    const handleExportPDF = async () => {
+        if (!selectedLeaveRequest) return;
+        setIsExportingPDF(true);
+        setTimeout(async () => {
+            const input = document.getElementById('printable-leave-request-area');
+            if (!input) {
+                setIsExportingPDF(false);
+                return;
+            }
+            try {
+                const canvas = await html2canvas(input, { 
+                    scale: 2, 
+                    useCORS: true,
+                    windowWidth: 800,
+                    width: 794
+                });
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                
+                const empName = selectedLeaveRequest.employeeName ? selectedLeaveRequest.employeeName.trim() : 'NhanVien';
+                const dateFormatted = selectedLeaveRequest.requestDate ? selectedLeaveRequest.requestDate.replace(/-/g, '') : '';
+                pdf.save(`Don_Xin_Nghi_${empName}_${dateFormatted}.pdf`);
+            } catch (error) {
+                console.error("Error exporting PDF:", error);
+                setNotification({ type: 'error', message: 'Lỗi xuất PDF. Thử lại sau.' });
+            } finally {
+                setIsExportingPDF(false);
+            }
+        }, 300);
     };
 
     const handleExportLeaveExcel = async () => {
@@ -915,6 +953,16 @@ const AdminRequests = () => {
                         <Stack direction="row" spacing={1}>
                             <Button
                                 variant="contained"
+                                color="error"
+                                startIcon={<PictureAsPdfIcon />}
+                                onClick={handleExportPDF}
+                                disabled={isExportingPDF}
+                                sx={{ borderRadius: '8px', textTransform: 'none', bgcolor: '#ef4444', '&:hover': { bgcolor: '#dc2626' } }}
+                            >
+                                {isExportingPDF ? 'Đang xuất...' : 'Xuất PDF'}
+                            </Button>
+                            <Button
+                                variant="contained"
                                 color="primary"
                                 startIcon={<PrintIcon />}
                                 onClick={triggerBrowserPrint}
@@ -927,7 +975,11 @@ const AdminRequests = () => {
                     </DialogTitle>
 
                     <DialogContent sx={{ p: { xs: 1, sm: 4 }, display: 'flex', justifyContent: 'center' }}>
-                        {selectedLeaveRequest && <PrintableLeaveRequestTemplate leaveRequest={selectedLeaveRequest} />}
+                        {selectedLeaveRequest && (
+                            <div id="printable-leave-request-area" style={{ width: '100%', display: 'flex', justifyContent: 'center', background: 'white' }}>
+                                <PrintableLeaveRequestTemplate leaveRequest={selectedLeaveRequest} />
+                            </div>
+                        )}
                     </DialogContent>
                 </Dialog>
 
