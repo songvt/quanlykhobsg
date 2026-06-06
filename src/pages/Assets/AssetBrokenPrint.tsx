@@ -32,7 +32,7 @@ const AssetBrokenPrint: React.FC<Props> = ({ open, onClose, assets }) => {
                 <style>
                     @page { size: A4; margin: 10mm 15mm; }
                     * { box-sizing: border-box; }
-                    body { font-family: 'Times New Roman', serif; font-size: 12pt; color: #000; margin: 0; padding: 0; line-height: 1.4; }
+                    body { font-family: 'Times New Roman', Times, serif; font-size: 11.5pt; color: #000; margin: 0; padding: 0; line-height: 1.4; }
                     
                     .page-header { width: 100%; margin-bottom: 20px; }
                     .header-table { width: 100%; border: none; }
@@ -102,7 +102,8 @@ const AssetBrokenPrint: React.FC<Props> = ({ open, onClose, assets }) => {
                     width: '210mm', 
                     minHeight: '297mm',
                     boxShadow: '0 0 20px rgba(0,0,0,0.15)',
-                    fontFamily: 'Times New Roman',
+                    fontFamily: "'Times New Roman', Times, serif",
+                    fontSize: '11.5pt',
                     color: 'black',
                     lineHeight: 1.4
                 }}>

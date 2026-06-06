@@ -91,7 +91,7 @@ const AssetHandoverPrint: React.FC<Props> = ({ open, onClose, actionType, assets
                 <style>
                     @page { size: A4; margin: 10mm 12mm; }
                     * { box-sizing: border-box; }
-                    body { font-family: 'Times New Roman', serif; font-size: 11pt; color: #000; margin: 0; padding: 0; }
+                    body { font-family: 'Times New Roman', Times, serif; font-size: 11.5pt; color: #000; margin: 0; padding: 0; }
                     .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
                     .header-left { width: 55%; display: flex; align-items: center; gap: 10px; }
                     .header-right { width: 45%; text-align: center; }
@@ -242,7 +242,7 @@ const AssetHandoverPrint: React.FC<Props> = ({ open, onClose, actionType, assets
 
                 {/* ── Preview Area ── */}
                 <Paper variant="outlined" sx={{ bgcolor: 'white', p: '15mm 15mm', mx: 'auto', width: '210mm', minHeight: '280mm', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', border: '1px solid #e2e8f0' }}>
-                    <Box ref={printRef} sx={{ fontFamily: 'Times New Roman', fontSize: '11pt', color: '#000' }}>
+                    <Box ref={printRef} sx={{ fontFamily: "'Times New Roman', Times, serif", fontSize: '11.5pt', color: '#000' }}>
 
                         {/* Header */}
                         <div className="header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
