@@ -2696,7 +2696,7 @@ const PrintableLeaveRequestTemplate = ({ leaveRequest }: { leaveRequest: any }) 
             {/* Bottom Signatures Layout matching image */}
             <Box sx={{ mt: 4, '@media print': { mt: 3 } }}>
                 {/* Director Title Centered */}
-                <Box sx={{ textAlign: 'center', width: '100%', mb: 6 }}>
+                <Box sx={{ textAlign: 'center', width: '100%', mb: 12 }}>
                     <Typography sx={{ fontWeight: 'bold', fontSize: '11.5pt', fontFamily: "'Times New Roman', Times, serif" }}>
                         BAN GIÁM ĐỐC TRUNG TÂM
                     </Typography>
