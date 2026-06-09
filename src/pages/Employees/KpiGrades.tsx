@@ -2415,7 +2415,7 @@ const KpiGrades = () => {
                         }
                         @page {
                             size: A4 portrait;
-                            margin: 0;
+                            margin: 20mm 15mm 20mm 30mm;
                         }
                     }
                     #print-portal-root {
@@ -2490,18 +2490,17 @@ const PrintableReportTemplate = ({ report }: { report: InfractionReport }) => {
     return (
         <Box
             sx={{
-                width: '100%',
-                maxWidth: '794px', // Kích thước chuẩn A4 tại 96 DPI
-                minHeight: '1050px',
-                p: '40px 48px',
+                width: '794px',
+                height: '1123px',
+                p: '20mm 15mm 20mm 30mm',
                 bgcolor: 'white',
                 color: '#000000',
                 fontFamily: "'Times New Roman', Times, serif",
                 boxSizing: 'border-box',
                 '@media print': {
-                    p: '0px',
-                    maxWidth: '100%',
-                    minHeight: 'auto',
+                    p: '0px !important',
+                    width: '100% !important',
+                    height: 'auto !important',
                 }
             }}
         >
@@ -2697,9 +2696,9 @@ const PrintableLeaveRequestTemplate = ({ leaveRequest }: { leaveRequest: any }) 
                 fontFamily: "'Times New Roman', Times, serif",
                 boxSizing: 'border-box',
                 '@media print': {
-                    p: '20mm 15mm 20mm 30mm !important',
-                    width: '794px',
-                    height: '1123px',
+                    p: '0px !important',
+                    width: '100% !important',
+                    height: 'auto !important',
                 }
             }}
         >
