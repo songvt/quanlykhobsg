@@ -2,22 +2,22 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 
-import productsHandler from './api/_products.js';
-import employeesHandler from './api/_employees.js';
-import transactionsHandler from './api/_transactions.js';
-import ordersHandler from './api/_orders.js';
-import assetsHandler from './api/_assets.js';
-import auditsHandler from './api/_audits.js';
-import settlementsHandler from './api/_settlements.js';
-import systemUtilsHandler from './api/_system_utils.js';
-import systemConfigHandler from './api/_system_config.js';
-import zaloHandler from './api/_zalo.js';
-import geminiHandler from './api/_gemini.js';
-import ocrHandler from './api/_ocr.js';
-import trinhkyHandler from './api/_trinhky.js';
+import productsHandler from './_products.js';
+import employeesHandler from './_employees.js';
+import transactionsHandler from './_transactions.js';
+import ordersHandler from './_orders.js';
+import assetsHandler from './_assets.js';
+import auditsHandler from './_audits.js';
+import settlementsHandler from './_settlements.js';
+import systemUtilsHandler from './_system_utils.js';
+import systemConfigHandler from './_system_config.js';
+import zaloHandler from './_zalo.js';
+import geminiHandler from './_gemini.js';
+import ocrHandler from './_ocr.js';
+import trinhkyHandler from './_trinhky.js';
+import cronSyncHandler from './_cron-sync.js';
 
 const app = express();
-const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors());
@@ -48,6 +48,7 @@ app.all('/api/gemini', createVercelHandler(geminiHandler));
 app.all('/api/ocr', createVercelHandler(ocrHandler));
 app.all('/api/trinhky', createVercelHandler(trinhkyHandler));
 app.all('/api/system_config', createVercelHandler(systemConfigHandler));
+app.all('/api/cron-sync', createVercelHandler(cronSyncHandler));
 
 // Helper to safely override Express prototype query getter
 const setQueryType = (req: express.Request, type: string) => {
@@ -124,7 +125,4 @@ app.get('/api/diagnose', (req, res) => {
     });
 });
 
-app.listen(PORT, () => {
-    console.log(`[Local API Server] Running on http://localhost:${PORT}`);
-    console.log(`[Local API Server] Serving endpoints attached to Google Sheets.`);
-});
+export default app;
