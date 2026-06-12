@@ -2,20 +2,20 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 
-import productsHandler from './_products.js';
-import employeesHandler from './_employees.js';
-import transactionsHandler from './_transactions.js';
-import ordersHandler from './_orders.js';
-import assetsHandler from './_assets.js';
-import auditsHandler from './_audits.js';
-import settlementsHandler from './_settlements.js';
-import systemUtilsHandler from './_system_utils.js';
-import systemConfigHandler from './_system_config.js';
-import zaloHandler from './_zalo.js';
-import geminiHandler from './_gemini.js';
-import ocrHandler from './_ocr.js';
-import trinhkyHandler from './_trinhky.js';
-import cronSyncHandler from './_cron-sync.js';
+import productsHandler from '../api_handlers/products.js';
+import employeesHandler from '../api_handlers/employees.js';
+import transactionsHandler from '../api_handlers/transactions.js';
+import ordersHandler from '../api_handlers/orders.js';
+import assetsHandler from '../api_handlers/assets.js';
+import auditsHandler from '../api_handlers/audits.js';
+import settlementsHandler from '../api_handlers/settlements.js';
+import systemUtilsHandler from '../api_handlers/system_utils.js';
+import systemConfigHandler from '../api_handlers/system_config.js';
+import zaloHandler from '../api_handlers/zalo.js';
+import geminiHandler from '../api_handlers/gemini.js';
+import ocrHandler from '../api_handlers/ocr.js';
+import trinhkyHandler from '../api_handlers/trinhky.js';
+import cronSyncHandler from '../api_handlers/cron-sync.js';
 
 const app = express();
 
