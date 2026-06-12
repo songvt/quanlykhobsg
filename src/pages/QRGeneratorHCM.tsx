@@ -141,7 +141,7 @@ const QRGeneratorHCM = () => {
     const printStyles = `
         @page { size: A4 landscape; margin: 0; }
         * { box-sizing: border-box; }
-        body { margin: 0; padding: 0; }
+        body { margin: 0; padding: 0; background: white; }
         
         .print-container { 
             width: 297mm;
@@ -149,176 +149,89 @@ const QRGeneratorHCM = () => {
             background: white; 
             font-family: "Times New Roman", Times, serif;
             color: black;
-            padding: 5mm;
             display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
+            align-items: center;
+            justify-content: center;
         }
         
         .label-wrapper { 
-            width: 100%; 
-            height: 200mm; 
-            border: 4.5px solid #000000; 
-            margin-bottom: 0; 
-            background: white;
-            display: flex;
-            flex-direction: column;
+            width: 270mm; 
+            height: 730px !important; 
+            border: 3px solid #000000 !important; 
+            background: #000000 !important;
+            display: grid;
+            grid-template-columns: 75mm 125mm 70mm;
+            grid-template-rows: 110px 124px 124px 180px 180px;
+            gap: 3px !important;
+            box-sizing: border-box;
             page-break-inside: avoid;
             position: relative;
-            box-shadow: 0 0 15px rgba(0,0,0,0.06);
-            overflow: hidden;
-            border-radius: 6px;
             font-family: "Times New Roman", Times, serif !important;
-        }
-        
-        .label-wrapper:last-child {
-            margin-bottom: 0;
+            overflow: hidden;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
         
         @media print {
             .page-break { page-break-after: always; height: 0; border: none; margin: 0; }
-            .label-wrapper { box-shadow: none; border-color: black !important; border: 4.5px solid black !important; }
-        }
-        
-        .header-text-print { 
-            font-size: 72pt; 
-            font-weight: 900; 
-            text-align: center; 
-            text-transform: uppercase;
-            line-height: 1.35;
-            margin-bottom: 0;
-            letter-spacing: 0.5px;
-            background: white !important;
-            color: black !important;
-            padding: 5px 15px;
-            border-bottom: 4.5px solid #000000;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-        
-        .header-decor-line {
-            height: 3px;
-            width: 50px;
-            background-color: black;
-            display: inline-block;
-        }
-        
-        .label-body {
-            display: grid;
-            grid-template-columns: 110mm 110mm 65mm;
-            grid-template-rows: repeat(4, 1fr);
-            flex: 1;
-            min-height: 0;
-            background: white;
+            .label-wrapper { border-color: black !important; background: black !important; }
         }
         
         .grid-cell {
             display: flex;
             align-items: center;
             justify-content: center;
+            background: white !important;
+            padding: 5px;
+            box-sizing: border-box;
             overflow: hidden;
-            background: white;
-            border-bottom: 2px solid #000000;
-            position: relative;
-            isolation: isolate;
-            contain: paint;
-        }
-        
-        .grid-cell-label {
-            justify-content: center;
-            padding: 0 12px;
-            font-size: 72pt;
-            font-weight: 900;
-            border-right: 2px solid #000000;
-            z-index: 5;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #000000;
             text-align: center;
-            white-space: nowrap;
+            color: black !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
         
-        .grid-cell-value {
-            background-color: white !important; /* Premium softer yellow background */
-            font-size: 72pt; 
-            font-weight: 900; 
-            text-align: center;
-            padding: 0 12px;
-            border-right: 2px solid #000000;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-            z-index: 10;
-            white-space: nowrap;
-            text-transform: uppercase;
-            color: #000000;
-        }
-        
-        .grid-cell-value-lg {
-            background-color: white !important; /* Bold yellow for primary numbers */
-            font-size: 72pt; 
-            font-weight: 900; 
-            text-align: center;
-            border-right: 2px solid #000000;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-            z-index: 10;
-            white-space: nowrap;
-            text-transform: uppercase;
-            color: #000000;
-        }
-        
-        .grid-cell-qr {
-            flex-direction: column;
-            padding: 12px;
-            border-right: none;
-            background: white !important;
-            z-index: 5;
-            transform: translateZ(0);
-        }
-        
-        .grid-cell-qr svg {
-            shape-rendering: crispEdges;
-            background: white !important;
-        }
-        
-        /* Last row specific: remove bottom border */
-        .label-body > .grid-cell:nth-last-child(-n+2) {
-            border-bottom: none;
-        }
-        
-        .qr-label-small {
-            font-size: 9pt;
-            font-weight: 900;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            background-color: white;
-            color: black;
-            padding: 2px 10px;
-            border-radius: 10px;
-            border: 1px solid #000000;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
-        
-        .logistics-watermark {
-            position: absolute;
-            bottom: 4px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 7pt;
-            color: #94a3b8;
+        .cell-header {
+            grid-column: span 3;
+            font-size: 110pt;
             font-weight: bold;
-            letter-spacing: 2px;
             text-transform: uppercase;
-            white-space: nowrap;
-            opacity: 0.8;
+            letter-spacing: 0.5px;
+        }
+        
+        .cell-label {
+            font-size: 38pt;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+        
+        .cell-value {
+            font-size: 110pt;
+            word-break: break-word;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+        
+        .cell-qr {
+            flex-direction: column;
+            padding: 5mm;
+            background: white !important;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .qr-container {
+            width: 35mm;
+            height: 35mm;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .qr-container svg {
+            width: 100% !important;
+            height: 100% !important;
+            shape-rendering: crispEdges;
         }
     `;
 
@@ -1121,11 +1034,10 @@ const QRGeneratorHCM = () => {
                             {groupedBoxes.map((group, groupIdx) => (
                                 <div className="print-container" key={groupIdx}>
                                     <div className="label-wrapper">
-                                        {/* Helper for auto-shrink font size */}
                                         {(() => {
                                             const SvgFitText = ({ text, fontSizePt, maxWidthPt }: { text: string, fontSizePt: number, maxWidthPt: number }) => {
                                                 const len = text.length;
-                                                const charRatio = 0.65;
+                                                const charRatio = 0.85; // Increased ratio to prevent any cut-off
                                                 const estWidth = len * (fontSizePt * charRatio); 
                                                 const needsSquash = estWidth > maxWidthPt;
                                                 const finalFontSize = needsSquash ? Math.floor(fontSizePt * (maxWidthPt / estWidth)) : fontSizePt;
@@ -1134,6 +1046,7 @@ const QRGeneratorHCM = () => {
                                                     <div style={{ 
                                                         fontSize: `${finalFontSize}pt`, 
                                                         fontWeight: 900, 
+                                                        textTransform: 'uppercase',
                                                         fontFamily: '"Times New Roman", Times, serif',
                                                         color: 'black',
                                                         whiteSpace: 'nowrap',
@@ -1143,94 +1056,86 @@ const QRGeneratorHCM = () => {
                                                     </div>
                                                 );
                                             };
-
-                                            const GRID_SIZE_LARGE = 65;
-                                            const GRID_SIZE_SMALL = 65;
-                                            const GRID_SIZE_VALUE_LARGE = 72;
-                                            const GRID_MAX_WIDTH = 290;
-                                            const HEADER_SIZE = 72;
-                                            const HEADER_MAX_WIDTH = 800;
-
+ 
+                                            const ValueCellContent = ({ text }: { text: string }) => {
+                                                if (text.includes(' - ')) {
+                                                    const parts = text.split(' - ');
+                                                    return (
+                                                        <div style={{ 
+                                                            display: 'flex', 
+                                                            flexDirection: 'column', 
+                                                            alignItems: 'center', 
+                                                            justifyContent: 'center', 
+                                                            lineHeight: 1.0, 
+                                                            fontSize: '45pt',
+                                                            fontWeight: 900,
+                                                            textTransform: 'uppercase',
+                                                            fontFamily: '"Times New Roman", Times, serif'
+                                                        }}>
+                                                            {parts.map((p, i) => (
+                                                                <div key={i}>{p}{i === 0 && parts.length > 1 ? ' -' : ''}</div>
+                                                            ))}
+                                                        </div>
+                                                    );
+                                                }
+                                                return <SvgFitText text={text} fontSizePt={110} maxWidthPt={405} />;
+                                            };
+ 
                                             return (
                                                 <>
-                                                    {/* Header */}
-                                                    <div className="header-text-print">
-                                                        <span className="header-decor-line" style={{ margin: '0 15px' }}></span>
-                                                        <SvgFitText text={group.tieu_de || 'TIÊU ĐỀ IN ẤN'} fontSizePt={HEADER_SIZE} maxWidthPt={HEADER_MAX_WIDTH} />
-                                                        <span className="header-decor-line" style={{ margin: '0 15px' }}></span>
+                                                    {/* Row 1: Header */}
+                                                    <div className="grid-cell cell-header">
+                                                        <SvgFitText text={group.tieu_de || 'KHIRM-2026'} fontSizePt={110} maxWidthPt={765} />
                                                     </div>
-
-                                                    <div className="label-body">
-                                                        {/* Row 1 */}
-                                                        <div className="grid-cell grid-cell-label">
-                                                            <SvgFitText text="THÙNG" fontSizePt={GRID_SIZE_LARGE} maxWidthPt={GRID_MAX_WIDTH} />
-                                                        </div>
-                                                        <div className="grid-cell grid-cell-value-lg">
-                                                            <SvgFitText text={String(group.thung)} fontSizePt={GRID_SIZE_VALUE_LARGE} maxWidthPt={GRID_MAX_WIDTH} />
-                                                        </div>
-                                                        <div className="grid-cell grid-cell-qr" style={{ gridRow: group.qrChunks.length > 1 ? 'span 2' : 'span 4', borderBottom: group.qrChunks.length > 1 ? '2.5px solid #000000' : 'none' }}>
-                                                            {group.qrChunks[0] && (
-                                                                <>
-                                                                    <div style={{ width: '45mm', height: '45mm', minWidth: '45mm', minHeight: '45mm', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                                        <QRCodeSVG value={group.qrChunks[0].qrValue} size={165} level="M" includeMargin={false} />
-                                                                    </div>
-                                                                </>
-                                                            )}
-                                                        </div>
-
-                                                        {/* Row 2 */}
-                                                        <div className="grid-cell grid-cell-label">
-                                                            <SvgFitText text="SỐ LƯỢNG" fontSizePt={GRID_SIZE_LARGE} maxWidthPt={GRID_MAX_WIDTH} />
-                                                        </div>
-                                                        <div className="grid-cell grid-cell-value-lg">
-                                                            <div style={{ 
-                                                                display: 'flex', 
-                                                                alignItems: 'baseline', 
-                                                                justifyContent: 'center',
-                                                                gap: '6px',
-                                                                fontSize: `${GRID_SIZE_VALUE_LARGE}pt`, 
-                                                                fontWeight: 900, 
-                                                                fontFamily: '"Times New Roman", Times, serif',
-                                                                color: 'black',
-                                                                whiteSpace: 'nowrap'
-                                                            }}>
-                                                                <span>{group.totalQuantity}</span>
-                                                                <span style={{ fontSize: '20pt', fontWeight: 'normal' }}>pcs</span>
+ 
+                                                    {/* Row 2: THÙNG */}
+                                                    <div className="grid-cell cell-label" style={{ fontSize: '38pt', fontWeight: 900, fontFamily: '"Times New Roman", Times, serif' }}>
+                                                        THÙNG
+                                                    </div>
+                                                    <div className="grid-cell cell-value">
+                                                        <ValueCellContent text={String(group.thung)} />
+                                                    </div>
+                                                    <div className="grid-cell cell-qr" style={{ gridRow: group.qrChunks.length > 1 ? 'span 2' : 'span 4' }}>
+                                                        {group.qrChunks[0] && (
+                                                            <div className="qr-container">
+                                                                <QRCodeSVG value={group.qrChunks[0].qrValue} size={300} level="M" includeMargin={false} />
                                                             </div>
-                                                        </div>
-                                                        {/* Col 3 is spanned from Row 1 */}
-
-                                                        {/* Row 3 */}
-                                                        <div className="grid-cell grid-cell-label">
-                                                            <SvgFitText text="THIẾT BỊ" fontSizePt={GRID_SIZE_SMALL} maxWidthPt={GRID_MAX_WIDTH} />
-                                                        </div>
-                                                        <div className="grid-cell grid-cell-value">
-                                                            <SvgFitText text={String(group.thiet_bi)} fontSizePt={GRID_SIZE_SMALL} maxWidthPt={GRID_MAX_WIDTH} />
-                                                        </div>
-                                                        {group.qrChunks.length > 1 ? (
-                                                            <div className="grid-cell grid-cell-qr" style={{ gridRow: 'span 2', borderBottom: 'none' }}>
-                                                                <div style={{ width: '45mm', height: '45mm', minWidth: '45mm', minHeight: '45mm', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                                    <QRCodeSVG value={group.qrChunks[1].qrValue} size={165} level="M" includeMargin={false} />
-                                                                </div>
-                                                            </div>
-                                                        ) : (
-                                                            null // Spanned from Row 1
                                                         )}
+                                                    </div>
+ 
+                                                    {/* Row 3: SỐ LƯỢNG */}
+                                                    <div className="grid-cell cell-label" style={{ fontSize: '38pt', fontWeight: 900, fontFamily: '"Times New Roman", Times, serif' }}>
+                                                        SỐ LƯỢNG
+                                                    </div>
+                                                    <div className="grid-cell cell-value">
+                                                        <ValueCellContent text={String(group.totalQuantity)} />
+                                                    </div>
+ 
+                                                    {/* Row 4: THIẾT BỊ */}
+                                                    <div className="grid-cell cell-label" style={{ fontSize: '38pt', fontWeight: 900, fontFamily: '"Times New Roman", Times, serif' }}>
+                                                        THIẾT BỊ
+                                                    </div>
+                                                    <div className="grid-cell cell-value">
+                                                        <ValueCellContent text={String(group.thiet_bi)} />
+                                                    </div>
+                                                    {group.qrChunks.length > 1 ? (
+                                                        <div className="grid-cell cell-qr" style={{ gridRow: 'span 2' }}>
+                                                            <div className="qr-container">
+                                                                <QRCodeSVG value={group.qrChunks[1].qrValue} size={300} level="M" includeMargin={false} />
+                                                            </div>
+                                                        </div>
+                                                    ) : null}
 
-                                                        {/* Row 4 */}
-                                                        <div className="grid-cell grid-cell-label">
-                                                            <SvgFitText text="TÌNH TRẠNG" fontSizePt={GRID_SIZE_SMALL} maxWidthPt={GRID_MAX_WIDTH} />
-                                                        </div>
-                                                        <div className="grid-cell grid-cell-value" style={{ borderBottom: 'none' }}>
-                                                            <SvgFitText text={String(group.tinh_trang)} fontSizePt={GRID_SIZE_SMALL} maxWidthPt={GRID_MAX_WIDTH} />
-                                                        </div>
+                                                    {/* Row 5: TÌNH TRẠNG */}
+                                                    <div className="grid-cell cell-label" style={{ fontSize: '38pt', fontWeight: 900, fontFamily: '"Times New Roman", Times, serif' }}>
+                                                        TÌNH TRẠNG
+                                                    </div>
+                                                    <div className="grid-cell cell-value">
+                                                        <ValueCellContent text={String(group.tinh_trang)} />
                                                     </div>
                                                 </>
                                             );
                                         })()}
-                                        
-                                        {/* Watermark in bottom corner */}
-                                        <div className="logistics-watermark">BSG Logistics HCM Division · Tem Nhãn Phân Phối Tiêu Chuẩn</div>
                                     </div>
                                     {groupIdx < groupedBoxes.length - 1 && <div className="page-break" />}
                                 </div>

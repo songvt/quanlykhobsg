@@ -55,18 +55,17 @@ const injectSignaturesIntoContent = (htmlContent: string, approvers: any[]) => {
         
         if (app.trang_thai === 'DaKy' || app.trang_thai === 'DaKyNhay') {
             if (app.signature_data) {
-                const imgTag = `<div style="text-align: center; margin: 5px 0;"><img src="${app.signature_data}" style="max-height: 80px; max-width: 150px; object-fit: contain; display: inline-block;" alt="Chữ ký ${app.employee?.full_name || ''}" /><div style="font-size: 0.75rem; color: gray;">Ký bởi: ${app.employee?.full_name || ''}</div></div>`;
+                const imgTag = `<img src="${app.signature_data}" style="max-height: 60px; max-width: 120px; object-fit: contain; display: inline-block; vertical-align: middle; margin: 0 5px;" alt="Chữ ký" />`;
                 updatedContent = updatedContent.replaceAll(placeholder, imgTag);
                 updatedContent = updatedContent.replaceAll(placeholderAlt, imgTag);
             } else {
-                const textTag = `<div style="color: green; text-align: center; font-weight: bold; font-size: 0.8rem; padding: 5px;">✓ Đã ký duyệt<br/><span style="font-size: 0.7rem; color: gray;">${app.employee?.full_name || ''}</span></div>`;
+                const textTag = `<span style="color: green; font-weight: bold; font-size: 0.8rem; display: inline-block; vertical-align: middle; margin: 0 5px;">✓ Đã ký</span>`;
                 updatedContent = updatedContent.replaceAll(placeholder, textTag);
                 updatedContent = updatedContent.replaceAll(placeholderAlt, textTag);
             }
         } else {
-            const spacer = `<div style="height: 45px; color: #aaa; font-size: 0.75rem; text-align: center; font-style: italic; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center; border-radius: 4px; padding: 2px; background: rgba(0,0,0,0.01);">Chờ ${app.employee?.full_name || 'ký'}</div>`;
-            updatedContent = updatedContent.replaceAll(placeholder, spacer);
-            updatedContent = updatedContent.replaceAll(placeholderAlt, spacer);
+            updatedContent = updatedContent.replaceAll(placeholder, '');
+            updatedContent = updatedContent.replaceAll(placeholderAlt, '');
         }
     });
     

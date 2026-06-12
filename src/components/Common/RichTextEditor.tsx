@@ -16,7 +16,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     value, 
     onChange, 
     placeholder = 'Nhập nội dung...', 
-    minHeight = '300px' 
+    minHeight = '150px' 
 }) => {
     const editorRef = useRef<HTMLDivElement>(null);
 
