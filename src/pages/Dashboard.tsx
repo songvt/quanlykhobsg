@@ -102,7 +102,7 @@ const modulesData = [
     { id: 'outbound', title: 'Xuất kho', desc: 'Xuất kho vật tư cho kỹ thuật.', color: '#ea580c', icon: <Truck />, path: '/outbound' },
     { id: 'orders', title: 'Đặt hàng', desc: 'Đăng ký phê duyệt đơn.', color: '#f97316', icon: <ShoppingCart />, path: '/orders' },
     { id: 'audit', title: 'Kiểm kê kho', desc: 'Đối soát tồn kho thực tế.', color: '#4f46e5', icon: <CheckSquare />, path: '/audit' },
-    { id: 'qr-generator', title: 'Tạo QR code', desc: 'In mã QR sản phẩm.', color: '#2563eb', icon: <QrCode />, path: '/qr-generator' },
+    { id: 'qr-generator', title: 'Mã QR Code', desc: 'In mã QR sản phẩm.', color: '#2563eb', icon: <QrCode />, path: '/qr-generator' },
     { id: 'action-history', title: 'Lịch sử', desc: 'Nhật ký hệ thống.', color: '#4b5563', icon: <History />, path: '/action-history' },
     { id: 'admin-hr', title: 'Hành chính', desc: 'Quản lý nhân viên, chấm công.', color: '#059669', icon: <Users />, path: '/admin-hr' },
     { id: 'trinhky', title: 'Trình ký nội bộ', desc: 'Tạo và luân chuyển hồ sơ trình ký điện tử.', color: '#EF4444', icon: <FileSignature />, path: '/trinh-ky/list' }

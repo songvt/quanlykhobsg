@@ -4,11 +4,14 @@ import {
     Paper, Stack, Grid, MenuItem, CircularProgress, Typography
 } from '@mui/material';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
+import CloseIcon from '@mui/icons-material/Close';
+import SaveIcon from '@mui/icons-material/Save';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState, AppDispatch } from '../../store';
 import { addInboundTransaction, importInboundTransactions, fetchTransactionsForce } from '../../store/slices/transactionsSlice';
 import { selectProductStock, selectStockMap } from '../../store/slices/inventorySlice';
 import { useNotification } from '../../contexts/NotificationContext';
+import { AppButton } from '../Common/AppButton';
 import { parseSerialInput, filterNewSerials } from '../../utils/serialParser';
 import { playBeep } from '../../utils/audio';
 import { useScanDetection } from '../../hooks/useScanDetection';
@@ -281,20 +284,21 @@ const InboundForm: React.FC<InboundFormProps> = ({ onSuccess }) => {
 
                 <Grid size={{ xs: 12 }}>
                     <Box display="flex" justifyContent="flex-end" gap={2} mt={2}>
-                        <Button
-                            variant="outlined" color="inherit" size="large" onClick={resetForm}
-                            sx={{ minWidth: 120, py: 1.2, borderRadius: 3, fontWeight: 700, textTransform: 'none' }}
-                        >
-                            Hủy
-                        </Button>
-                        <Button
-                            variant="contained" color="primary" size="large" onClick={handleSave}
+                        <AppButton
+                            variant="outlined"
+                            color="inherit"
+                            onClick={resetForm}
+                            icon={<CloseIcon />}
+                            title="Hủy nhập kho"
+                        />
+                        <AppButton
+                            variant="contained"
+                            color="primary"
+                            onClick={handleSave}
                             disabled={isSaving}
-                            startIcon={isSaving ? <CircularProgress size={18} color="inherit" /> : undefined}
-                            sx={{ minWidth: 150, py: 1.2, borderRadius: 3, fontWeight: 700, textTransform: 'none', boxShadow: 'none' }}
-                        >
-                            {isSaving ? 'Đang lưu...' : 'Nhập Kho'}
-                        </Button>
+                            icon={isSaving ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
+                            title="Xác nhận Nhập Kho"
+                        />
                     </Box>
                 </Grid>
             </Grid>

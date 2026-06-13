@@ -29,6 +29,7 @@ import { useTabVisibility } from '../../hooks/useTabVisibility';
 import VoiceSearchButton from '../../components/VoiceSearchButton';
 import PageHeader from '../../components/Common/PageHeader';
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
+import { AppButton } from '../../components/Common/AppButton';
 
 const ProductList = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -223,63 +224,36 @@ const ProductList = () => {
                         {canManage && (
                             <>
                                 {selectedIds.length > 0 && (
-                                    <Button
+                                    <AppButton
                                         variant="contained"
                                         color="error"
-                                        size="small"
-                                        startIcon={<DeleteIcon />}
+                                        icon={<DeleteIcon />}
                                         onClick={handleBulkDelete}
-                                        sx={{ 
-                                            borderRadius: '12px', 
-                                            textTransform: 'none', 
-                                            fontWeight: 700, 
-                                            px: 2, 
-                                            py: 1,
-                                            boxShadow: '0 8px 20px -6px rgba(239, 68, 68, 0.4)'
-                                        }}
-                                    >
-                                        Xóa ({selectedIds.length})
-                                    </Button>
+                                        title={`Xóa (${selectedIds.length})`}
+                                    />
                                 )}
-                                <Button
-                                    variant="contained"
-                                    size="small"
-                                    startIcon={<FileDownloadIcon />}
+                                <AppButton
+                                    variant="outlined"
                                     onClick={generateProductTemplate}
+                                    icon={<FileDownloadIcon />}
+                                    title="Tải mẫu Excel"
                                     sx={{ 
-                                        borderRadius: '12px', 
-                                        textTransform: 'none', 
-                                        fontWeight: 700, 
-                                        bgcolor: 'rgba(255, 255, 255, 0.2)',
                                         color: 'white',
-                                        border: '1px solid rgba(255,255,255,0.3)',
-                                        backdropFilter: 'blur(5px)',
-                                        px: 2,
-                                        py: 1,
-                                        '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.3)' }
+                                        borderColor: 'rgba(255,255,255,0.4)',
+                                        '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.15)', borderColor: 'white' }
                                     }}
-                                >
-                                    Tải mẫu
-                                </Button>
-                                <Button
-                                    variant="contained"
-                                    size="small"
+                                />
+                                <AppButton
+                                    variant="outlined"
                                     component="label"
-                                    startIcon={<UploadFileIcon />}
+                                    icon={<UploadFileIcon />}
+                                    title="Nhập Excel"
                                     sx={{ 
-                                        borderRadius: '12px', 
-                                        textTransform: 'none', 
-                                        fontWeight: 700, 
-                                        bgcolor: 'rgba(255, 255, 255, 0.2)',
                                         color: 'white',
-                                        border: '1px solid rgba(255,255,255,0.3)',
-                                        backdropFilter: 'blur(5px)',
-                                        px: 2,
-                                        py: 1,
-                                        '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.3)' }
+                                        borderColor: 'rgba(255,255,255,0.4)',
+                                        '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.15)', borderColor: 'white' }
                                     }}
                                 >
-                                    Nhập Excel
                                     <input
                                         type="file"
                                         hidden
@@ -318,27 +292,20 @@ const ProductList = () => {
                                             }
                                         }}
                                     />
-                                </Button>
+                                </AppButton>
                             </>
                         )}
-                        <Button
+                        <AppButton
                             variant="contained"
-                            size="small"
-                            startIcon={<AddIcon />}
+                            icon={<AddIcon />}
                             onClick={handleOpenAdd}
+                            title="Thêm mới"
                             sx={{ 
-                                px: 2.5, 
-                                py: 1.2, 
-                                borderRadius: '12px', 
-                                whiteSpace: 'nowrap', 
-                                fontWeight: 800,
                                 bgcolor: '#ffffff',
                                 color: '#2563eb',
-                                '&:hover': { bgcolor: '#f8fafc', transform: 'translateY(-1px)' }
+                                '&:hover': { bgcolor: '#f8fafc' }
                             }}
-                        >
-                            Thêm mới
-                        </Button>
+                        />
                     </>
                 }
             />

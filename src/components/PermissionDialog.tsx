@@ -36,10 +36,10 @@ const PERMISSION_GROUPS = [
         ]
     },
     {
-        title: 'Tạo QR Code',
+        title: 'Mã QR Code',
         permissions: [
-            { code: 'qr.view', label: 'Tạo QR Code (Chuẩn)' },
-            { code: 'qr_hcm.view', label: 'Tạo QR Code (HCM)' },
+            { code: 'qr.view', label: 'Mã QR Code' },
+            { code: 'qr_hcm.view', label: 'Mã QR Code HCM' },
         ]
     },
     {

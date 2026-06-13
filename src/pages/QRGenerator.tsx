@@ -3,7 +3,7 @@ import {
     Box, Typography, Paper, Button, TextField, Grid, Stack,
     Chip, IconButton, Alert, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, CircularProgress,
-    Tabs, Tab, Card, CardContent, Divider, Tooltip, Zoom
+    Tabs, Tab, Card, CardContent, Divider, Tooltip, Zoom, TablePagination
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import { QRCodeSVG } from 'qrcode.react';
@@ -13,6 +13,8 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
 import DownloadIcon from '@mui/icons-material/Download';
 import PreviewIcon from '@mui/icons-material/Preview';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import InventoryIcon from '@mui/icons-material/Inventory2Outlined';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
@@ -32,6 +34,7 @@ import html2canvas from 'html2canvas';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store';
 import { GoogleSheetService } from '../services/GoogleSheetService';
+import { AppButton } from '../components/Common/AppButton';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface QRDataRow {
@@ -257,6 +260,8 @@ const QRGenerator = () => {
     const [manualSerials, setManualSerials] = useState('');
     const [docTitle, setDocTitle] = useState('THU HỒI');
     const [showPreview, setShowPreview] = useState(false);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const [isDragOver, setIsDragOver] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
     const [isPrinting, setIsPrinting] = useState(false);
@@ -568,7 +573,7 @@ const QRGenerator = () => {
                                         fontSize: { xs: '1.75rem', md: '2.25rem' }
                                     }}
                                 >
-                                    TẠO MÃ QR CODE CHUẨN
+                                    MÃ QR CODE
                                 </Typography>
                                 <Typography 
                                     variant="body1" 
@@ -586,50 +591,34 @@ const QRGenerator = () => {
                     </Grid>
                     <Grid size={{ xs: 12, md: 5 }} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', md: 'flex-end' } }}>
                         <Stack direction="row" spacing={1.5} flexWrap="wrap" gap={1}>
-                            <Button 
+                            <AppButton 
                                 variant="contained" 
-                                startIcon={<DownloadIcon />} 
                                 onClick={downloadTemplate}
+                                icon={<DownloadIcon />}
+                                title="File Mẫu Chuẩn"
                                 sx={{ 
-                                    borderRadius: '12px', 
-                                    textTransform: 'none', 
-                                    fontWeight: 700,
                                     bgcolor: 'rgba(255, 255, 255, 0.2)',
                                     color: 'white',
                                     border: '1px solid rgba(255,255,255,0.3)',
                                     backdropFilter: 'blur(5px)',
-                                    px: 2.5,
-                                    py: 1,
                                     '&:hover': { 
                                         bgcolor: 'rgba(255, 255, 255, 0.35)',
                                         border: '1px solid rgba(255,255,255,0.5)',
-                                        transform: 'translateY(-2px)'
                                     } 
                                 }}
-                            >
-                                File Mẫu Chuẩn
-                            </Button>
+                            />
                             
                             {dataRows.length > 0 && (
-                                <Button 
+                                <AppButton 
                                     variant="contained" 
                                     color="error" 
-                                    startIcon={<DeleteOutlineIcon />}
                                     onClick={() => { setDataRows([]); success('Đã xóa toàn bộ dữ liệu'); }}
+                                    icon={<DeleteOutlineIcon />}
+                                    title="Xóa Toàn Bộ"
                                     sx={{ 
-                                        borderRadius: '12px', 
-                                        textTransform: 'none', 
-                                        fontWeight: 700,
-                                        px: 2.5,
-                                        py: 1,
                                         boxShadow: '0 8px 20px -6px rgba(239, 68, 68, 0.5)',
-                                        '&:hover': {
-                                            transform: 'translateY(-2px)'
-                                        }
                                     }}
-                                >
-                                    Xóa Toàn Bộ
-                                </Button>
+                                />
                             )}
                         </Stack>
                     </Grid>
@@ -747,8 +736,8 @@ const QRGenerator = () => {
                                     '& .MuiTabs-indicator': { height: '3px', borderRadius: '3px' }
                                 }}
                             >
-                                <Tab icon={<UploadFileIcon />} iconPosition="start" label="Import File Excel" />
-                                <Tab icon={<KeyboardIcon />} iconPosition="start" label="Nhập Thủ Công / Quét" />
+                                <Tab icon={<UploadFileIcon />} iconPosition="start" label="Tạo QR hàng loạt" />
+                                <Tab icon={<KeyboardIcon />} iconPosition="start" label="Tạo QR đơn lẻ" />
                             </Tabs>
                         </Box>
 
@@ -868,27 +857,22 @@ const QRGenerator = () => {
                                                 InputProps={{ sx: { borderRadius: '12px' } }}
                                             />
                                         </Grid>
-                                        <Grid size={{ xs: 12 }}>
-                                            <Button 
-                                                fullWidth 
+                                        <Grid size={{ xs: 12 }} sx={{ display: 'flex', justifyContent: 'center' }}>
+                                            <AppButton 
                                                 variant="contained" 
-                                                startIcon={<AddCircleOutlineIcon />}
                                                 onClick={handleManualAdd}
+                                                icon={<AddCircleOutlineIcon />}
+                                                title="Thêm Vào Danh Sách Đợi"
                                                 sx={{ 
                                                     background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)',
                                                     borderRadius: '12px', 
-                                                    py: 1.5, 
-                                                    fontWeight: 700,
-                                                    fontSize: '0.95rem',
                                                     boxShadow: '0 8px 20px -6px rgba(37, 99, 235, 0.4)',
                                                     '&:hover': { 
                                                         background: 'linear-gradient(135deg, #1d4ed8 0%, #1d4ed8 100%)',
                                                         transform: 'translateY(-1px)'
                                                     } 
                                                 }}
-                                            >
-                                                Thêm Vào Danh Sách Đợi
-                                            </Button>
+                                            />
                                         </Grid>
                                     </Grid>
                                 </Box>
@@ -1057,21 +1041,23 @@ const QRGenerator = () => {
                             <Chip label={`${dataRows.length} serials`} size="small" color="primary" sx={{ fontWeight: 700 }} />
                         </Stack>
                         
-                        <Button 
-                            size="small" 
+                        <AppButton 
                             variant="outlined" 
-                            startIcon={<PreviewIcon />}
                             onClick={() => setShowPreview(v => !v)} 
-                            color={showPreview ? "primary" : "info"}
-                            sx={{ borderRadius: '8px', textTransform: 'none', fontWeight: 700 }}
-                        >
-                            {showPreview ? 'Thu Gọn Bảng' : 'Hiển Thị Bảng Chi Tiết'}
-                        </Button>
+                            icon={showPreview ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                            title={showPreview ? 'Thu Gọn Bảng' : 'Hiển Thị Bảng Chi Tiết'}
+                            sx={{ 
+                                borderRadius: '8px', 
+                                borderColor: '#cbd5e1',
+                                color: '#1e293b',
+                                '&:hover': { bgcolor: '#f1f5f9', borderColor: '#94a3b8' } 
+                            }}
+                        />
                     </Box>
 
                     {showPreview && (
                         <Box>
-                            <TableContainer sx={{ maxHeight: 350 }}>
+                            <TableContainer sx={{ maxHeight: 350, borderTop: '1px solid #e2e8f0' }}>
                                 <Table size="small" stickyHeader>
                                     <TableHead>
                                         <TableRow>
@@ -1083,40 +1069,53 @@ const QRGenerator = () => {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {dataRows.slice(0, 200).map((row, idx) => (
-                                            <TableRow key={row.serial_code} hover sx={{ '&:hover': { bgcolor: '#f8fafc' } }}>
-                                                <TableCell sx={{ color: '#94a3b8', fontSize: '0.8rem', fontWeight: 600 }}>{idx + 1}</TableCell>
-                                                <TableCell sx={{ fontFamily: 'monospace', fontWeight: 700, color: '#1e293b' }}>{row.serial_code}</TableCell>
-                                                <TableCell sx={{ fontWeight: 600 }}>{row.Number_Thung}</TableCell>
-                                                <TableCell>
-                                                    <Chip 
-                                                        label={row.District} 
-                                                        size="small" 
-                                                        sx={{ 
-                                                            bgcolor: 'rgba(37, 99, 235, 0.06)', 
-                                                            color: '#2563eb', 
-                                                            fontWeight: 700,
-                                                            borderRadius: '6px'
-                                                        }} 
-                                                    />
-                                                </TableCell>
-                                                <TableCell sx={{ textAlign: 'center' }}>
-                                                    <Tooltip title="Xóa serial này khỏi danh sách chờ in">
-                                                        <IconButton size="small" color="error" onClick={() => removeSerial(row.serial_code)}>
-                                                            <DeleteOutlineIcon fontSize="small" />
-                                                        </IconButton>
-                                                    </Tooltip>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
+                                        {(() => {
+                                            const currentPage = Math.min(page, Math.max(0, Math.ceil(dataRows.length / rowsPerPage) - 1));
+                                            return dataRows.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage).map((row, idx) => (
+                                                <TableRow key={row.serial_code} hover sx={{ '&:hover': { bgcolor: '#f8fafc' } }}>
+                                                    <TableCell sx={{ color: '#94a3b8', fontSize: '0.8rem', fontWeight: 600 }}>{currentPage * rowsPerPage + idx + 1}</TableCell>
+                                                    <TableCell sx={{ fontFamily: 'monospace', fontWeight: 700, color: '#1e293b' }}>{row.serial_code}</TableCell>
+                                                    <TableCell sx={{ fontWeight: 600 }}>{row.Number_Thung}</TableCell>
+                                                    <TableCell>
+                                                        <Chip 
+                                                            label={row.District} 
+                                                            size="small" 
+                                                            sx={{ 
+                                                                bgcolor: 'rgba(37, 99, 235, 0.06)', 
+                                                                color: '#2563eb', 
+                                                                fontWeight: 700,
+                                                                borderRadius: '6px'
+                                                            }} 
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell sx={{ textAlign: 'center' }}>
+                                                        <Tooltip title="Xóa serial này khỏi danh sách chờ in">
+                                                            <IconButton size="small" color="error" onClick={() => removeSerial(row.serial_code)}>
+                                                                <DeleteOutlineIcon fontSize="small" />
+                                                            </IconButton>
+                                                        </Tooltip>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ));
+                                        })()}
                                     </TableBody>
                                 </Table>
                             </TableContainer>
-                            {dataRows.length > 200 && (
-                                <Alert severity="info" sx={{ borderRadius: 0, border: 'none', borderTop: '1px solid #e2e8f0', fontWeight: 500 }}>
-                                    Hệ thống đang hiển thị 200/{dataRows.length} serials để tối ưu tốc độ trình duyệt. Toàn bộ {dataRows.length} serials vẫn được dán nhãn đầy đủ khi in hoặc xuất PDF.
-                                </Alert>
-                            )}
+                            <TablePagination
+                                rowsPerPageOptions={[10, 25, 50, 100]}
+                                component="div"
+                                count={dataRows.length}
+                                rowsPerPage={rowsPerPage}
+                                page={Math.min(page, Math.max(0, Math.ceil(dataRows.length / rowsPerPage) - 1))}
+                                onPageChange={(e, newPage) => setPage(newPage)}
+                                onRowsPerPageChange={(e) => {
+                                    setRowsPerPage(parseInt(e.target.value, 10));
+                                    setPage(0);
+                                }}
+                                labelRowsPerPage="Số dòng mỗi trang:"
+                                labelDisplayedRows={({ from, to, count }) => `${from}-${to} trong số ${count}`}
+                                sx={{ borderTop: '1px solid #e2e8f0', bgcolor: '#f8fafc' }}
+                            />
                         </Box>
                     )}
                 </Paper>
@@ -1184,45 +1183,37 @@ const QRGenerator = () => {
                                 }} 
                             />
                             
-                            <Button 
+                            <AppButton 
                                 variant="contained" 
-                                startIcon={<PictureAsPdfIcon />}
                                 onClick={handleExportPDF} 
                                 disabled={isExporting}
+                                icon={isExporting ? <CircularProgress size={18} color="inherit" /> : <PictureAsPdfIcon />}
+                                title={isExporting ? 'Đang tạo PDF...' : 'Xuất File PDF'}
                                 sx={{ 
                                     bgcolor: '#d97706', 
                                     borderRadius: '10px',
-                                    py: 1,
-                                    px: 2.5,
-                                    textTransform: 'none',
-                                    fontWeight: 700,
+                                    color: 'white',
                                     '&:hover': { bgcolor: '#b45309', transform: 'translateY(-1px)' } 
                                 }}
-                            >
-                                {isExporting ? 'Đang tạo PDF...' : 'Xuất File PDF'}
-                            </Button>
+                            />
 
-                            <Button 
+                            <AppButton 
                                 variant="contained"
-                                startIcon={isPrinting ? <CircularProgress size={18} color="inherit" /> : <PrintIcon />}
                                 onClick={handlePrint} 
                                 disabled={isExporting || isPrinting}
+                                icon={isPrinting ? <CircularProgress size={18} color="inherit" /> : <PrintIcon />}
+                                title={isPrinting ? 'Đang chuẩn bị...' : `In Ngay (${totalQRCodes} QR)`}
                                 sx={{ 
                                     background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)',
                                     borderRadius: '10px', 
-                                    py: 1,
-                                    px: 2.5,
-                                    textTransform: 'none', 
-                                    fontWeight: 800,
+                                    color: 'white',
                                     boxShadow: '0 8px 16px rgba(37, 99, 235, 0.25)',
                                     '&:hover': { 
                                         background: 'linear-gradient(135deg, #1d4ed8 0%, #1d4ed8 100%)',
                                         transform: 'translateY(-1px)' 
                                     } 
                                 }}
-                            >
-                                {isPrinting ? 'Đang chuẩn bị...' : `In Ngay (${totalQRCodes} QR)`}
-                            </Button>
+                            />
                         </Stack>
                     </Paper>
 

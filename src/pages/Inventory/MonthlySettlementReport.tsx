@@ -23,6 +23,7 @@ import { GoogleSheetService } from '../../services/GoogleSheetService';
 import { readExcelFile } from '../../utils/excelUtils';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import * as ExcelJS from 'exceljs';
+import { AppButton } from '../../components/Common/AppButton';
 import { saveAs } from 'file-saver';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -930,29 +931,27 @@ const MonthlySettlementReport: React.FC = () => {
                         </Select>
                     </FormControl>
 
-                    <Button 
+                    <AppButton 
                         variant="outlined" 
-                        startIcon={isLoading ? <CircularProgress size={16} /> : <HistoryIcon />} 
+                        icon={isLoading ? <CircularProgress size={20} /> : <HistoryIcon />} 
                         onClick={() => loadPreviousBalances()}
                         disabled={isLoading}
-                    >
-                        Lấy tồn đầu kỳ
-                    </Button>
+                        title="Lấy tồn đầu kỳ"
+                    />
 
-                    <Button 
+                    <AppButton 
                         variant="contained" 
                         color="success"
-                        startIcon={isSaving ? <CircularProgress size={16} color="inherit" /> : <CheckCircleIcon />} 
+                        icon={isSaving ? <CircularProgress size={20} color="inherit" /> : <CheckCircleIcon />} 
                         onClick={handleSaveSettlement}
                         disabled={isSaving || settlementRows.length === 0}
-                    >
-                        Chốt & Lưu tháng
-                    </Button>
+                        title="Chốt & Lưu tháng"
+                    />
 
-                    <Button variant="outlined" color="error" startIcon={<DeleteSweepIcon />} onClick={handleClearData} disabled={isLoading}>Xóa dữ liệu</Button>
-                    <Button variant="outlined" color="success" startIcon={<FileDownloadIcon />} onClick={handleExportExcel}>Xuất Excel</Button>
-                    <Button variant="outlined" color="primary" startIcon={<FileDownloadIcon />} onClick={handleExportPDF}>Xuất PDF</Button>
-                    <Button variant="contained" startIcon={<PrintIcon />} onClick={handlePrint}>In Báo Cáo (A4)</Button>
+                    <AppButton variant="outlined" color="error" icon={<DeleteSweepIcon />} onClick={handleClearData} disabled={isLoading} title="Xóa dữ liệu" />
+                    <AppButton variant="outlined" color="success" icon={<FileDownloadIcon />} onClick={handleExportExcel} title="Xuất Excel" />
+                    <AppButton variant="outlined" color="primary" icon={<FileDownloadIcon />} onClick={handleExportPDF} title="Xuất PDF" />
+                    <AppButton variant="contained" icon={<PrintIcon />} onClick={handlePrint} title="In Báo Cáo (A4)" />
                 </Box>
             </Paper>
 

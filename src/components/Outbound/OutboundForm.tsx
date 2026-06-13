@@ -4,11 +4,14 @@ import {
     Paper, Stack, Grid, MenuItem, CircularProgress
 } from '@mui/material';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
+import CloseIcon from '@mui/icons-material/Close';
+import SaveIcon from '@mui/icons-material/Save';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState, AppDispatch } from '../../store';
 import { addOutboundTransaction, fetchTransactionsForce, importOutboundTransactions } from '../../store/slices/transactionsSlice';
 import { selectProductStock, selectDetailedStock } from '../../store/slices/inventorySlice';
 import { useNotification } from '../../contexts/NotificationContext';
+import { AppButton } from '../Common/AppButton';
 import { parseSerialInput, filterNewSerials } from '../../utils/serialParser';
 import { playBeep } from '../../utils/audio';
 import { useScanDetection } from '../../hooks/useScanDetection';
@@ -263,12 +266,14 @@ const OutboundForm: React.FC<OutboundFormProps> = ({ onSuccess }) => {
 
                 <Grid size={{ xs: 12 }}>
                     <Box display="flex" justifyContent="flex-end">
-                        <Button
-                            variant="contained" size="large" onClick={handleSave} disabled={isSaving}
-                            startIcon={isSaving && <CircularProgress size={20} />}
-                        >
-                            {isSaving ? 'Đang xử lý...' : 'Xác Nhận Xuất Kho'}
-                        </Button>
+                        <AppButton
+                            variant="contained"
+                            color="primary"
+                            onClick={handleSave}
+                            disabled={isSaving}
+                            icon={isSaving ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
+                            title="Xác Nhận Xuất Kho"
+                        />
                     </Box>
                 </Grid>
             </Grid>

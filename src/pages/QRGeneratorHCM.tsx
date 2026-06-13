@@ -3,7 +3,7 @@ import {
     Box, Typography, Paper, Button, TextField, Grid, Stack,
     Chip, IconButton, Alert, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, CircularProgress,
-    Tabs, Tab, Card, CardContent, Tooltip, Zoom
+    Tabs, Tab, Card, CardContent, Tooltip, Zoom, TablePagination
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import { QRCodeSVG } from 'qrcode.react';
@@ -13,6 +13,8 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
 import DownloadIcon from '@mui/icons-material/Download';
 import PreviewIcon from '@mui/icons-material/Preview';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import InventoryIcon from '@mui/icons-material/Inventory2Outlined';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
@@ -33,6 +35,7 @@ import html2canvas from 'html2canvas';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store';
 import { GoogleSheetService } from '../services/GoogleSheetService';
+import { AppButton } from '../components/Common/AppButton';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface QRDataRow {
@@ -125,6 +128,8 @@ const QRGeneratorHCM = () => {
     const [manualSerials, setManualSerials] = useState('');
 
     const [showPreview, setShowPreview] = useState(false);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const [isDragOver, setIsDragOver] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
     const [isPrinting, setIsPrinting] = useState(false);
@@ -157,12 +162,12 @@ const QRGeneratorHCM = () => {
         .label-wrapper { 
             width: 270mm; 
             height: 730px !important; 
-            border: 3px solid #000000 !important; 
-            background: #000000 !important;
+            border: none !important; 
+            background: #ffffff !important;
             display: grid;
             grid-template-columns: 75mm 125mm 70mm;
             grid-template-rows: 110px 124px 124px 180px 180px;
-            gap: 3px !important;
+            gap: 0px !important;
             box-sizing: border-box;
             page-break-inside: avoid;
             position: relative;
@@ -174,7 +179,9 @@ const QRGeneratorHCM = () => {
         
         @media print {
             .page-break { page-break-after: always; height: 0; border: none; margin: 0; }
-            .label-wrapper { border-color: black !important; background: black !important; }
+            .label-wrapper { 
+                background: white !important; 
+            }
         }
         
         .grid-cell {
@@ -187,6 +194,8 @@ const QRGeneratorHCM = () => {
             overflow: hidden;
             text-align: center;
             color: black !important;
+            border-bottom: 3px solid #000000 !important;
+            border-right: 3px solid #000000 !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
@@ -543,7 +552,7 @@ const QRGeneratorHCM = () => {
                                         fontSize: { xs: '1.65rem', md: '2.1rem' }
                                     }}
                                 >
-                                    TẠO QR CODE CHI NHÁNH HCM
+                                    MÃ QR CODE HCM
                                 </Typography>
                                 <Typography 
                                     variant="body2" 
@@ -723,8 +732,8 @@ const QRGeneratorHCM = () => {
                                     '& .MuiTabs-indicator': { height: '3px', borderRadius: '3px', bgcolor: '#0f172a' }
                                 }}
                             >
-                                <Tab icon={<UploadFileIcon />} iconPosition="start" label="Import File Excel HCM" />
-                                <Tab icon={<KeyboardIcon />} iconPosition="start" label="Nhập Tay Thủ Công" />
+                                <Tab icon={<UploadFileIcon />} iconPosition="start" label="Tạo QR hàng loạt" />
+                                <Tab icon={<KeyboardIcon />} iconPosition="start" label="Tạo QR đơn lẻ" />
                             </Tabs>
                         </Box>
 
@@ -856,22 +865,19 @@ const QRGeneratorHCM = () => {
                                                 InputProps={{ sx: { borderRadius: '12px' } }}
                                             />
                                         </Grid>
-                                        <Grid size={{ xs: 12 }}>
-                                            <Button 
-                                                fullWidth 
+                                        <Grid size={{ xs: 12 }} sx={{ display: 'flex', justifyContent: 'center' }}>
+                                            <AppButton 
                                                 variant="contained" 
                                                 onClick={handleManualAdd} 
+                                                icon={<AddCircleOutlineIcon />}
+                                                title="Thêm Tem Chờ In"
                                                 sx={{ 
                                                     bgcolor: '#0f172a',
                                                     borderRadius: '12px', 
-                                                    py: 1.3, 
-                                                    fontWeight: 800,
                                                     boxShadow: '0 8px 16px rgba(15, 23, 42, 0.2)',
                                                     '&:hover': { bgcolor: '#1e293b', transform: 'translateY(-1px)' }
                                                 }}
-                                            >
-                                                Thêm Tem Chờ In
-                                            </Button>
+                                            />
                                         </Grid>
                                     </Grid>
                                 </Box>
@@ -970,49 +976,47 @@ const QRGeneratorHCM = () => {
                         </Box>
                         
                         <Stack direction="row" spacing={1.5} flexWrap="wrap" gap={1}>
-                            <Button 
+                            <AppButton 
                                 variant="outlined" 
-                                startIcon={<PreviewIcon />} 
                                 onClick={() => setShowPreview(v => !v)}
-                                sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 700, px: 2 }}
-                            >
-                                {showPreview ? 'Ẩn Bảng Serials' : 'Hiển Thị Bảng Serials'}
-                            </Button>
+                                icon={showPreview ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                                title={showPreview ? 'Ẩn Bảng Serials' : 'Hiển Thị Bảng Serials'}
+                                sx={{ 
+                                    borderRadius: '10px', 
+                                    borderColor: '#cbd5e1',
+                                    color: '#1e293b',
+                                    '&:hover': { bgcolor: '#f1f5f9', borderColor: '#94a3b8' } 
+                                }}
+                            />
 
-                            <Button 
+                            <AppButton 
                                 variant="contained" 
-                                startIcon={<PictureAsPdfIcon />} 
                                 onClick={handleExportPDF} 
                                 disabled={isExporting} 
+                                icon={<PictureAsPdfIcon />}
+                                title="Xuất File PDF"
                                 sx={{ 
                                     bgcolor: '#d97706',
                                     borderRadius: '10px',
-                                    fontWeight: 700,
-                                    textTransform: 'none',
-                                    px: 2.5,
+                                    color: 'white',
                                     '&:hover': { bgcolor: '#b45309', transform: 'translateY(-1px)' }
                                 }}
-                            >
-                                Xuất File PDF
-                            </Button>
+                            />
                             
-                            <Button 
+                            <AppButton 
                                 variant="contained" 
-                                startIcon={<PrintIcon />} 
                                 onClick={handlePrint} 
                                 disabled={isPrinting} 
+                                icon={<PrintIcon />}
+                                title="In Tem Ngay"
                                 sx={{ 
                                     bgcolor: '#0f172a',
                                     borderRadius: '10px',
-                                    fontWeight: 800,
-                                    textTransform: 'none',
-                                    px: 2.5,
+                                    color: 'white',
                                     boxShadow: '0 8px 16px rgba(15, 23, 42, 0.25)',
                                     '&:hover': { bgcolor: '#1e293b', transform: 'translateY(-1px)' }
                                 }}
-                            >
-                                In Tem Ngay
-                            </Button>
+                            />
                         </Stack>
                     </Paper>
                     
@@ -1084,53 +1088,53 @@ const QRGeneratorHCM = () => {
                                             return (
                                                 <>
                                                     {/* Row 1: Header */}
-                                                    <div className="grid-cell cell-header">
+                                                    <div className="grid-cell cell-header" style={{ gridRow: 1, gridColumn: '1 / span 3', borderTop: '3px solid black', borderLeft: '3px solid black' }}>
                                                         <SvgFitText text={group.tieu_de || 'KHIRM-2026'} fontSizePt={110} maxWidthPt={765} />
                                                     </div>
  
                                                     {/* Row 2: THÙNG */}
-                                                    <div className="grid-cell cell-label" style={{ fontSize: '38pt', fontWeight: 900, fontFamily: '"Times New Roman", Times, serif' }}>
+                                                    <div className="grid-cell cell-label" style={{ gridRow: 2, gridColumn: 1, borderLeft: '3px solid black', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '33pt', fontFamily: '"Times New Roman", Times, serif' }}>
                                                         THÙNG
                                                     </div>
-                                                    <div className="grid-cell cell-value">
+                                                    <div className="grid-cell cell-value" style={{ gridRow: 2, gridColumn: 2 }}>
                                                         <ValueCellContent text={String(group.thung)} />
                                                     </div>
-                                                    <div className="grid-cell cell-qr" style={{ gridRow: group.qrChunks.length > 1 ? 'span 2' : 'span 4' }}>
+                                                    <div className="grid-cell cell-qr" style={{ gridRow: group.qrChunks.length > 1 ? '2 / span 2' : '2 / span 4', gridColumn: 3 }}>
                                                         {group.qrChunks[0] && (
                                                             <div className="qr-container">
-                                                                <QRCodeSVG value={group.qrChunks[0].qrValue} size={300} level="M" includeMargin={false} />
+                                                                <QRCodeSVG value={group.qrChunks[0].qrValue} size={315} level="M" includeMargin={false} />
                                                             </div>
                                                         )}
                                                     </div>
  
                                                     {/* Row 3: SỐ LƯỢNG */}
-                                                    <div className="grid-cell cell-label" style={{ fontSize: '38pt', fontWeight: 900, fontFamily: '"Times New Roman", Times, serif' }}>
+                                                    <div className="grid-cell cell-label" style={{ gridRow: 3, gridColumn: 1, borderLeft: '3px solid black', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '33pt', fontFamily: '"Times New Roman", Times, serif' }}>
                                                         SỐ LƯỢNG
                                                     </div>
-                                                    <div className="grid-cell cell-value">
+                                                    <div className="grid-cell cell-value" style={{ gridRow: 3, gridColumn: 2 }}>
                                                         <ValueCellContent text={String(group.totalQuantity)} />
                                                     </div>
  
                                                     {/* Row 4: THIẾT BỊ */}
-                                                    <div className="grid-cell cell-label" style={{ fontSize: '38pt', fontWeight: 900, fontFamily: '"Times New Roman", Times, serif' }}>
+                                                    <div className="grid-cell cell-label" style={{ gridRow: 4, gridColumn: 1, borderLeft: '3px solid black', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '33pt', fontFamily: '"Times New Roman", Times, serif' }}>
                                                         THIẾT BỊ
                                                     </div>
-                                                    <div className="grid-cell cell-value">
+                                                    <div className="grid-cell cell-value" style={{ gridRow: 4, gridColumn: 2 }}>
                                                         <ValueCellContent text={String(group.thiet_bi)} />
                                                     </div>
                                                     {group.qrChunks.length > 1 ? (
-                                                        <div className="grid-cell cell-qr" style={{ gridRow: 'span 2' }}>
+                                                        <div className="grid-cell cell-qr" style={{ gridRow: '4 / span 2', gridColumn: 3 }}>
                                                             <div className="qr-container">
-                                                                <QRCodeSVG value={group.qrChunks[1].qrValue} size={300} level="M" includeMargin={false} />
+                                                                <QRCodeSVG value={group.qrChunks[1].qrValue} size={315} level="M" includeMargin={false} />
                                                             </div>
                                                         </div>
                                                     ) : null}
 
                                                     {/* Row 5: TÌNH TRẠNG */}
-                                                    <div className="grid-cell cell-label" style={{ fontSize: '38pt', fontWeight: 900, fontFamily: '"Times New Roman", Times, serif' }}>
+                                                    <div className="grid-cell cell-label" style={{ gridRow: 5, gridColumn: 1, borderLeft: '3px solid black', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '33pt', fontFamily: '"Times New Roman", Times, serif' }}>
                                                         TÌNH TRẠNG
                                                     </div>
-                                                    <div className="grid-cell cell-value">
+                                                    <div className="grid-cell cell-value" style={{ gridRow: 5, gridColumn: 2 }}>
                                                         <ValueCellContent text={String(group.tinh_trang)} />
                                                     </div>
                                                 </>
@@ -1149,7 +1153,7 @@ const QRGeneratorHCM = () => {
             {showPreview && dataRows.length > 0 && (
                 <Box sx={{ mt: 3 }}>
                     <Typography variant="subtitle2" sx={{ color: '#475569', mb: 1, fontWeight: 700 }}>Danh sách chi tiết các dòng chờ tạo tem ({dataRows.length} dòng):</Typography>
-                    <TableContainer component={Paper} sx={{ mb: 3, maxHeight: 350, border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden' }}>
+                    <TableContainer component={Paper} sx={{ mb: 0, border: '1px solid #e2e8f0', borderRadius: '12px 12px 0 0', overflow: 'hidden' }}>
                         <Table size="small" stickyHeader>
                             <TableHead>
                                 <TableRow>
@@ -1161,24 +1165,42 @@ const QRGeneratorHCM = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {dataRows.map((row, idx) => (
-                                    <TableRow key={idx} hover sx={{ '&:hover': { bgcolor: '#f8fafc' } }}>
-                                        <TableCell sx={{ fontWeight: 600 }}>{row.thung}</TableCell>
-                                        <TableCell sx={{ fontWeight: 500 }}>{row.thiet_bi}</TableCell>
-                                        <TableCell sx={{ fontFamily: 'monospace', fontWeight: 700 }}>{row.serial}</TableCell>
-                                        <TableCell>
-                                            <Chip label={row.tinh_trang} size="small" sx={{ fontWeight: 600, bgcolor: '#f1f5f9', color: '#475569', borderRadius: '6px' }} />
-                                        </TableCell>
-                                        <TableCell sx={{ textAlign: 'center' }}>
-                                            <IconButton size="small" color="error" onClick={() => setDataRows(prev => prev.filter((_, i) => i !== idx))}>
-                                                <DeleteOutlineIcon fontSize="small" />
-                                            </IconButton>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
+                                {(() => {
+                                    const currentPage = Math.min(page, Math.max(0, Math.ceil(dataRows.length / rowsPerPage) - 1));
+                                    return dataRows.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage).map((row, idx) => (
+                                        <TableRow key={idx} hover sx={{ '&:hover': { bgcolor: '#f8fafc' } }}>
+                                            <TableCell sx={{ fontWeight: 600 }}>{row.thung}</TableCell>
+                                            <TableCell sx={{ fontWeight: 500 }}>{row.thiet_bi}</TableCell>
+                                            <TableCell sx={{ fontFamily: 'monospace', fontWeight: 700 }}>{row.serial}</TableCell>
+                                            <TableCell>
+                                                <Chip label={row.tinh_trang} size="small" sx={{ fontWeight: 600, bgcolor: '#f1f5f9', color: '#475569', borderRadius: '6px' }} />
+                                            </TableCell>
+                                            <TableCell sx={{ textAlign: 'center' }}>
+                                                <IconButton size="small" color="error" onClick={() => setDataRows(prev => prev.filter((_, i) => i !== (currentPage * rowsPerPage + idx)))}>
+                                                    <DeleteOutlineIcon fontSize="small" />
+                                                </IconButton>
+                                            </TableCell>
+                                        </TableRow>
+                                    ));
+                                })()}
                             </TableBody>
                         </Table>
                     </TableContainer>
+                    <TablePagination
+                        rowsPerPageOptions={[10, 25, 50, 100]}
+                        component={Paper}
+                        count={dataRows.length}
+                        rowsPerPage={rowsPerPage}
+                        page={Math.min(page, Math.max(0, Math.ceil(dataRows.length / rowsPerPage) - 1))}
+                        onPageChange={(e, newPage) => setPage(newPage)}
+                        onRowsPerPageChange={(e) => {
+                            setRowsPerPage(parseInt(e.target.value, 10));
+                            setPage(0);
+                        }}
+                        labelRowsPerPage="Số dòng mỗi trang:"
+                        labelDisplayedRows={({ from, to, count }) => `${from}-${to} trong số ${count}`}
+                        sx={{ borderRadius: '0 0 12px 12px', border: '1px solid #e2e8f0', borderTop: 'none' }}
+                    />
                 </Box>
             )}
         </Box>

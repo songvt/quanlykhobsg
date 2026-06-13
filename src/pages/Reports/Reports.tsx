@@ -32,6 +32,7 @@ import ReturnsReportPreview from '../../components/Reports/ReturnsReportPreview'
 import { formatCurrency, getLocalYYYYMMDD, matchDistrict, formatPhone } from '../../utils/format';
 import { formatDate, parseDate } from '../../utils/dateUtils';
 import PageHeader from '../../components/Common/PageHeader';
+import { AppButton } from '../../components/Common/AppButton';
 
 const Reports = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -993,13 +994,15 @@ const Reports = () => {
                 height: '100%',
                 borderRadius: '16px',
                 display: 'flex',
-                flexDirection: 'column',
+                flexDirection: { xs: 'row', sm: 'column' },
+                alignItems: { xs: 'center', sm: 'stretch' },
                 position: 'relative',
                 overflow: 'hidden',
                 background: '#ffffff',
                 border: '1px solid rgba(226, 232, 240, 0.8)',
                 boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.02)',
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                p: { xs: 2, sm: 0 },
                 '&:hover': {
                     transform: 'translateY(-6px)',
                     boxShadow: hoverShadows[themeColor] || '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
@@ -1010,105 +1013,133 @@ const Reports = () => {
                     }
                 }
             }}>
-                {/* Visual Accent Top Bar */}
+                {/* Visual Accent - vertical line on mobile, top bar on desktop */}
                 <Box sx={{
-                    height: '4px',
-                    width: '100%',
+                    height: { xs: '100%', sm: '4px' },
+                    width: { xs: '4px', sm: '100%' },
+                    position: { xs: 'absolute', sm: 'relative' },
+                    left: 0,
+                    top: 0,
+                    bottom: 0,
                     background: gradients[themeColor] || gradients.primary,
                 }} />
 
-                <CardContent sx={{ flexGrow: 1, p: 3, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                    {/* Category Pill + Icon Row */}
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', mb: 2.5 }}>
-                        <Box 
-                            className="card-icon-container"
-                            sx={{
-                                display: 'inline-flex',
-                                p: 1.5,
-                                borderRadius: '12px',
-                                background: gradients[themeColor] || gradients.primary,
-                                color: '#ffffff',
-                                transition: 'all 0.3s ease',
-                                boxShadow: '0 4px 10px rgba(0,0,0,0.05)'
-                            }}
-                        >
-                            {icon}
-                        </Box>
-                        
-                        <Typography 
-                            variant="caption" 
-                            sx={{
-                                fontWeight: 700,
-                                textTransform: 'uppercase',
-                                letterSpacing: '1px',
-                                px: 1.5,
-                                py: 0.5,
-                                borderRadius: '20px',
-                                bgcolor: pillBg[themeColor] || pillBg.primary,
-                                color: textColors[themeColor] || textColors.primary,
-                                fontSize: '0.7rem'
-                            }}
-                        >
-                            {category}
-                        </Typography>
+                <Box sx={{ 
+                    display: 'flex', 
+                    flexDirection: { xs: 'row', sm: 'column' }, 
+                    width: '100%',
+                    pl: { xs: 1.5, sm: 0 },
+                    alignItems: { xs: 'center', sm: 'stretch' },
+                    gap: { xs: 2, sm: 0 }
+                }}>
+                    {/* Left side on mobile (Icon), top on desktop */}
+                    <Box 
+                        className="card-icon-container"
+                        sx={{
+                            display: 'inline-flex',
+                            p: 1.5,
+                            borderRadius: '12px',
+                            background: gradients[themeColor] || gradients.primary,
+                            color: '#ffffff',
+                            transition: 'all 0.3s ease',
+                            boxShadow: '0 4px 10px rgba(0,0,0,0.05)',
+                            alignSelf: { xs: 'center', sm: 'flex-start' },
+                            m: { sm: 3 },
+                            mb: { sm: 0 }
+                        }}
+                    >
+                        {icon}
                     </Box>
 
-                    {/* Title */}
-                    <Typography 
-                        variant="h6" 
-                        fontWeight="800" 
-                        sx={{ 
-                            fontSize: '1.1rem', 
-                            color: '#1E293B',
-                            mb: 1,
-                            lineHeight: 1.3
-                        }}
-                    >
-                        {title}
-                    </Typography>
+                    {/* Content area */}
+                    <CardContent sx={{ 
+                        flexGrow: 1, 
+                        p: { xs: 0, sm: 3 }, 
+                        pt: { sm: 2 },
+                        pb: { xs: 0, sm: 2 },
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        alignItems: 'flex-start',
+                        overflow: 'hidden'
+                    }}>
+                        {/* Category Pill */}
+                        <Box sx={{ display: { xs: 'none', sm: 'flex' }, justifyContent: 'space-between', alignItems: 'center', width: '100%', mb: 1.5 }}>
+                            <Typography 
+                                variant="caption" 
+                                sx={{
+                                    fontWeight: 700,
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '1px',
+                                    px: 1.5,
+                                    py: 0.5,
+                                    borderRadius: '20px',
+                                    bgcolor: pillBg[themeColor] || pillBg.primary,
+                                    color: textColors[themeColor] || textColors.primary,
+                                    fontSize: '0.7rem'
+                                }}
+                            >
+                                {category}
+                            </Typography>
+                        </Box>
 
-                    {/* Description */}
-                    <Typography 
-                        variant="body2" 
-                        sx={{ 
-                            fontSize: '0.85rem', 
-                            color: '#64748B', 
-                            lineHeight: 1.5,
-                            flexGrow: 1
-                        }}
-                    >
-                        {desc}
-                    </Typography>
-                </CardContent>
+                        {/* Title */}
+                        <Typography 
+                            variant="h6" 
+                            fontWeight="800" 
+                            sx={{ 
+                                fontSize: { xs: '0.95rem', sm: '1.1rem' }, 
+                                color: '#1E293B',
+                                mb: { xs: 0.5, sm: 1 },
+                                lineHeight: 1.2
+                            }}
+                        >
+                            {title}
+                        </Typography>
 
-                {/* Actions Button */}
-                <CardActions sx={{ p: 3, pt: 0, width: '100%' }}>
-                    <Button
-                        variant="contained"
-                        size="medium"
-                        startIcon={<DownloadIcon fontSize="small" />}
-                        onClick={onClick}
-                        sx={{
-                            borderRadius: '10px',
-                            px: 3,
-                            py: 1,
-                            fontWeight: 700,
-                            textTransform: 'none',
-                            background: gradients[themeColor] || gradients.primary,
-                            boxShadow: 'none',
-                            color: '#ffffff',
-                            '&:hover': {
+                        {/* Description */}
+                        <Typography 
+                            variant="body2" 
+                            sx={{ 
+                                fontSize: { xs: '0.75rem', sm: '0.85rem' }, 
+                                color: '#64748B', 
+                                lineHeight: 1.4,
+                                flexGrow: 1,
+                                display: '-webkit-box',
+                                WebkitLineBreak: 'anywhere',
+                                WebkitLineClamp: { xs: 2, sm: 3 },
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden'
+                            }}
+                        >
+                            {desc}
+                        </Typography>
+                    </CardContent>
+
+                    {/* Actions Button */}
+                    <CardActions sx={{ 
+                        p: { xs: 0, sm: 3 }, 
+                        pt: { sm: 0 }, 
+                        justifyContent: 'flex-end',
+                        pr: { xs: 1, sm: 3 }
+                    }}>
+                        <AppButton
+                            variant="contained"
+                            onClick={onClick}
+                            icon={<DownloadIcon />}
+                            title="Xuất dữ liệu Excel"
+                            sx={{
                                 background: gradients[themeColor] || gradients.primary,
-                                opacity: 0.95,
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                            },
-                            transition: 'all 0.2s ease',
-                            width: '100%'
-                        }}
-                    >
-                        Xuất dữ liệu Excel
-                    </Button>
-                </CardActions>
+                                width: { xs: 36, sm: 40 },
+                                height: { xs: 36, sm: 40 },
+                                minWidth: { xs: 36, sm: 40 },
+                                '&:hover': {
+                                    background: gradients[themeColor] || gradients.primary,
+                                    opacity: 0.95,
+                                }
+                            }}
+                        />
+                    </CardActions>
+                </Box>
             </Card>
         );
     };

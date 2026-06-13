@@ -33,6 +33,7 @@ import { getOrderLimit } from '../../config/orderLimits';
 import { formatDate, parseDate } from '../../utils/dateUtils';
 import PageHeader from '../../components/Common/PageHeader';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
+import { AppButton } from '../../components/Common/AppButton';
 
 const OrderList = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -286,64 +287,37 @@ const OrderList = () => {
                     <>
                         {canDelete && selectedOrderIds.length > 0 && (
                             <>
-                                <Button
+                                <AppButton
                                     variant="contained"
                                     color="error"
-                                    size="small"
-                                    startIcon={<DeleteIcon />}
+                                    icon={<DeleteIcon />}
                                     onClick={handleBulkDelete}
-                                    sx={{ 
-                                        borderRadius: '12px', 
-                                        textTransform: 'none', 
-                                        fontWeight: 700, 
-                                        px: 2, 
-                                        py: 1,
-                                        boxShadow: '0 8px 20px -6px rgba(239, 68, 68, 0.4)'
-                                    }}
-                                >
-                                    Xóa ({selectedOrderIds.length})
-                                </Button>
+                                    title={`Xóa (${selectedOrderIds.length})`}
+                                />
                                 {canApprove && selectedOrderIds.some(id => orders.find(o => o.id === id)?.status === 'pending') && (
-                                    <Button
+                                    <AppButton
                                         variant="contained"
                                         color="success"
-                                        size="small"
-                                        startIcon={bulkApproveLoading ? <CircularProgress size={14} color="inherit" /> : <DoneAllIcon />}
+                                        icon={bulkApproveLoading ? <CircularProgress size={20} color="inherit" /> : <DoneAllIcon />}
                                         onClick={handleBulkApprove}
                                         disabled={bulkApproveLoading}
-                                        sx={{ 
-                                            borderRadius: '12px', 
-                                            textTransform: 'none', 
-                                            fontWeight: 700, 
-                                            px: 2, 
-                                            py: 1,
-                                            boxShadow: '0 8px 20px -6px rgba(16, 185, 129, 0.4)'
-                                        }}
-                                    >
-                                        {bulkApproveLoading ? 'Đang duyệt...' : 'Duyệt'}
-                                    </Button>
+                                        title="Duyệt yêu cầu đặt hàng"
+                                    />
                                 )}
                             </>
                         )}
                         {canCreate && (
-                            <Button
+                            <AppButton
                                 variant="contained"
-                                size="small"
-                                startIcon={<AddIcon />}
+                                icon={<AddIcon />}
                                 onClick={handleOpenAdd}
+                                title="Tạo mới"
                                 sx={{ 
-                                    px: 2.5, 
-                                    py: 1.2, 
-                                    borderRadius: '12px', 
-                                    whiteSpace: 'nowrap', 
-                                    fontWeight: 800,
                                     bgcolor: '#ffffff',
                                     color: '#2563eb',
-                                    '&:hover': { bgcolor: '#f8fafc', transform: 'translateY(-1px)' }
+                                    '&:hover': { bgcolor: '#f8fafc' }
                                 }}
-                            >
-                                Tạo mới
-                            </Button>
+                            />
                         )}
                     </>
                 }

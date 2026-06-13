@@ -33,10 +33,12 @@ import {
     Send as SendIcon,
     Add as AddIcon,
     Sync as SyncIcon,
-    Edit as EditIcon
+    Edit as EditIcon,
+    Close as CloseIcon
 } from '@mui/icons-material';
 import * as ExcelJS from 'exceljs';
 import { supabase } from '../../config/supabase';
+import { AppButton } from '../../components/Common/AppButton';
 
 interface ZaloBotToken {
     id: string;
@@ -588,7 +590,7 @@ const ZaloBotManager: React.FC = () => {
                     <Grid size={{ xs: 12, md: 3 }}><TextField fullWidth size="small" label="API token Zalo (Tên bot hiển thị)" value={newToken.bot_name} onChange={e => setNewToken({...newToken, bot_name: e.target.value})} /></Grid>
                     <Grid size={{ xs: 12, md: 2 }}><TextField fullWidth size="small" label="Ghi chú nhóm" value={newToken.notes} onChange={e => setNewToken({...newToken, notes: e.target.value})} /></Grid>
                     <Grid size={{ xs: 12, md: 1 }}>
-                        <Button fullWidth variant="contained" color="success" sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, boxShadow: 'none' }} onClick={handleAddToken} startIcon={<AddIcon />}>Lưu</Button>
+                        <AppButton variant="contained" color="success" onClick={handleAddToken} icon={<AddIcon />} title="Lưu nhóm token" />
                     </Grid>
                 </Grid>
 
@@ -598,17 +600,16 @@ const ZaloBotManager: React.FC = () => {
                             {t.token.substring(0, 15)}... - {t.group_name} - {t.bot_name}
                         </Typography>
                     {/* Removed Get Chat ID button */}
-                        <Button 
+                        <AppButton 
                             variant="outlined" 
                             color="secondary" 
                             size="small" 
                             onClick={() => handleRegisterWebhook(t)} 
                             disabled={loadingSync === t.id + '_webhook'}
-                            startIcon={loadingSync === t.id + '_webhook' ? <CircularProgress size={16} /> : <SyncIcon fontSize="small" />}
-                            sx={{ textTransform: 'none', px: 1, py: 0.25, minWidth: 'auto', fontSize: '0.75rem' }}
-                        >
-                            Đăng ký Webhook
-                        </Button>
+                            icon={loadingSync === t.id + '_webhook' ? <CircularProgress size={16} /> : <SyncIcon fontSize="small" />}
+                            title="Đăng ký Webhook"
+                            sx={{ minWidth: 34, width: 34, height: 34 }}
+                        />
                         <IconButton size="small" color="error" onClick={() => handleDeleteToken(t.id)} sx={{ p: 0.5 }}><DeleteIcon fontSize="small" /></IconButton>
                     </Box>
                 ))}
@@ -667,22 +668,19 @@ const ZaloBotManager: React.FC = () => {
                     </Grid>
                     <Grid size={{ xs: 12, md: 4 }}><TextField fullWidth size="small" label="Ghi chú" value={newContact.notes} onChange={e => setNewContact({...newContact, notes: e.target.value})} /></Grid>
                     <Grid size={{ xs: 12, md: 2 }} display="flex" gap={1}>
-                        <Button fullWidth variant="contained" color={newContact.id ? "warning" : "success"} sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, boxShadow: '0 4px 14px 0 rgba(16, 185, 129, 0.39)', background: newContact.id ? 'linear-gradient(90deg, #f59e0b, #d97706)' : 'linear-gradient(90deg, #10b981, #059669)', '&:hover': { boxShadow: '0 6px 20px rgba(16, 185, 129, 0.23)' } }} onClick={handleSaveContact} startIcon={newContact.id ? <EditIcon /> : <AddIcon />}>
-                            {newContact.id ? "Lưu" : "Thêm"}
-                        </Button>
+                        <AppButton variant="contained" color={newContact.id ? "warning" : "success"} onClick={handleSaveContact} icon={newContact.id ? <EditIcon /> : <AddIcon />} title={newContact.id ? "Lưu liên hệ" : "Thêm liên hệ"} />
                         {newContact.id && (
-                            <Button variant="outlined" color="inherit" onClick={() => setNewContact({ id: '', employee_id: '', receiver_name: '', phone: '', zalo_user_id: '', notes: '', bot_api_token: '' })}>Hủy</Button>
+                            <AppButton variant="outlined" color="inherit" onClick={() => setNewContact({ id: '', employee_id: '', receiver_name: '', phone: '', zalo_user_id: '', notes: '', bot_api_token: '' })} icon={<CloseIcon />} title="Hủy" />
                         )}
                     </Grid>
                 </Grid>
 
                 <Box sx={{ display: 'flex', gap: 2 }}>
-                    <Button variant="outlined" component="label" sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, boxShadow: 'none' }} startIcon={importing ? <CircularProgress size={16}/> : <UploadFileIcon />} disabled={importing}>
-                        Import Excel
+                    <AppButton variant="outlined" component="label" icon={importing ? <CircularProgress size={16}/> : <UploadFileIcon />} disabled={importing} title="Nhập Excel danh bạ">
                         <input type="file" hidden accept=".xlsx,.xls,.csv" onChange={handleImportExcel} />
-                    </Button>
-                    <Button variant="outlined" sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, boxShadow: 'none' }} startIcon={<DownloadIcon />} onClick={handleExportExcel}>Export Excel</Button>
-                    <Button variant="outlined" sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, boxShadow: 'none' }} startIcon={<DescriptionIcon />} onClick={handleDownloadTemplate}>Mẫu import</Button>
+                    </AppButton>
+                    <AppButton variant="outlined" icon={<DownloadIcon />} onClick={handleExportExcel} title="Xuất danh bạ Excel" />
+                    <AppButton variant="outlined" icon={<DescriptionIcon />} onClick={handleDownloadTemplate} title="Tải mẫu Excel import" />
                 </Box>
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2, mt: 3 }}>

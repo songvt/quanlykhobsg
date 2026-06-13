@@ -145,10 +145,10 @@ const ModernSidebar: React.FC<ModernSidebarProps> = ({ isMobile, handleDrawerTog
             { text: 'Xuất nhập kho', icon: <Warehouse size={20} />, path: '/xnk-cdbr' }
         ] : []),
         ...(hasPermission('qr.view') ? [
-            { text: 'Tạo QR code', icon: <QrCode size={20} />, path: '/qr-generator' }
+            { text: 'Mã QR Code', icon: <QrCode size={20} />, path: '/qr-generator' }
         ] : []),
         ...(hasPermission('qr_hcm.view') ? [
-            { text: 'QR HCM', icon: <QrCode size={20} color="#1e4b9b" />, path: '/qr-generator-hcm' }
+            { text: 'Mã QR Code HCM', icon: <QrCode size={20} color="#1e4b9b" />, path: '/qr-generator-hcm' }
         ] : []),
         ...(hasAnyPermission(['reports.view_all', 'reports.handover']) ? [
             { text: 'Lịch sử', icon: <History size={20} />, path: '/action-history' }
@@ -212,7 +212,7 @@ const ModernSidebar: React.FC<ModernSidebarProps> = ({ isMobile, handleDrawerTog
                         letterSpacing: '0.05em',
                         textTransform: 'uppercase',
                     }}>
-                        Workspace
+                        Bắc Sài Gòn
                     </Typography>
                 </Box>
                 {isMobile && (

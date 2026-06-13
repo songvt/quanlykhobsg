@@ -12,6 +12,7 @@ import OutboundList from '../../components/Outbound/OutboundList';
 import PrintIcon from '@mui/icons-material/Print';
 import PageHeader from '../../components/Common/PageHeader';
 import OutboxIcon from '@mui/icons-material/Outbox';
+import { AppButton } from '../../components/Common/AppButton';
 
 interface StaffOutboundViewProps {
     approvedOrders: Order[];
@@ -108,17 +109,15 @@ const StaffOutboundView = ({
                                             </Box>
                                         </Stack>
 
-                                        <Button
+                                        <AppButton
                                             variant="contained"
                                             color={isExpired ? "inherit" : "secondary"}
-                                            fullWidth
-                                            size="medium"
                                             onClick={() => onFulfill(order)}
                                             disabled={isExpired}
-                                            sx={{ textTransform: 'none', fontWeight: 'bold', borderRadius: '8px' }}
-                                        >
-                                            Xuất kho
-                                        </Button>
+                                            icon={<OutboxIcon />}
+                                            title="Xuất kho"
+                                            sx={{ width: '100%' }}
+                                        />
                                     </CardContent>
                                 </Card>
                             );
@@ -187,16 +186,14 @@ const StaffOutboundView = ({
                                                 )}
                                             </TableCell>
                                             <TableCell align="center">
-                                                <Button
+                                                <AppButton
                                                     variant="contained"
                                                     color={isExpired ? "inherit" : "secondary"}
-                                                    size="small"
                                                     onClick={() => onFulfill(order)}
                                                     disabled={isExpired}
-                                                    sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' }, minWidth: 64 }}
-                                                >
-                                                    Xuất kho
-                                                </Button>
+                                                    icon={<OutboxIcon />}
+                                                    title="Xuất kho"
+                                                />
                                             </TableCell>
                                         </TableRow>
                                     );
@@ -212,14 +209,14 @@ const StaffOutboundView = ({
                 <Typography variant="h5" color="text.secondary" sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' }, mb: 2 }}>
                     Lịch Sử Xuất Kho Của Bạn
                 </Typography>
-                <Button
-                    variant="contained" color="secondary" startIcon={<PrintIcon />}
+                <AppButton
+                    variant="contained" 
+                    color="secondary" 
+                    icon={<PrintIcon />}
                     disabled={selectedPrintIds.length === 0}
                     onClick={onPrint}
-                    sx={{ mb: 2 }}
-                >
-                    In Biên Bản ({selectedPrintIds.length})
-                </Button>
+                    title={`In Biên Bản (${selectedPrintIds.length})`}
+                />
             </Box>
             
             <Box sx={{ maxWidth: 1200, mx: 'auto', mb: 4 }}>
