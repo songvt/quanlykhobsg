@@ -403,12 +403,12 @@ const InventoryReport: React.FC = () => {
                                     <TableCell sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>{item.order_number}</TableCell>
                                     <TableCell>{item.employee_voucher}</TableCell>
                                     <TableCell sx={{ fontWeight: 600 }}>{item.warehouse_voucher}</TableCell>
-                                    <TableCell sx={{ maxWidth: 200, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                    <TableCell sx={{ maxWidth: 250, whiteSpace: 'normal', wordBreak: 'break-word' }}>
                                         <Tooltip title={item.bccs_item}>
                                             <span>{item.bccs_item}</span>
                                         </Tooltip>
                                     </TableCell>
-                                    <TableCell sx={{ maxWidth: 200, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                    <TableCell sx={{ maxWidth: 250, whiteSpace: 'normal', wordBreak: 'break-word' }}>
                                         <Tooltip title={item.finance_item}>
                                             <span>{item.finance_item}</span>
                                         </Tooltip>
