@@ -421,9 +421,7 @@ const AdminRequests = () => {
             return;
         }
 
-        const id = leaveFormMode === 'create' ? `LR-${Date.now()}` : leaveFormData.id;
-        const payload = {
-            id,
+        const payload: any = {
             request_date: leaveFormData.requestDate,
             employee_id: emp.id,
             employee_name: emp.full_name,
@@ -443,6 +441,10 @@ const AdminRequests = () => {
             handovers: leaveFormData.handovers.filter(h => h.task.trim() !== '' || h.target.trim() !== ''),
             status: 'approved'
         };
+
+        if (leaveFormMode === 'edit') {
+            payload.id = leaveFormData.id;
+        }
 
         try {
             if (leaveFormMode === 'create') {
