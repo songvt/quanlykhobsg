@@ -23,7 +23,7 @@ import { useNotification } from '../../contexts/NotificationContext';
 import { fetchOrders, addOrder, updateOrderStatus, deleteOrders } from '../../store/slices/ordersSlice';
 import { fetchEmployees } from '../../store/slices/employeesSlice';
 import { fetchProducts } from '../../store/slices/productsSlice';
-import { fetchInventory, selectStockMap } from '../../store/slices/inventorySlice';
+import { fetchInventory, selectStockMap, selectDetailedStockMap } from '../../store/slices/inventorySlice';
 import type { RootState, AppDispatch } from '../../store';
 import type { Order } from '../../types';
 import { usePermission } from '../../hooks/usePermission';
@@ -43,6 +43,7 @@ const OrderList = () => {
     const { items: employees, status: employeeStatus } = useSelector((state: RootState) => state.employees);
     const { status: inventoryStatus } = useSelector((state: RootState) => state.inventory);
     const inventory = useSelector(selectStockMap);
+    const detailedStockMap = useSelector(selectDetailedStockMap);
     const { profile } = useSelector((state: RootState) => state.auth);
     const { hasPermission } = usePermission();
     const { success: notifySuccess, error: notifyError } = useNotification();
@@ -104,10 +105,40 @@ const OrderList = () => {
         setOpenDialog(true);
     };
 
+    // Tìm nhân viên được chọn đặt hàng (cho Admin)
+    const selectedEmployee = useMemo(() => {
+        return employees.find(e => e.full_name === newOrder.requester_group);
+    }, [employees, newOrder.requester_group]);
+
+    // Xác định quận hoạt động của đơn hàng này
+    const activeDistrict = useMemo(() => {
+        if (isAdmin) {
+            return selectedEmployee?.district || '';
+        }
+        return profile?.district || '';
+    }, [isAdmin, selectedEmployee, profile]);
+
+    // Tính toán tồn kho chi tiết theo quận cho các sản phẩm
+    const districtStockMap = useMemo(() => {
+        const map: Record<string, number> = {};
+        if (!detailedStockMap) return map;
+
+        products.forEach(p => {
+            if (activeDistrict) {
+                const key = `${p.id}|${activeDistrict}|*ALL*`;
+                map[p.id] = detailedStockMap[key] || 0;
+            } else {
+                const key = `${p.id}||`;
+                map[p.id] = detailedStockMap[key] || 0;
+            }
+        });
+        return map;
+    }, [detailedStockMap, activeDistrict, products]);
+
     // Tính giới hạn số lượng đặt hàng hiệu quả cho sản phẩm đang chọn
     // Admin không bị giới hạn theo chính sách, chỉ bị giới hạn bởi tồn kho
     const selectedProduct = products.find(p => p.id === newOrder.product_id);
-    const stockLimit = inventory[newOrder.product_id] || 0;
+    const stockLimit = districtStockMap[newOrder.product_id] || 0;
     const policyLimit = (!isAdmin && selectedProduct) ? getOrderLimit(selectedProduct.name) : null;
     const effectiveMaxQty = isAdmin ? 999999 : (policyLimit !== null ? Math.min(stockLimit, policyLimit) : stockLimit);
 
@@ -224,8 +255,11 @@ const OrderList = () => {
     }, [visibleOrders, products, debouncedSearchTerm, startDate, endDate]);
 
     const availableProducts = useMemo(() => {
-        return isAdmin ? products : products.filter(p => (inventory[p.id] || 0) > 0);
-    }, [isAdmin, products, inventory]);
+        if (activeDistrict) {
+            return products.filter(p => (districtStockMap[p.id] || 0) > 0);
+        }
+        return isAdmin ? products : products.filter(p => (districtStockMap[p.id] || 0) > 0);
+    }, [isAdmin, products, districtStockMap, activeDistrict]);
 
     const handleSelectAll = (checked: boolean) => {
         if (checked) {
@@ -748,7 +782,7 @@ const OrderList = () => {
                                                         {p.name}
                                                     </Typography>
                                                     <Typography variant="caption" display="block" sx={{ color: 'text.secondary', mt: 0.25 }}>
-                                                        Mã: {p.item_code} | Tồn: {inventory[p.id] || 0}
+                                                        Mã: {p.item_code} | Tồn: {districtStockMap[p.id] || 0}
                                                     </Typography>
                                                 </Box>
                                             </MenuItem>
