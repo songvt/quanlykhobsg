@@ -17,8 +17,14 @@ function isChunkLoadError(error: any): boolean {
         msg.includes('importing a module script failed') ||
         msg.includes('loading chunk') ||
         msg.includes('chunkloaderror') ||
+        msg.includes('text/html') ||
+        msg.includes('mime type') ||
+        msg.includes('mime') ||
         stack.includes('chunkloaderror') ||
-        stack.includes('failed to fetch dynamically imported module')
+        stack.includes('failed to fetch dynamically imported module') ||
+        stack.includes('text/html') ||
+        stack.includes('mime type') ||
+        stack.includes('mime')
     );
 }
 
@@ -60,6 +66,22 @@ class ErrorBoundary extends Component<Props, State> {
     public componentDidCatch(error: any, errorInfo: ErrorInfo) {
         console.error('[ErrorBoundary] Caught error:', error);
         this.setState({ errorInfo });
+
+        // Tự động reload nếu gặp lỗi load chunk/MIME type để người dùng không phải bấm nút thủ công
+        if (isChunkLoadError(error)) {
+            const lastReload = sessionStorage.getItem('last_chunk_error_reload');
+            const now = Date.now();
+            // Chỉ tự động reload nếu lần reload trước đó cách đây hơn 10 giây (tránh lặp vô hạn nếu lỗi thật sự từ server)
+            if (!lastReload || now - parseInt(lastReload, 10) > 10000) {
+                sessionStorage.setItem('last_chunk_error_reload', now.toString());
+                console.warn('[ErrorBoundary] Chunk load/MIME type error detected, auto-reloading...');
+                
+                // Chờ 500ms để người dùng kịp nhận thấy hành động tải lại nếu cần
+                setTimeout(() => {
+                    clearCacheAndReload();
+                }, 500);
+            }
+        }
     }
 
     public render() {
