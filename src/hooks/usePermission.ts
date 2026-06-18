@@ -16,11 +16,17 @@ export const usePermission = () => {
         // Check for wildcard access
         if (permissions.includes('*')) return true;
 
-        // Automatically grant Returns and Audit permissions to staff ONLY if they have no other explicit permissions
+        // Automatically grant Returns permissions to all staff members
+        if (profile.role === 'staff' && (
+            code === 'returns.view' || 
+            code === 'returns.create'
+        )) {
+            return true;
+        }
+
+        // Automatically grant Audit permissions to staff ONLY if they have no other explicit permissions
         // This allows creating restricted accounts by assigning specific permissions.
         if (profile.role === 'staff' && permissions.length === 0 && (
-            code === 'returns.view' || 
-            code === 'returns.create' || 
             code === 'audit.view' || 
             code === 'audit.create'
         )) {
