@@ -16,6 +16,7 @@ import geminiHandler from '../api_handlers/gemini.js';
 import ocrHandler from '../api_handlers/ocr.js';
 import trinhkyHandler from '../api_handlers/trinhky.js';
 import cronSyncHandler from '../api_handlers/cron-sync.js';
+import cronSyncStockHandler from '../api_handlers/cron-sync-stock.js';
 
 const app = express();
 
@@ -49,6 +50,7 @@ app.all('/api/ocr', createVercelHandler(ocrHandler));
 app.all('/api/trinhky', createVercelHandler(trinhkyHandler));
 app.all('/api/system_config', createVercelHandler(systemConfigHandler));
 app.all('/api/cron-sync', createVercelHandler(cronSyncHandler));
+app.all('/api/cron-sync-stock', createVercelHandler(cronSyncStockHandler));
 
 // Helper to safely override Express prototype query getter
 const setQueryType = (req: express.Request, type: string) => {
