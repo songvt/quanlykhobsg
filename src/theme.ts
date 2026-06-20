@@ -108,7 +108,7 @@ const theme = createTheme({
         MuiCssBaseline: {
             styleOverrides: {
                 body: {
-                    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+                    fontFamily: "'Be Vietnam Pro', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
                     letterSpacing: 0,
                     backgroundColor: 'var(--bg-default)',
                     color: 'var(--text-primary)',

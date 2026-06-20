@@ -1065,41 +1065,67 @@ const Reports = () => {
                 onClick={onClick}
                 sx={{
                     height: '100%',
-                    borderRadius: '20px',
+                    borderRadius: '24px',
                     position: 'relative',
                     overflow: 'hidden',
                     background: '#ffffff',
-                    border: '1px solid rgba(226, 232, 240, 0.8)',
-                    boxShadow: '0 10px 25px -5px rgba(15, 23, 42, 0.03), 0 8px 10px -6px rgba(15, 23, 42, 0.03)',
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    border: '1px solid rgba(226, 232, 240, 0.7)',
+                    boxShadow: '0 4px 20px -2px rgba(15, 23, 42, 0.02), 0 2px 4px -1px rgba(15, 23, 42, 0.01)',
+                    transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
                     cursor: 'pointer',
+                    '&::before': {
+                        content: '""',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        background: `radial-gradient(circle 120px at var(--mouse-x, 50%) var(--mouse-y, 50%), ${activeColor.glow}, transparent 100%)`,
+                        opacity: 0,
+                        transition: 'opacity 0.4s ease',
+                        pointerEvents: 'none',
+                        zIndex: 0,
+                    },
                     '&:hover': {
                         transform: 'translateY(-6px)',
-                        boxShadow: `0 20px 25px -5px ${activeColor.glow}, 0 10px 10px -5px rgba(0, 0, 0, 0.02)`,
+                        boxShadow: `0 20px 30px -10px ${activeColor.glow}, 0 8px 16px -8px rgba(0, 0, 0, 0.03)`,
                         borderColor: activeColor.main,
+                        '&::before': {
+                            opacity: 1,
+                        },
                         '& .card-icon-container': {
-                            transform: 'scale(1.1) rotate(4deg)',
-                            boxShadow: `0 8px 20px ${activeColor.glow}`,
+                            transform: 'scale(1.08) translateY(-2px)',
+                            boxShadow: `0 8px 24px ${activeColor.glow}`,
                         },
                         '& .card-action-btn': {
                             background: activeColor.gradient,
                             color: '#ffffff',
-                            transform: 'scale(1.05)',
+                            borderColor: 'transparent',
+                            transform: 'scale(1.1) rotate(-10deg)',
+                            boxShadow: `0 4px 12px ${activeColor.glow}`,
                         }
                     },
                     '&:active': {
                         transform: 'translateY(-2px)',
                     }
                 }}
+                onMouseMove={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    e.currentTarget.style.setProperty('--mouse-x', `${x}px`);
+                    e.currentTarget.style.setProperty('--mouse-y', `${y}px`);
+                }}
             >
                 {/* Visual Accent - Top gradient line */}
                 <Box sx={{
-                    height: '4px',
+                    height: '5px',
                     width: '100%',
                     background: activeColor.gradient,
                     position: 'absolute',
                     top: 0,
                     left: 0,
+                    zIndex: 2,
                 }} />
 
                 <Box sx={{ 
@@ -1111,7 +1137,9 @@ const Reports = () => {
                     width: '100%',
                     boxSizing: 'border-box',
                     gap: { xs: 2, sm: 3 },
-                    alignItems: { xs: 'center', sm: 'stretch' }
+                    alignItems: { xs: 'center', sm: 'stretch' },
+                    position: 'relative',
+                    zIndex: 1,
                 }}>
                     {/* Icon Container */}
                     <Box 
@@ -1123,10 +1151,10 @@ const Reports = () => {
                             width: { xs: 46, sm: 54 },
                             height: { xs: 46, sm: 54 },
                             minWidth: { xs: 46, sm: 54 },
-                            borderRadius: '14px',
+                            borderRadius: '16px',
                             background: activeColor.bg,
                             color: activeColor.text,
-                            transition: 'all 0.3s ease',
+                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                             '& svg': {
                                 fontSize: { xs: '1.4rem', sm: '1.75rem' }
                             }
@@ -1217,7 +1245,7 @@ const Reports = () => {
                                 border: `1.5px solid ${activeColor.bg}`,
                                 color: activeColor.text,
                                 bgcolor: 'transparent',
-                                transition: 'all 0.3s ease',
+                                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                                 '& svg': {
                                     fontSize: '1.1rem'
                                 }
@@ -1360,7 +1388,7 @@ const Reports = () => {
 
                     <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                         <ReportCard
-                            title="Biên Bản Bàn Giao"
+                            title="Biên Bản Nhập Kho"
                             category="Biên bản nhập kho"
                             desc="In và xuất biên bản giao nhận thiết bị cho các phiếu nhập kho."
                             icon={<FileSignature size={20} />}
@@ -1370,7 +1398,7 @@ const Reports = () => {
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                         <ReportCard
-                            title="Biên Bản Bàn Giao"
+                            title="Biên Bản Xuất Kho"
                             category="Biên bản xuất kho"
                             desc="In và xuất biên bản giao nhận thiết bị cho các phiếu xuất kho."
                             icon={<FileSignature size={20} />}
