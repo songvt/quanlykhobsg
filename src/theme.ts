@@ -215,6 +215,10 @@ const theme = createTheme({
                         boxShadow: '0 20px 35px -10px rgba(15, 23, 42, 0.12)',
                         transform: 'translateY(-4px)',
                     },
+                    '&:active': {
+                        transform: 'scale(0.98)',
+                        transition: 'transform 0.1s ease',
+                    },
                 },
             },
         },
@@ -227,11 +231,11 @@ const theme = createTheme({
                     textTransform: 'none',
                     fontSize: '0.8125rem',
                     borderBottom: '1px solid var(--border-color)',
-                    padding: '12px 16px',
+                    padding: '10px 16px',
                     whiteSpace: 'nowrap',
                 },
                 body: {
-                    padding: '12px 16px',
+                    padding: '8px 16px',
                     color: 'var(--text-primary)',
                     borderBottom: '1px solid var(--border-color)',
                     fontSize: '0.875rem',
@@ -305,7 +309,7 @@ const theme = createTheme({
                 root: {
                     fontSize: '1rem',
                     fontWeight: 700,
-                    padding: '18px 22px 10px',
+                    padding: 'calc(18px + env(safe-area-inset-top, 0px)) 22px 10px',
                 },
             },
         },
