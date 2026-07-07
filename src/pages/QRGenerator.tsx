@@ -180,7 +180,7 @@ const QR_STYLES = `
         background-color: #fafafa;
     }
     .label-text { 
-        font-size: 0.8rem; 
+        font-size: 1.05rem; 
         color: #333333; 
         font-weight: bold;
         text-transform: uppercase; 
@@ -188,7 +188,7 @@ const QR_STYLES = `
         letter-spacing: 0.5px;
     }
     .value-text { 
-        font-size: 1.5rem; 
+        font-size: 1.85rem; 
         font-weight: 900; 
         color: #000000;
     }
@@ -1270,15 +1270,18 @@ const QRGenerator = () => {
                                                         </div>
                                                         <div className="info-row">
                                                             <div className="label-text">Số Thùng</div>
-                                                            <div className="value-text" style={{ fontSize: '1.65rem' }}>{boxLabel || group.boxNumber}</div>
+                                                            <div className="value-text" style={{ fontSize: '2.0rem' }}>{boxLabel || group.boxNumber}</div>
                                                         </div>
                                                         <div className="info-row">
                                                             <div className="label-text">Số Lượng</div>
-                                                            <div className="value-text" style={{ color: '#1d4ed8' }}>{group.totalQuantity} <span style={{ fontSize: '1rem', fontWeight: 'normal', color: '#333' }}>serial</span></div>
+                                                            <div className="value-text" style={{ color: '#1d4ed8' }}>{group.totalQuantity} <span style={{ fontSize: '1.2rem', fontWeight: 'normal', color: '#333' }}>serial</span></div>
                                                         </div>
                                                         <div className="info-row">
                                                             <div className="label-text">Mã QR</div>
-                                                            <div className="value-text">{group.qrChunks.length} <span style={{ fontSize: '1rem', fontWeight: 'normal', color: '#333' }}>mã</span></div>
+                                                            <div className="value-text">{group.qrChunks.length} <span style={{ fontSize: '1.2rem', fontWeight: 'normal', color: '#333' }}>mã</span></div>
+                                                        </div>
+                                                        <div className="info-row">
+                                                            <div style={{ fontSize: '1.3rem', fontWeight: 900, color: '#000000', marginTop: '2px' }}>SỐ PHIẾU: ________</div>
                                                         </div>
                                                     </div>
 
