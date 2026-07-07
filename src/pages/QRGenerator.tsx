@@ -1268,22 +1268,21 @@ const QRGenerator = () => {
                                                         <div className="blue-header">
                                                             {group.district.toUpperCase()} – {docTitle.toUpperCase()}
                                                         </div>
-                                                        <div className="info-row" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '6px', fontSize: '1.45rem', fontWeight: 900 }}>
-                                                            <span style={{ color: '#333333' }}>Số Thùng :</span>
-                                                            <span style={{ color: '#000000', fontSize: '1.65rem' }}>{boxLabel || group.boxNumber}</span>
+                                                        <div className="info-row" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', gap: '8px', fontSize: '1.65rem', fontWeight: 950 }}>
+                                                            <span style={{ color: '#333333' }}>SỐ THÙNG :</span>
+                                                            <span style={{ color: '#000000', fontSize: '1.9rem' }}>{boxLabel || group.boxNumber}</span>
                                                         </div>
-                                                        <div className="info-row" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '6px', fontSize: '1.45rem', fontWeight: 900 }}>
-                                                            <span style={{ color: '#333333' }}>Số Lượng :</span>
-                                                            <span style={{ color: '#1d4ed8' }}>{group.totalQuantity} <span style={{ fontWeight: 'normal', color: '#333', fontSize: '1.15rem' }}>serial</span></span>
+                                                        <div className="info-row" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', gap: '8px', fontSize: '1.65rem', fontWeight: 950 }}>
+                                                            <span style={{ color: '#333333' }}>SỐ LƯỢNG :</span>
+                                                            <span style={{ color: '#1d4ed8' }}>{group.totalQuantity} <span style={{ fontWeight: 'bold', color: '#333', fontSize: '1.25rem' }}>SERIAL</span></span>
                                                         </div>
-                                                        <div className="info-row" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '6px', fontSize: '1.45rem', fontWeight: 900 }}>
-                                                            <span style={{ color: '#333333' }}>Mã QR :</span>
-                                                            <span style={{ color: '#000000' }}>{group.qrChunks.length} <span style={{ fontWeight: 'normal', color: '#333', fontSize: '1.15rem' }}>mã</span></span>
+                                                        <div className="info-row" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', gap: '8px', fontSize: '1.65rem', fontWeight: 950 }}>
+                                                            <span style={{ color: '#333333' }}>MÃ QR :</span>
+                                                            <span style={{ color: '#000000' }}>{group.qrChunks.length} <span style={{ fontWeight: 'bold', color: '#333', fontSize: '1.25rem' }}>MÃ</span></span>
                                                         </div>
-                                                        <div className="info-row" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '6px', fontSize: '1.45rem', fontWeight: 900 }}>
+                                                        <div className="info-row" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', gap: '8px', fontSize: '1.65rem', fontWeight: 950 }}>
                                                             <div style={{ color: '#000000' }}>SỐ PHIẾU: ________</div>
-                                                        </div>
-                                                    </div>
+                                                        </div></div>
 
                                                     {/* ─ QR Code Columns ─ */}
                                                     {group.qrChunks.map((chunk) => (
