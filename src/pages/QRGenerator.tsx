@@ -1270,18 +1270,18 @@ const QRGenerator = () => {
                                                         </div>
                                                         <div className="info-row">
                                                             <div className="label-text">Số Thùng</div>
-                                                            <div className="value-text" style={{ fontSize: '2.0rem' }}>{boxLabel || group.boxNumber}</div>
+                                                            <div className="value-text" style={{ fontSize: '2.3rem' }}>{boxLabel || group.boxNumber}</div>
                                                         </div>
                                                         <div className="info-row">
                                                             <div className="label-text">Số Lượng</div>
-                                                            <div className="value-text" style={{ color: '#1d4ed8' }}>{group.totalQuantity} <span style={{ fontSize: '1.2rem', fontWeight: 'normal', color: '#333' }}>serial</span></div>
+                                                            <div className="value-text" style={{ color: '#1d4ed8' }}>{group.totalQuantity} <span style={{ fontSize: '1.3rem', fontWeight: 'normal', color: '#333' }}>serial</span></div>
                                                         </div>
                                                         <div className="info-row">
                                                             <div className="label-text">Mã QR</div>
-                                                            <div className="value-text">{group.qrChunks.length} <span style={{ fontSize: '1.2rem', fontWeight: 'normal', color: '#333' }}>mã</span></div>
+                                                            <div className="value-text">{group.qrChunks.length} <span style={{ fontSize: '1.3rem', fontWeight: 'normal', color: '#333' }}>mã</span></div>
                                                         </div>
                                                         <div className="info-row">
-                                                            <div style={{ fontSize: '1.3rem', fontWeight: 900, color: '#000000', marginTop: '2px' }}>SỐ PHIẾU: ________</div>
+                                                            <div style={{ fontSize: '1.5rem', fontWeight: 950, color: '#000000', marginTop: '2px' }}>SỐ PHIẾU: ________</div>
                                                         </div>
                                                     </div>
 
