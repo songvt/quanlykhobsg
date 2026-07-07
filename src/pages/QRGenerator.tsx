@@ -157,7 +157,7 @@ const QR_STYLES = `
     .blue-header {
         background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%) !important;
         color: white !important;
-        padding: 12px 10px;
+        padding: 8px 10px;
         font-weight: 900;
         font-size: 1.35rem;
         text-align: center;
@@ -168,7 +168,7 @@ const QR_STYLES = `
         print-color-adjust: exact;
     }
     .info-row {
-        padding: 8px 14px;
+        padding: 4px 14px;
         border-bottom: 1.5px dashed #000000;
         flex: 1;
         display: flex;
