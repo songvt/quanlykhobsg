@@ -37,7 +37,7 @@ const BarcodeValue: React.FC<BarcodeValueProps> = ({ value }) => {
                     format: 'CODE128',
                     displayValue: false,
                     height: 38,
-                    width: 1.3,
+                    width: 1.0,
                     margin: 0,
                     background: 'transparent',
                 });
@@ -355,7 +355,7 @@ const BarcodeGenerator = () => {
                                 format: 'CODE128',
                                 displayValue: false,
                                 height: 38,
-                                width: 1.3,
+                                width: 1.0,
                                 margin: 0,
                                 background: 'transparent'
                             });
@@ -447,7 +447,7 @@ const BarcodeGenerator = () => {
                             format: 'CODE128',
                             displayValue: false,
                             height: 38,
-                            width: 1.3,
+                            width: 1.0,
                             margin: 0,
                             background: 'transparent'
                         });
