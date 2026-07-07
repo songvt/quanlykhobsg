@@ -27,6 +27,7 @@ const EmployeeReturns = lazy(() => import('./pages/EmployeeReturns/EmployeeRetur
 const Settings        = lazy(() => import('./pages/Settings'));
 const QRGenerator     = lazy(() => import('./pages/QRGenerator'));
 const QRGeneratorHCM  = lazy(() => import('./pages/QRGeneratorHCM'));
+const BarcodeGenerator = lazy(() => import('./pages/BarcodeGenerator'));
 const ActionHistory   = lazy(() => import('./pages/Reports/ActionHistory'));
 const Audit           = lazy(() => import('./pages/Inventory/Audit'));
 const InventoryReport = lazy(() => import('./pages/Inventory/InventoryReport'));
@@ -138,6 +139,7 @@ function App() {
                                 
                                 <Route element={<ProtectedRoute allowedPermissions={['qr.view']} />}>
                                     <Route path="qr-generator" element={<QRGenerator />} />
+                                    <Route path="barcode-generator" element={<BarcodeGenerator />} />
                                 </Route>
 
                                 <Route element={<ProtectedRoute allowedPermissions={['qr_hcm.view']} />}>

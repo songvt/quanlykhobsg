@@ -49,7 +49,8 @@ import {
     Calculator as CalculatorIcon,
     Mailbox,
     Bot,
-    Send
+    Send,
+    Barcode
 } from 'lucide-react';
 import type { RootState, AppDispatch } from '../../store';
 import { logoutUser } from '../../store/slices/authSlice';
@@ -145,7 +146,8 @@ const ModernSidebar: React.FC<ModernSidebarProps> = ({ isMobile, handleDrawerTog
             { text: 'Xuất nhập kho', icon: <Warehouse size={20} />, path: '/xnk-cdbr' }
         ] : []),
         ...(hasPermission('qr.view') ? [
-            { text: 'Mã QR Code', icon: <QrCode size={20} />, path: '/qr-generator' }
+            { text: 'Mã QR Code', icon: <QrCode size={20} />, path: '/qr-generator' },
+            { text: 'Barcode 4x4', icon: <Barcode size={20} color="#0d9488" />, path: '/barcode-generator' }
         ] : []),
         ...(hasPermission('qr_hcm.view') ? [
             { text: 'Mã QR Code HCM', icon: <QrCode size={20} color="#1e4b9b" />, path: '/qr-generator-hcm' }
