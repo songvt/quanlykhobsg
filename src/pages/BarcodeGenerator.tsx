@@ -803,7 +803,9 @@ const BarcodeGenerator = () => {
                                         gridTemplateRows: 'repeat(4, 1fr)', 
                                         width: '100%', 
                                         height: '92%', 
-                                        border: '2px solid #000000',
+                                        border: '1.5px solid #000000',
+                                        padding: '4px',
+                                        gap: '4px',
                                         boxSizing: 'border-box'
                                     }}
                                 >
@@ -811,7 +813,7 @@ const BarcodeGenerator = () => {
                                         <Box 
                                             key={itemIdx}
                                             sx={{ 
-                                                border: '1px solid #000000', 
+                                                border: '1.5px solid #000000', 
                                                 display: 'flex', 
                                                 flexDirection: 'column', 
                                                 justifyContent: 'space-between',
