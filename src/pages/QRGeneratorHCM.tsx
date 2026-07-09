@@ -1062,8 +1062,7 @@ const QRGeneratorHCM = () => {
                                             };
 
                                             
-                                            const LabelCellContent = ({ text }: { text: string }) => {
-                                                const baseFontSize = 52;
+                                            const LabelCellContent = ({ text, baseFontSize = 52 }: { text: string; baseFontSize?: number }) => {
                                                 const maxWidth = 270; // ~90mm minus padding
                                                 const len = text.length;
                                                 const charRatio = 0.62;
@@ -1072,8 +1071,7 @@ const QRGeneratorHCM = () => {
                                                 return <span style={{ fontSize: `${fitSize}pt` }}>{text}</span>;
                                             };
 
-                                            const ValueCellContent = ({ text, isSpanned }: { text: string; isSpanned?: boolean }) => {
-                                                const baseFontSize = 52;
+                                            const ValueCellContent = ({ text, isSpanned, baseFontSize = 52 }: { text: string; isSpanned?: boolean; baseFontSize?: number }) => {
                                                 const maxWidth = isSpanned ? 425 : 300;
 
                                                 const getFitFontSize = (str: string) => {
@@ -1164,14 +1162,14 @@ const QRGeneratorHCM = () => {
                                                     </div>
  
                                                     {/* Row 2: THÙNG */}
-                                                    <div className="grid-cell cell-label" style={{ gridRow: 2, gridColumn: 1, borderLeft: '3px solid black', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingLeft: '20px', fontWeight: 900, fontSize: '52pt', fontFamily: '"Times New Roman", Times, serif', whiteSpace: 'nowrap' }}>
+                                                    <div className="grid-cell cell-label" style={{ gridRow: 2, gridColumn: 1, borderLeft: '3px solid black', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingLeft: '20px', fontWeight: 'normal', fontSize: '52pt', fontFamily: '"Times New Roman", Times, serif', whiteSpace: 'nowrap' }}>
                                                         <LabelCellContent text="THÙNG" /></div>
                                                     <div className="grid-cell cell-value" style={{ gridRow: 2, gridColumn: 2 }}>
-                                                        <ValueCellContent text={String(group.thung)} isSpanned={false} />
+                                                        <ValueCellContent text={String(group.thung)} isSpanned={false} baseFontSize={70} />
                                                     </div>
  
                                                     {/* Row 3: SỐ LƯỢNG */}
-                                                    <div className="grid-cell cell-label" style={{ gridRow: 3, gridColumn: 1, borderLeft: '3px solid black', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingLeft: '20px', fontWeight: 900, fontSize: '52pt', fontFamily: '"Times New Roman", Times, serif', whiteSpace: 'nowrap' }}>
+                                                    <div className="grid-cell cell-label" style={{ gridRow: 3, gridColumn: 1, borderLeft: '3px solid black', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingLeft: '20px', fontWeight: 'normal', fontSize: '52pt', fontFamily: '"Times New Roman", Times, serif', whiteSpace: 'nowrap' }}>
                                                         <LabelCellContent text="SỐ LƯỢNG" /></div>
                                                     {hasTwoQRs ? (
                                                         <div className="grid-cell cell-value" style={{ gridRow: 3, gridColumn: 2 }}>
@@ -1193,7 +1191,7 @@ const QRGeneratorHCM = () => {
                                                     )}
  
                                                     {/* Row 4: THIẾT BỊ */}
-                                                    <div className="grid-cell cell-label" style={{ gridRow: 4, gridColumn: 1, borderLeft: '3px solid black', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingLeft: '20px', fontWeight: 900, fontSize: '52pt', fontFamily: '"Times New Roman", Times, serif', whiteSpace: 'nowrap' }}>
+                                                    <div className="grid-cell cell-label" style={{ gridRow: 4, gridColumn: 1, borderLeft: '3px solid black', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingLeft: '20px', fontWeight: 'normal', fontSize: '52pt', fontFamily: '"Times New Roman", Times, serif', whiteSpace: 'nowrap' }}>
                                                         <LabelCellContent text="THIẾT BỊ" /></div>
                                                     {hasTwoQRs ? (
                                                         <div className="grid-cell cell-value" style={{ gridRow: 4, gridColumn: 2 }}>
@@ -1206,9 +1204,8 @@ const QRGeneratorHCM = () => {
                                                     )}
  
                                                     {/* Row 5: TÌNH TRẠNG */}
-                                                    <div className="grid-cell cell-label" style={{ gridRow: 5, gridColumn: 1, borderLeft: '3px solid black', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', paddingLeft: '20px', fontWeight: 900, fontSize: '52pt', fontFamily: '"Times New Roman", Times, serif', lineHeight: 1.1 }}>
-                                                        <div>TÌNH</div>
-                                                        <div>TRẠNG</div>
+                                                    <div className="grid-cell cell-label" style={{ gridRow: 5, gridColumn: 1, borderLeft: '3px solid black', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingLeft: '20px', fontWeight: 'normal', fontSize: '48pt', fontFamily: '"Times New Roman", Times, serif', whiteSpace: 'nowrap' }}>
+                                                        <LabelCellContent text="TÌNH TRẠNG" baseFontSize={48} />
                                                     </div>
                                                     <div className="grid-cell cell-value" style={{ gridRow: 5, gridColumn: '2 / span 2', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0px' }}>
                                                         <div style={{
