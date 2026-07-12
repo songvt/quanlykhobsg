@@ -136,7 +136,7 @@ const BillTemplateA5: React.FC<BillTemplateA5Props> = ({ data }) => {
                     </Box>
                 </Box>
                 <Box sx={{ width: '36%', textAlign: 'center', pl: 1 }}>
-                    <Typography sx={{ fontStyle: 'italic', fontSize: '17px', mb: 0.5, mt: -1 }}>
+                    <Typography sx={{ fontStyle: 'italic', fontSize: '15px', mb: 0.5, mt: -1, whiteSpace: 'nowrap' }}>
                         {data.dateString}
                     </Typography>
                     <Typography sx={{ fontWeight: 'bold', fontSize: '17px', mb: 0.5 }}>
