@@ -27,22 +27,23 @@ const BillTemplateA5: React.FC<BillTemplateA5Props> = ({ data }) => {
     return (
         <Box 
             sx={{
-                width: '100%', // Dùng 100% để tự động fit vào khổ giấy A5
-                maxWidth: '209mm', // Giới hạn chiều ngang an toàn
-                height: '146mm', // Tăng chiều cao sát mức A5 (148.5mm) để thoải mái nhất
-                padding: '8mm 15mm', // Giảm lề trên/dưới để nới thêm không gian
+                width: '100%',
+                maxWidth: '209mm',
+                height: '145mm', // Sát mức 148.5mm nhưng vẫn an toàn
+                padding: '4mm 10mm', // Ép nhỏ lề để có thêm không gian chiều dọc
                 backgroundColor: '#fff',
-                fontFamily: '"Times New Roman", Times, serif', // matches the image style
+                fontFamily: '"Times New Roman", Times, serif',
                 color: '#000',
                 boxSizing: 'border-box',
                 position: 'relative',
                 pageBreakInside: 'avoid',
+                pageBreakAfter: 'always', // Bắt buộc sang trang mới sau mỗi phiếu để an toàn tuyệt đối
                 '& .MuiTypography-root': {
                     fontFamily: '"Times New Roman", Times, serif'
                 }
             }}
         >
-            <Box sx={{ display: 'flex', mb: 2, alignItems: 'center', width: '100%' }}>
+            <Box sx={{ display: 'flex', mb: 1, alignItems: 'center', width: '100%' }}>
                 <Box sx={{ width: '35%', display: 'flex', alignItems: 'center' }}>
                     <img 
                         src={window.location.origin + "/viettel-logo.png"} 
@@ -109,13 +110,13 @@ const BillTemplateA5: React.FC<BillTemplateA5Props> = ({ data }) => {
             </Box>
 
             {/* Footer Information */}
-            <Box sx={{ display: 'flex', mt: 2, width: '100%', alignItems: 'flex-start' }}>
+            <Box sx={{ display: 'flex', mt: 1, width: '100%', alignItems: 'flex-start' }}>
                 <Box sx={{ width: '58%' }}>
                     <Box 
                         sx={{ 
                             border: '1px solid #000', 
-                            p: 1.5,
-                            mt: 1,
+                            p: 1,
+                            mt: 0.5,
                             textAlign: 'center',
                             width: '95%'
                         }}
@@ -135,13 +136,13 @@ const BillTemplateA5: React.FC<BillTemplateA5Props> = ({ data }) => {
                     </Box>
                 </Box>
                 <Box sx={{ width: '42%', textAlign: 'center', pl: 2 }}>
-                    <Typography sx={{ fontStyle: 'italic', fontSize: '17px', mb: 1, mt: -1 }}>
+                    <Typography sx={{ fontStyle: 'italic', fontSize: '17px', mb: 0.5, mt: -1 }}>
                         {data.dateString}
                     </Typography>
-                    <Typography sx={{ fontWeight: 'bold', fontSize: '17px', mb: 1 }}>
+                    <Typography sx={{ fontWeight: 'bold', fontSize: '17px', mb: 0.5 }}>
                         Nhân viên thu cước
                     </Typography>
-                    <Typography sx={{ fontWeight: 'bold', fontSize: '17px', mb: 3 }}>
+                    <Typography sx={{ fontWeight: 'bold', fontSize: '17px', mb: 2 }}>
                         {data.collectorPhone}
                     </Typography>
                     <Typography sx={{ fontWeight: 'bold', fontSize: '18px', textTransform: 'uppercase' }}>
