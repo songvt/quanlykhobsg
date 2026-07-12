@@ -51,7 +51,8 @@ import {
     Bot,
     Send,
     Barcode,
-    Scissors
+    Scissors,
+    ImagePlus
 } from 'lucide-react';
 import type { RootState, AppDispatch } from '../../store';
 import { logoutUser } from '../../store/slices/authSlice';
@@ -165,6 +166,8 @@ const ModernSidebar: React.FC<ModernSidebarProps> = ({ isMobile, handleDrawerTog
         { text: 'Trợ lý AI', icon: <Bot size={20} color="#2563eb" />, path: '/ai-assistant' },
         { text: 'OCR Image/PDF', icon: <FileText size={20} color="#8b5cf6" />, path: '/ocr-documents' },
         { text: 'Tách/Gộp PDF', icon: <Scissors size={20} color="#ec4899" />, path: '/pdf-tools' },
+        { text: 'Xử lý ảnh', icon: <ImagePlus size={20} color="#f59e0b" />, path: '/image-tools' },
+        { text: 'In thông báo cước', icon: <FileText size={20} color="#10B981" />, path: '/print-bill' },
         ...(hasAnyPermission(['trinhky.create', 'trinhky.approve', 'trinhky.view', '*']) ? [
             { text: 'Trình ký nội bộ', icon: <FileSignature size={20} color="#EF4444" />, path: '/trinh-ky' }
         ] : []),

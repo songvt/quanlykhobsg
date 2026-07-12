@@ -28,6 +28,7 @@ const Settings        = lazy(() => import('./pages/Settings'));
 const QRGenerator     = lazy(() => import('./pages/QRGenerator'));
 const QRGeneratorHCM  = lazy(() => import('./pages/QRGeneratorHCM'));
 const BarcodeGenerator = lazy(() => import('./pages/BarcodeGenerator'));
+const PrintBillNotification = lazy(() => import('./pages/PrintBillNotification'));
 const ActionHistory   = lazy(() => import('./pages/Reports/ActionHistory'));
 const Audit           = lazy(() => import('./pages/Inventory/Audit'));
 const InventoryReport = lazy(() => import('./pages/Inventory/InventoryReport'));
@@ -47,6 +48,7 @@ const ZaloTemplates  = lazy(() => import('./pages/Zalo/ZaloTemplates'));
 const ZaloCampaigns  = lazy(() => import('./pages/Zalo/ZaloCampaigns'));
 const ZaloLogs       = lazy(() => import('./pages/Zalo/ZaloLogs'));
 
+const ImageTools     = lazy(() => import('./pages/ImageTools'));
 const AIAssistant    = lazy(() => import('./pages/AIAssistant'));
 const OCRDocuments   = lazy(() => import('./pages/OCRDocuments'));
 const PDFTools       = lazy(() => import('./pages/PDFTools'));
@@ -160,6 +162,8 @@ function App() {
                                 <Route path="ai-assistant" element={<AIAssistant />} />
                                 <Route path="ocr-documents" element={<OCRDocuments />} />
                                 <Route path="pdf-tools" element={<PDFTools />} />
+                                <Route path="image-tools" element={<ImageTools />} />
+                                <Route path="print-bill" element={<PrintBillNotification />} />
 
                                 <Route element={<ProtectedRoute allowedPermissions={['returns.view', 'returns.create']} />}>
                                     <Route path="employee-returns" element={<EmployeeReturns />} />

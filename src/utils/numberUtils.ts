@@ -88,8 +88,69 @@ export const parseExcelNumber = (val: any): number => {
             }
         }
     }
-    
     const num = Number(str);
     return isNaN(num) ? 0 : num;
 };
 
+export const numberToWordsVN = (num: number): string => {
+    if (num === 0) return 'Không đồng';
+    
+    let isNegative = false;
+    if (num < 0) {
+        isNegative = true;
+        num = -num;
+    }
+
+    const digits = ['không', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín'];
+
+    const readGroup = (group: number, full: boolean): string => {
+        let result = '';
+        const h = Math.floor(group / 100);
+        const remainder = group % 100;
+        const t = Math.floor(remainder / 10);
+        const u = remainder % 10;
+
+        if (full || h > 0) {
+            result += digits[h] + ' trăm ';
+            if (remainder === 0) return result.trim();
+            if (t === 0) result += 'lẻ ';
+        }
+
+        if (t === 1) {
+            result += 'mười ';
+        } else if (t > 1) {
+            result += digits[t] + ' mươi ';
+        }
+
+        if (u === 1 && t > 1) {
+            result += 'mốt';
+        } else if (u === 5 && t > 0) {
+            result += 'lăm';
+        } else if (u === 4 && t > 1) {
+            result += 'tư';
+        } else if (u > 0) {
+            result += digits[u];
+        }
+
+        return result.trim();
+    };
+
+    const units = ['', 'nghìn', 'triệu', 'tỷ', 'nghìn tỷ', 'triệu tỷ'];
+    let result = '';
+    let index = 0;
+
+    while (num > 0) {
+        const group = num % 1000;
+        num = Math.floor(num / 1000);
+        if (group > 0) {
+            const groupText = readGroup(group, num > 0);
+            result = groupText + ' ' + units[index] + ' ' + result;
+        }
+        index++;
+    }
+
+    result = result.replace(/\s+/g, ' ').trim() + ' đồng';
+    if (isNegative) result = 'Âm ' + result;
+
+    return result.charAt(0).toUpperCase() + result.slice(1) + ' chẵn';
+};
