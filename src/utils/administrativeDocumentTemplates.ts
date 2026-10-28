@@ -89,3 +89,4 @@ export const applyPersonnelToForm = (employee: DirectoryEmployee, role: 'investi
 
 // A concise dot leader keeps every blank printable field visible without overflowing narrow columns.
 export const administrativePrintPlaceholder = '................................';
+export const administrativeIncidentTimePlaceholder = '';

@@ -11,6 +11,7 @@ import { administrativePrintTheme } from '../src/utils/administrativeDocumentTem
 import { administrativeIncidentSummaryRowCount } from '../src/utils/administrativeDocumentTemplates.ts';
 import { administrativeWritingDots } from '../src/utils/administrativeDocumentTemplates.ts';
 import { formatAdministrativeDate } from '../src/utils/administrativeDocumentTemplates.ts';
+import { administrativeIncidentTimePlaceholder } from '../src/utils/administrativeDocumentTemplates.ts';
 
 test('registers the three requested administrative print templates', () => {
     assert.deepEqual(
@@ -74,6 +75,10 @@ test('uses the supplied formal navy print palette', () => {
 
 test('formats the header date in Vietnamese administrative form', () => {
     assert.equal(formatAdministrativeDate('28/10/2026'), 'TP. Hồ Chí Minh, ngày 28 tháng 10 năm 2026');
+});
+
+test('keeps the incident-time label blank instead of adding dot leaders', () => {
+    assert.equal(administrativeIncidentTimePlaceholder, '');
 });
 
 test('fills administrative form identity fields from the employee directory', () => {
