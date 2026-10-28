@@ -34,6 +34,11 @@ export const administrativeAssetTableColumns = [
     { label: 'Ghi chú', width: 15 },
 ] as const;
 
+export const administrativeWritingLineCounts = {
+    standard: 3,
+    extended: 4,
+} as const;
+
 type PersonnelFields = Record<string, string>;
 type DirectoryEmployee = { id: string; full_name: string; job_position?: string; department?: string; phone_number?: string; date_of_birth?: string };
 
