@@ -23,3 +23,20 @@ export const administrativeDocumentTemplates: readonly AdministrativeDocumentTem
         description: 'Tường trình diễn biến, nguyên nhân và cam kết của người viết.',
     },
 ];
+
+type PersonnelFields = Record<string, string>;
+type DirectoryEmployee = { id: string; full_name: string; job_position?: string; department?: string; phone_number?: string; date_of_birth?: string };
+
+const formatBirthDate = (value?: string) => {
+    if (!value) return '';
+    const date = new Date(`${value}T00:00:00`);
+    if (Number.isNaN(date.getTime())) return value;
+    return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+};
+
+export const applyPersonnelToForm = (employee: DirectoryEmployee, role: 'investigator' | 'violator' | 'writer'): PersonnelFields => {
+    const identity = { name: employee.full_name || '', code: employee.id || '', title: employee.job_position || '', unit: employee.department || '', phone: employee.phone_number || '' };
+    if (role === 'investigator') return { investigator: identity.name, investigatorTitle: identity.title, investigatorUnit: identity.unit, investigatorPhone: identity.phone };
+    if (role === 'violator') return { violator: identity.name, violatorCode: identity.code, violatorTitle: identity.title, violatorUnit: identity.unit, violatorPhone: identity.phone };
+    return { writer: identity.name, birthday: formatBirthDate(employee.date_of_birth), position: identity.title, writerUnit: identity.unit };
+};

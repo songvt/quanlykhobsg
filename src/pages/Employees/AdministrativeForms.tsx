@@ -1,10 +1,14 @@
-import React, { useMemo, useRef, useState } from 'react';
-import { Box, Button, Card, CardActionArea, CardContent, Divider, Grid, Stack, TextField, Typography } from '@mui/material';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Autocomplete, Box, Button, Card, CardActionArea, CardContent, Chip, CircularProgress, Divider, Grid, Paper, Stack, TextField, Typography } from '@mui/material';
 import PrintIcon from '@mui/icons-material/Print';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import DescriptionIcon from '@mui/icons-material/Description';
-import { administrativeDocumentTemplates, type AdministrativeDocumentTemplateId } from '../../utils/administrativeDocumentTemplates';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch, RootState } from '../../store';
+import { fetchHRProfiles } from '../../store/slices/hrProfilesSlice';
+import type { HRProfile } from '../../types';
+import { administrativeDocumentTemplates, applyPersonnelToForm, type AdministrativeDocumentTemplateId } from '../../utils/administrativeDocumentTemplates';
 
 type FormValues = Record<string, string>;
 
@@ -25,10 +29,23 @@ const FormField = ({ label, field, values, setValues, multiline = false }: { lab
 );
 
 const AdministrativeForms = () => {
+    const dispatch = useDispatch<AppDispatch>();
+    const { items: employees, status: employeeStatus } = useSelector((state: RootState) => state.hrProfiles);
     const [templateId, setTemplateId] = useState<AdministrativeDocumentTemplateId>('incident-record');
     const [values, setValues] = useState<FormValues>(initialValues);
     const printRef = useRef<HTMLDivElement>(null);
     const selectedTemplate = useMemo(() => administrativeDocumentTemplates.find(template => template.id === templateId)!, [templateId]);
+    const employeeOptions = useMemo(() => [...employees].filter(employee => employee.full_name?.trim()).sort((first, second) => first.full_name.localeCompare(second.full_name, 'vi')), [employees]);
+    const filterEmployees = (options: HRProfile[], { inputValue }: { inputValue: string }) => {
+        const query = inputValue.trim().toLocaleLowerCase('vi');
+        return !query ? options : options.filter(employee => `${employee.full_name} ${employee.id} ${employee.department || ''} ${employee.job_position || ''}`.toLocaleLowerCase('vi').includes(query));
+    };
+
+    useEffect(() => { if (employeeStatus === 'idle') void dispatch(fetchHRProfiles()); }, [dispatch, employeeStatus]);
+    const fillPersonnel = (employee: HRProfile | null, role: 'investigator' | 'violator' | 'writer') => {
+        if (employee) setValues(previous => ({ ...previous, ...applyPersonnelToForm(employee, role) }));
+    };
+    const renderEmployeeOption = (props: React.HTMLAttributes<HTMLLIElement>, option: HRProfile) => <li {...props} key={option.id}><Box><Typography fontWeight={700}>{option.full_name}</Typography><Typography variant="caption" color="text.secondary">{option.id} · {option.job_position || 'Chưa cập nhật chức danh'} · {option.department || 'Chưa cập nhật đơn vị'}</Typography></Box></li>;
 
     const print = () => {
         const body = printRef.current?.innerHTML;
@@ -57,9 +74,21 @@ const AdministrativeForms = () => {
 
     return <Box p={{ xs: 1.5, md: 3 }}>
         <Typography variant="h4" fontWeight={900} color="primary">BIỂU MẪU HÀNH CHÍNH</Typography>
-        <Typography color="text.secondary" mt={0.5} mb={2.5}>Điền thông tin cần thiết, sau đó in theo đúng ba biểu mẫu đã cung cấp.</Typography>
+        <Typography color="text.secondary" mt={0.5} mb={2.5}>Chọn nhân sự từ Bảng nhân viên để tự điền thông tin nhận diện, sau đó bổ sung nội dung sự việc và in biểu mẫu.</Typography>
+        <Paper variant="outlined" sx={{ p: { xs: 1.5, md: 2 }, mb: 2.5, borderColor: 'primary.main', bgcolor: 'action.hover' }}>
+            <Stack direction={{ xs: 'column', md: 'row' }} alignItems={{ md: 'center' }} justifyContent="space-between" spacing={1} mb={2}>
+                <Box><Typography fontWeight={900}>NẠP THÔNG TIN TỪ BẢNG NHÂN VIÊN</Typography><Typography variant="body2" color="text.secondary">Tự động điền họ tên, mã nhân sự, chức danh, đơn vị, số điện thoại và ngày sinh khi có dữ liệu.</Typography></Box>
+                {employeeStatus === 'loading' && <Stack direction="row" spacing={1} alignItems="center"><CircularProgress size={18} /><Typography variant="body2">Đang tải nhân sự…</Typography></Stack>}
+            </Stack>
+            <Grid container spacing={1.5}>
+                <Grid size={{ xs: 12, md: 4 }}><Autocomplete options={employeeOptions} filterOptions={filterEmployees} value={employeeOptions.find(employee => employee.full_name === values.investigator) || null} onChange={(_, employee) => fillPersonnel(employee, 'investigator')} getOptionLabel={employee => employee.full_name} isOptionEqualToValue={(first, second) => first.id === second.id} renderOption={renderEmployeeOption} renderInput={params => <TextField {...params} label="Người kiểm tra / phát hiện" placeholder="Tìm theo tên hoặc mã nhân sự" />} /></Grid>
+                <Grid size={{ xs: 12, md: 4 }}><Autocomplete options={employeeOptions} filterOptions={filterEmployees} value={employeeOptions.find(employee => employee.full_name === values.violator) || null} onChange={(_, employee) => fillPersonnel(employee, 'violator')} getOptionLabel={employee => employee.full_name} isOptionEqualToValue={(first, second) => first.id === second.id} renderOption={renderEmployeeOption} renderInput={params => <TextField {...params} label="Người liên quan / vi phạm" placeholder="Tìm theo tên hoặc mã nhân sự" />} /></Grid>
+                <Grid size={{ xs: 12, md: 4 }}><Autocomplete options={employeeOptions} filterOptions={filterEmployees} value={employeeOptions.find(employee => employee.full_name === values.writer) || null} onChange={(_, employee) => fillPersonnel(employee, 'writer')} getOptionLabel={employee => employee.full_name} isOptionEqualToValue={(first, second) => first.id === second.id} renderOption={renderEmployeeOption} renderInput={params => <TextField {...params} label="Người viết tường trình" placeholder="Dùng cho mẫu tường trình" />} /></Grid>
+            </Grid>
+            <Stack direction="row" flexWrap="wrap" useFlexGap gap={0.75} mt={1.5}>{values.investigator && <Chip label={`Người kiểm tra: ${values.investigator} · ${values.investigatorTitle || 'chưa có chức danh'}`} />}{values.violator && <Chip color="warning" label={`Người liên quan: ${values.violator} · ${values.violatorCode || 'chưa có mã'}`} />}{values.writer && <Chip color="info" label={`Người tường trình: ${values.writer}`} />}</Stack>
+        </Paper>
         <Grid container spacing={1.5} mb={2.5}>{administrativeDocumentTemplates.map((template, index) => <Grid key={template.id} size={{ xs: 12, md: 4 }}><Card variant="outlined" sx={{ borderColor: template.id === templateId ? 'primary.main' : 'divider', height: '100%' }}><CardActionArea onClick={() => setTemplateId(template.id)} sx={{ height: '100%' }}><CardContent><Stack direction="row" spacing={1.25} alignItems="center">{index === 1 ? <WarningAmberIcon color="warning" /> : index === 2 ? <DescriptionIcon color="info" /> : <AssignmentIcon color="primary" />}<Typography fontWeight={800}>{template.title}</Typography></Stack><Typography variant="body2" color="text.secondary" mt={1}>{template.description}</Typography></CardContent></CardActionArea></Card></Grid>)}</Grid>
-        <Card variant="outlined"><CardContent><Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ sm: 'center' }} spacing={1.5} mb={2}><Box><Typography variant="h6" fontWeight={800}>{selectedTemplate.title}</Typography><Typography variant="body2" color="text.secondary">Thông tin được đưa trực tiếp vào bản in.</Typography></Box><Button variant="contained" startIcon={<PrintIcon />} onClick={print}>In biểu mẫu</Button></Stack><Divider sx={{ mb: 2.5 }} /><Grid container spacing={2}><Grid size={{ xs: 12, md: 4 }}><FormField label="Ngày lập" field="date" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 4 }}><FormField label="Người kiểm tra / phát hiện" field="investigator" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 4 }}><FormField label="Chức danh người kiểm tra" field="investigatorTitle" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 4 }}><FormField label="Người liên quan / vi phạm" field="violator" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 4 }}><FormField label="Mã nhân sự" field="violatorCode" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 4 }}><FormField label="Chức danh người liên quan" field="violatorTitle" values={values} setValues={setValues} /></Grid>{templateFields}</Grid></CardContent></Card>
+        <Card variant="outlined"><CardContent><Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ sm: 'center' }} spacing={1.5} mb={2}><Box><Typography variant="h6" fontWeight={800}>{selectedTemplate.title}</Typography><Typography variant="body2" color="text.secondary">Thông tin nhận diện có thể nhập tay hoặc được nạp từ Bảng nhân viên.</Typography></Box><Button variant="contained" startIcon={<PrintIcon />} onClick={print}>In biểu mẫu</Button></Stack><Divider sx={{ mb: 2.5 }} /><Typography fontWeight={800} mb={1}>THÔNG TIN NHẬN DIỆN</Typography><Grid container spacing={2}><Grid size={{ xs: 12, md: 3 }}><FormField label="Ngày lập" field="date" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 3 }}><FormField label="Người kiểm tra / phát hiện" field="investigator" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 3 }}><FormField label="Chức danh người kiểm tra" field="investigatorTitle" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 3 }}><FormField label="Đơn vị người kiểm tra" field="investigatorUnit" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 3 }}><FormField label="Số điện thoại người kiểm tra" field="investigatorPhone" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 3 }}><FormField label="Người liên quan / vi phạm" field="violator" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 2 }}><FormField label="Mã nhân sự" field="violatorCode" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 2 }}><FormField label="Chức danh người liên quan" field="violatorTitle" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 2 }}><FormField label="Đơn vị người liên quan" field="violatorUnit" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 3 }}><FormField label="Số điện thoại người liên quan" field="violatorPhone" values={values} setValues={setValues} /></Grid></Grid><Divider sx={{ my: 2.5 }} /><Typography fontWeight={800} mb={1}>NỘI DUNG BIỂU MẪU</Typography><Grid container spacing={2}>{templateFields}</Grid></CardContent></Card>
         <Box ref={printRef} sx={{ display: 'none' }}>{templateId === 'incident-record' ? incidentPrint() : templateId === 'violation-record' ? violationPrint() : explanationPrint()}</Box>
     </Box>;
 };
