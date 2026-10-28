@@ -13,14 +13,14 @@ import { administrativeWritingDots } from '../src/utils/administrativeDocumentTe
 import { formatAdministrativeDate } from '../src/utils/administrativeDocumentTemplates.ts';
 import { administrativeIncidentTimePlaceholder } from '../src/utils/administrativeDocumentTemplates.ts';
 
-test('registers the three requested administrative print templates', () => {
+test('registers all six administrative print templates', () => {
     assert.deepEqual(
         administrativeDocumentTemplates.map(template => template.id),
-        ['incident-record', 'violation-record', 'explanation-record'],
+        ['incident-record', 'violation-record', 'explanation-record', 'deployment-appointment', 'acceptance-handover', 'incident-checklist'],
     );
     assert.deepEqual(
         administrativeDocumentTemplates.map(template => template.title),
-        ['Biên bản hiện trường', 'Biên bản ghi nhận lỗi vi phạm', 'Biên bản tường trình'],
+        ['Biên bản hiện trường', 'Biên bản ghi nhận lỗi vi phạm', 'Biên bản tường trình', 'Biên bản xác nhận hẹn thời gian triển khai', 'Biên bản nghiệm thu – bàn giao thiết bị', 'Biên bản xử lý sự cố LLNL – Checklist'],
     );
 });
 

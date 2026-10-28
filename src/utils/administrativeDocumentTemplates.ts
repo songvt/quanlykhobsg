@@ -1,4 +1,4 @@
-export type AdministrativeDocumentTemplateId = 'incident-record' | 'violation-record' | 'explanation-record';
+export type AdministrativeDocumentTemplateId = 'incident-record' | 'violation-record' | 'explanation-record' | 'deployment-appointment' | 'acceptance-handover' | 'incident-checklist';
 
 export interface AdministrativeDocumentTemplate {
     id: AdministrativeDocumentTemplateId;
@@ -21,6 +21,21 @@ export const administrativeDocumentTemplates: readonly AdministrativeDocumentTem
         id: 'explanation-record',
         title: 'Biên bản tường trình',
         description: 'Tường trình diễn biến, nguyên nhân và cam kết của người viết.',
+    },
+    {
+        id: 'deployment-appointment',
+        title: 'Biên bản xác nhận hẹn thời gian triển khai',
+        description: 'Xác nhận vướng mắc và thời điểm hẹn lại triển khai dịch vụ CĐBR.',
+    },
+    {
+        id: 'acceptance-handover',
+        title: 'Biên bản nghiệm thu – bàn giao thiết bị',
+        description: 'Nghiệm thu dịch vụ, thông số cấu hình và vật tư thiết bị bàn giao.',
+    },
+    {
+        id: 'incident-checklist',
+        title: 'Biên bản xử lý sự cố LLNL – Checklist',
+        description: 'Ghi nhận sự cố, nội dung kiểm tra, phương án khắc phục và xác nhận hoàn tất.',
     },
 ];
 
