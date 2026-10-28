@@ -3,6 +3,7 @@ import test from 'node:test';
 import { administrativeDocumentTemplates } from '../src/utils/administrativeDocumentTemplates.ts';
 import { applyPersonnelToForm } from '../src/utils/administrativeDocumentTemplates.ts';
 import { administrativePrintPlaceholder } from '../src/utils/administrativeDocumentTemplates.ts';
+import { administrativeAssetTableColumns } from '../src/utils/administrativeDocumentTemplates.ts';
 
 test('registers the three requested administrative print templates', () => {
     assert.deepEqual(
@@ -17,6 +18,14 @@ test('registers the three requested administrative print templates', () => {
 
 test('uses a compact blank placeholder that cannot force an administrative form onto a new line', () => {
     assert.equal(administrativePrintPlaceholder.length, 0);
+});
+
+test('uses a balanced seven-column asset table for the incident record', () => {
+    assert.deepEqual(
+        administrativeAssetTableColumns.map(column => column.label),
+        ['TT', 'Tên tài sản / hàng hóa', 'ĐVT', 'SL', 'Tình trạng', 'Số serial', 'Ghi chú'],
+    );
+    assert.equal(administrativeAssetTableColumns.reduce((total, column) => total + column.width, 0), 100);
 });
 
 test('fills administrative form identity fields from the employee directory', () => {

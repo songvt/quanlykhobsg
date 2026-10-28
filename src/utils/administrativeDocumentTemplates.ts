@@ -24,6 +24,16 @@ export const administrativeDocumentTemplates: readonly AdministrativeDocumentTem
     },
 ];
 
+export const administrativeAssetTableColumns = [
+    { label: 'TT', width: 6 },
+    { label: 'Tên tài sản / hàng hóa', width: 31 },
+    { label: 'ĐVT', width: 8 },
+    { label: 'SL', width: 7 },
+    { label: 'Tình trạng', width: 18 },
+    { label: 'Số serial', width: 15 },
+    { label: 'Ghi chú', width: 15 },
+] as const;
+
 type PersonnelFields = Record<string, string>;
 type DirectoryEmployee = { id: string; full_name: string; job_position?: string; department?: string; phone_number?: string; date_of_birth?: string };
 
