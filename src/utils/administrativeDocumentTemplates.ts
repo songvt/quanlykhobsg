@@ -40,3 +40,6 @@ export const applyPersonnelToForm = (employee: DirectoryEmployee, role: 'investi
     if (role === 'violator') return { violator: identity.name, violatorCode: identity.code, violatorTitle: identity.title, violatorUnit: identity.unit, violatorPhone: identity.phone };
     return { writer: identity.name, birthday: formatBirthDate(employee.date_of_birth), position: identity.title, writerUnit: identity.unit };
 };
+
+// Blank values are represented by a ruled field in the print layout, not a long run of dots that can wrap across columns.
+export const administrativePrintPlaceholder = '';

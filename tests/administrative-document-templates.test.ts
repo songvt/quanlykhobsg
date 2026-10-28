@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { administrativeDocumentTemplates } from '../src/utils/administrativeDocumentTemplates.ts';
 import { applyPersonnelToForm } from '../src/utils/administrativeDocumentTemplates.ts';
+import { administrativePrintPlaceholder } from '../src/utils/administrativeDocumentTemplates.ts';
 
 test('registers the three requested administrative print templates', () => {
     assert.deepEqual(
@@ -12,6 +13,10 @@ test('registers the three requested administrative print templates', () => {
         administrativeDocumentTemplates.map(template => template.title),
         ['Biên bản hiện trường', 'Biên bản ghi nhận lỗi vi phạm', 'Biên bản tường trình'],
     );
+});
+
+test('uses a compact blank placeholder that cannot force an administrative form onto a new line', () => {
+    assert.equal(administrativePrintPlaceholder.length, 0);
 });
 
 test('fills administrative form identity fields from the employee directory', () => {
