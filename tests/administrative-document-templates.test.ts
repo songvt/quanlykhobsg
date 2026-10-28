@@ -8,6 +8,7 @@ import { administrativeWritingLineCounts } from '../src/utils/administrativeDocu
 import { administrativeWritingRule } from '../src/utils/administrativeDocumentTemplates.ts';
 import { administrativeIncidentSummaryColumns } from '../src/utils/administrativeDocumentTemplates.ts';
 import { administrativePrintTheme } from '../src/utils/administrativeDocumentTemplates.ts';
+import { administrativeIncidentSummaryRowCount } from '../src/utils/administrativeDocumentTemplates.ts';
 
 test('registers the three requested administrative print templates', () => {
     assert.deepEqual(
@@ -41,6 +42,10 @@ test('keeps the incident appendix on a second page with the source table heading
         administrativeAssetTableColumns.map(column => column.label),
         ['TT', 'Tên mặt hàng', 'ĐVT', 'Số lượng', 'Trạng thái', 'Serial', 'Đơn giá', 'Thành tiền'],
     );
+});
+
+test('limits the incident summary table to five handwritten rows', () => {
+    assert.equal(administrativeIncidentSummaryRowCount, 5);
 });
 
 test('reserves real ruled lines for handwritten administrative content', () => {

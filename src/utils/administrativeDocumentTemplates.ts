@@ -31,6 +31,8 @@ export const administrativeIncidentSummaryColumns = [
     { label: 'Serial', width: 25 },
 ] as const;
 
+export const administrativeIncidentSummaryRowCount = 5;
+
 export const administrativeAssetTableColumns = [
     { label: 'TT', width: 6 },
     { label: 'Tên mặt hàng', width: 25 },
