@@ -24,14 +24,22 @@ export const administrativeDocumentTemplates: readonly AdministrativeDocumentTem
     },
 ];
 
+export const administrativeIncidentSummaryColumns = [
+    { label: 'STT', width: 10 },
+    { label: 'Danh mục', width: 45 },
+    { label: 'Số lượng', width: 20 },
+    { label: 'Serial', width: 25 },
+] as const;
+
 export const administrativeAssetTableColumns = [
     { label: 'TT', width: 6 },
-    { label: 'Tên tài sản / hàng hóa', width: 31 },
-    { label: 'ĐVT', width: 8 },
-    { label: 'SL', width: 7 },
-    { label: 'Tình trạng', width: 18 },
-    { label: 'Số serial', width: 15 },
-    { label: 'Ghi chú', width: 15 },
+    { label: 'Tên mặt hàng', width: 25 },
+    { label: 'ĐVT', width: 7 },
+    { label: 'Số lượng', width: 10 },
+    { label: 'Trạng thái', width: 16 },
+    { label: 'Serial', width: 14 },
+    { label: 'Đơn giá', width: 11 },
+    { label: 'Thành tiền', width: 11 },
 ] as const;
 
 export const administrativeWritingLineCounts = {

@@ -6,6 +6,7 @@ import { administrativePrintPlaceholder } from '../src/utils/administrativeDocum
 import { administrativeAssetTableColumns } from '../src/utils/administrativeDocumentTemplates.ts';
 import { administrativeWritingLineCounts } from '../src/utils/administrativeDocumentTemplates.ts';
 import { administrativeWritingRule } from '../src/utils/administrativeDocumentTemplates.ts';
+import { administrativeIncidentSummaryColumns } from '../src/utils/administrativeDocumentTemplates.ts';
 
 test('registers the three requested administrative print templates', () => {
     assert.deepEqual(
@@ -22,12 +23,23 @@ test('uses a compact blank placeholder that cannot force an administrative form 
     assert.equal(administrativePrintPlaceholder.length, 0);
 });
 
-test('uses a balanced seven-column asset table for the incident record', () => {
+test('uses the source eight-column asset table for the incident appendix', () => {
     assert.deepEqual(
         administrativeAssetTableColumns.map(column => column.label),
-        ['TT', 'Tên tài sản / hàng hóa', 'ĐVT', 'SL', 'Tình trạng', 'Số serial', 'Ghi chú'],
+        ['TT', 'Tên mặt hàng', 'ĐVT', 'Số lượng', 'Trạng thái', 'Serial', 'Đơn giá', 'Thành tiền'],
     );
     assert.equal(administrativeAssetTableColumns.reduce((total, column) => total + column.width, 0), 100);
+});
+
+test('keeps the incident appendix on a second page with the source table headings', () => {
+    assert.deepEqual(
+        administrativeIncidentSummaryColumns.map(column => column.label),
+        ['STT', 'Danh mục', 'Số lượng', 'Serial'],
+    );
+    assert.deepEqual(
+        administrativeAssetTableColumns.map(column => column.label),
+        ['TT', 'Tên mặt hàng', 'ĐVT', 'Số lượng', 'Trạng thái', 'Serial', 'Đơn giá', 'Thành tiền'],
+    );
 });
 
 test('reserves real ruled lines for handwritten administrative content', () => {
