@@ -1,4 +1,4 @@
-export type AdministrativeDocumentTemplateId = 'incident-record' | 'violation-record' | 'explanation-record' | 'deployment-appointment' | 'acceptance-handover' | 'incident-checklist';
+export type AdministrativeDocumentTemplateId = 'incident-record' | 'violation-record' | 'explanation-record' | 'deployment-appointment' | 'acceptance-handover' | 'incident-checklist' | 'service-incident-record';
 
 export interface AdministrativeDocumentTemplate {
     id: AdministrativeDocumentTemplateId;
@@ -36,6 +36,11 @@ export const administrativeDocumentTemplates: readonly AdministrativeDocumentTem
         id: 'incident-checklist',
         title: 'Biên bản xử lý sự cố LLNL – Checklist',
         description: 'Ghi nhận sự cố, nội dung kiểm tra, phương án khắc phục và xác nhận hoàn tất.',
+    },
+    {
+        id: 'service-incident-record',
+        title: 'Biên bản xử lý sự cố dịch vụ',
+        description: 'Ghi nhận tiếp nhận, xử lý kỹ thuật và phản hồi khách hàng sau sự cố dịch vụ.',
     },
 ];
 
