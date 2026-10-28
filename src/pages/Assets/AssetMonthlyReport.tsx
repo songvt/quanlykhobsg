@@ -11,6 +11,7 @@ import ExcelJS from 'exceljs';
 import { fetchAssets, fetchAssetLogs } from '../../store/slices/assetsSlice';
 import type { AppDispatch, RootState } from '../../store';
 import type { Asset } from '../../types';
+import { monthlyReportColumnPercents, monthlyReportExcelColumnWidths } from '../../utils/assetMonthlyReportLayout';
 
 interface Props {
     reportType: 'CCDC' | 'TBVP';
@@ -241,10 +242,10 @@ const AssetMonthlyReport: React.FC<Props> = ({ reportType }) => {
         ws.getCell('A3').alignment = { horizontal:'center' };
 
         const headers = [
-            {label:'STT', width:6}, {label:'Loại tài sản', width:22}, {label:'Tên tài sản', width:35},
-            {label:`SL ${prevMonthLabel}`, width:12}, {label:'Tăng', width:8}, {label:'Giảm', width:8},
-            {label:'Tổng cộng', width:12}, {label:'Đang SD', width:12}, {label:'Hỏng', width:9},
-            {label:'Chưa SD', width:10}, {label:'Bảo dưỡng', width:12}, {label:'Phòng/Ban', width:20}, {label:'Loại', width:8}
+            {label:'STT', width:monthlyReportExcelColumnWidths[0]}, {label:'Loại tài sản', width:monthlyReportExcelColumnWidths[1]}, {label:'Tên tài sản', width:monthlyReportExcelColumnWidths[2]},
+            {label:`SL ${prevMonthLabel}`, width:monthlyReportExcelColumnWidths[3]}, {label:'Tăng', width:monthlyReportExcelColumnWidths[4]}, {label:'Giảm', width:monthlyReportExcelColumnWidths[5]},
+            {label:'Tổng cộng', width:monthlyReportExcelColumnWidths[6]}, {label:'Đang SD', width:monthlyReportExcelColumnWidths[7]}, {label:'Hỏng', width:monthlyReportExcelColumnWidths[8]},
+            {label:'Chưa SD', width:monthlyReportExcelColumnWidths[9]}, {label:'Bảo dưỡng', width:monthlyReportExcelColumnWidths[10]}, {label:'Phòng/Ban', width:monthlyReportExcelColumnWidths[11]}, {label:'Loại', width:monthlyReportExcelColumnWidths[12]}
         ];
         headers.forEach((h, i) => {
             const cell = ws.getCell(5, i + 1);
@@ -380,7 +381,10 @@ const AssetMonthlyReport: React.FC<Props> = ({ reportType }) => {
                     </div>
                 </div>
 
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Times New Roman' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Times New Roman', tableLayout: 'fixed' }}>
+                    <colgroup>
+                        {Object.values(monthlyReportColumnPercents).map((width, index) => <col key={index} style={{ width: `${width}%` }} />)}
+                    </colgroup>
                     <thead>
                         <tr>
                             <th style={headerStyle} rowSpan={2}>STT</th>
