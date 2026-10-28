@@ -7,6 +7,7 @@ import { administrativeAssetTableColumns } from '../src/utils/administrativeDocu
 import { administrativeWritingLineCounts } from '../src/utils/administrativeDocumentTemplates.ts';
 import { administrativeWritingRule } from '../src/utils/administrativeDocumentTemplates.ts';
 import { administrativeIncidentSummaryColumns } from '../src/utils/administrativeDocumentTemplates.ts';
+import { administrativePrintTheme } from '../src/utils/administrativeDocumentTemplates.ts';
 
 test('registers the three requested administrative print templates', () => {
     assert.deepEqual(
@@ -49,6 +50,15 @@ test('reserves real ruled lines for handwritten administrative content', () => {
 
 test('uses a solid print rule with a fixed physical height', () => {
     assert.deepEqual(administrativeWritingRule, { style: 'solid', heightMm: 8 });
+});
+
+test('uses the supplied formal navy print palette', () => {
+    assert.deepEqual(administrativePrintTheme, {
+        navy: '#1f416a',
+        inkBlue: '#0f3b73',
+        paleBlue: '#eef4fb',
+        gridBlue: '#b7c9df',
+    });
 });
 
 test('fills administrative form identity fields from the employee directory', () => {

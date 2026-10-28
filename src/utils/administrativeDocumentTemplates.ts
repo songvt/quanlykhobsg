@@ -52,6 +52,13 @@ export const administrativeWritingRule = {
     heightMm: 8,
 } as const;
 
+export const administrativePrintTheme = {
+    navy: '#1f416a',
+    inkBlue: '#0f3b73',
+    paleBlue: '#eef4fb',
+    gridBlue: '#b7c9df',
+} as const;
+
 type PersonnelFields = Record<string, string>;
 type DirectoryEmployee = { id: string; full_name: string; job_position?: string; department?: string; phone_number?: string; date_of_birth?: string };
 
