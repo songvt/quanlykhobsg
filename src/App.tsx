@@ -22,6 +22,7 @@ const Reports         = lazy(() => import('./pages/Reports/Reports'));
 const EmployeeList    = lazy(() => import('./pages/Employees/EmployeeList'));
 const KpiGrades       = lazy(() => import('./pages/Employees/KpiGrades'));
 const AdminRequests   = lazy(() => import('./pages/Employees/AdminRequests'));
+const AdministrativeForms = lazy(() => import('./pages/Employees/AdministrativeForms'));
 const ChangePassword  = lazy(() => import('./pages/ChangePassword'));
 const UserProfile     = lazy(() => import('./pages/UserProfile'));
 const EmployeeReturns = lazy(() => import('./pages/EmployeeReturns/EmployeeReturns'));
@@ -186,6 +187,7 @@ function App() {
                                 <Route element={<ProtectedRoute allowedRoles={['admin', 'manager']} />}>
                                     <Route path="kpi-grades" element={<KpiGrades />} />
                                     <Route path="admin-requests" element={<AdminRequests />} />
+                                    <Route path="administrative-forms" element={<AdministrativeForms />} />
                                 </Route>
 
                                 <Route path="profile" element={<UserProfile />} />

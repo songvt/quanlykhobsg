@@ -138,7 +138,7 @@ const ModernSidebar: React.FC<ModernSidebarProps> = ({ isMobile, handleDrawerTog
         if (location.pathname.startsWith('/assets/periodic-audit')) setExpandPeriodicAudit(true);
         if (['/inventory-report', '/detailed-outbound-report', '/monthly-settlement', '/goods-settlement', '/stock-summary-report', '/warehouse-layout', '/stock-map'].includes(location.pathname)) setExpandXnk(true);
 
-        if (['/employees', '/attendance', '/attendance-summary', '/admin-requests', '/kpi-grades', '/payroll', '/bonus-penalty', '/payroll-settings', '/feedback-box'].includes(location.pathname)) setExpandAdminHr(true);
+        if (['/employees', '/attendance', '/attendance-summary', '/admin-requests', '/administrative-forms', '/kpi-grades', '/payroll', '/bonus-penalty', '/payroll-settings', '/feedback-box'].includes(location.pathname)) setExpandAdminHr(true);
         if (location.pathname.startsWith('/zalo')) setExpandZalo(true);
         if (location.pathname.startsWith('/zalo') || ['/announcements', '/ai-assistant', '/document-summary', '/image-merge', '/pdf-tools', '/print-bill'].includes(location.pathname)) setExpandUtilities(true);
         if (['/qr-generator', '/barcode-generator'].includes(location.pathname)) setExpandQr(true);
@@ -490,10 +490,11 @@ const ModernSidebar: React.FC<ModernSidebarProps> = ({ isMobile, handleDrawerTog
                                 ...(hasPermission('employees.view') ? [{ text: 'Nhân viên', path: '/employees', icon: <Users size={18} /> }] : []),
                                 ...(profile?.role === 'admin' || profile?.role === 'manager' ? [
                                     { text: 'Phiếu hành chính', path: '/admin-requests', icon: <FileSignature size={18} /> },
+                                    { text: 'Biểu mẫu in', path: '/administrative-forms', icon: <FileText size={18} /> },
                                     { text: 'Chấm điểm KPI', path: '/kpi-grades', icon: <Target size={18} /> },
                                 ] : [])
                             ];
-                            const isGroupActive = ['/employees', '/admin-requests', '/kpi-grades'].includes(location.pathname);
+                            const isGroupActive = ['/employees', '/admin-requests', '/administrative-forms', '/kpi-grades'].includes(location.pathname);
                             return (
                                 <React.Fragment key="admin-hr-group">
                                     <ListItem disablePadding>
