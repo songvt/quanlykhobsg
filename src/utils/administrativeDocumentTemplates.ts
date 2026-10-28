@@ -39,6 +39,11 @@ export const administrativeWritingLineCounts = {
     extended: 4,
 } as const;
 
+export const administrativeWritingRule = {
+    style: 'solid',
+    heightMm: 8,
+} as const;
+
 type PersonnelFields = Record<string, string>;
 type DirectoryEmployee = { id: string; full_name: string; job_position?: string; department?: string; phone_number?: string; date_of_birth?: string };
 

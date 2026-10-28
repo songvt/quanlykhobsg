@@ -5,6 +5,7 @@ import { applyPersonnelToForm } from '../src/utils/administrativeDocumentTemplat
 import { administrativePrintPlaceholder } from '../src/utils/administrativeDocumentTemplates.ts';
 import { administrativeAssetTableColumns } from '../src/utils/administrativeDocumentTemplates.ts';
 import { administrativeWritingLineCounts } from '../src/utils/administrativeDocumentTemplates.ts';
+import { administrativeWritingRule } from '../src/utils/administrativeDocumentTemplates.ts';
 
 test('registers the three requested administrative print templates', () => {
     assert.deepEqual(
@@ -32,6 +33,10 @@ test('uses a balanced seven-column asset table for the incident record', () => {
 test('reserves real ruled lines for handwritten administrative content', () => {
     assert.equal(administrativeWritingLineCounts.standard, 3);
     assert.equal(administrativeWritingLineCounts.extended, 4);
+});
+
+test('uses a solid print rule with a fixed physical height', () => {
+    assert.deepEqual(administrativeWritingRule, { style: 'solid', heightMm: 8 });
 });
 
 test('fills administrative form identity fields from the employee directory', () => {
