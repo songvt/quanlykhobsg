@@ -1,14 +1,20 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Autocomplete, Box, Button, Card, CardActionArea, CardContent, Chip, CircularProgress, Divider, Grid, Paper, Stack, TextField, Typography } from '@mui/material';
+import { Autocomplete, Box, Button, Card, CardActionArea, CardContent, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid, Paper, Stack, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography } from '@mui/material';
 import PrintIcon from '@mui/icons-material/Print';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import DescriptionIcon from '@mui/icons-material/Description';
+import SaveIcon from '@mui/icons-material/Save';
+import HistoryIcon from '@mui/icons-material/History';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from '../../store';
 import { fetchHRProfiles } from '../../store/slices/hrProfilesSlice';
 import type { HRProfile } from '../../types';
 import { administrativeAssetTableColumns, administrativeDocumentTemplates, administrativeIncidentSummaryColumns, administrativeIncidentSummaryRowCount, administrativeIncidentTimePlaceholder, administrativePrintPlaceholder, administrativePrintTheme, administrativeWritingDots, administrativeWritingLineCounts, administrativeWritingRule, applyPersonnelToForm, formatAdministrativeDate, type AdministrativeDocumentTemplateId } from '../../utils/administrativeDocumentTemplates';
+import { readAdministrativeIncidentHistory, saveAdministrativeIncidentHistory, type AdministrativeIncidentHistoryEntry } from '../../utils/administrativeIncidentHistory';
 
 type FormValues = Record<string, string>;
 
@@ -34,6 +40,8 @@ const AdministrativeForms = () => {
     const { items: employees, status: employeeStatus } = useSelector((state: RootState) => state.hrProfiles);
     const [templateId, setTemplateId] = useState<AdministrativeDocumentTemplateId>('incident-record');
     const [values, setValues] = useState<FormValues>(initialValues);
+    const [incidentHistory, setIncidentHistory] = useState<AdministrativeIncidentHistoryEntry[]>(() => readAdministrativeIncidentHistory());
+    const [historyOpen, setHistoryOpen] = useState(false);
     const printRef = useRef<HTMLDivElement>(null);
     const selectedTemplate = useMemo(() => administrativeDocumentTemplates.find(template => template.id === templateId)!, [templateId]);
     const employeeOptions = useMemo(() => [...employees].filter(employee => employee.full_name?.trim()).sort((first, second) => first.full_name.localeCompare(second.full_name, 'vi')), [employees]);
@@ -48,7 +56,42 @@ const AdministrativeForms = () => {
     };
     const renderEmployeeOption = (props: React.HTMLAttributes<HTMLLIElement>, option: HRProfile) => <li {...props} key={option.id}><Box><Typography fontWeight={700}>{option.full_name}</Typography><Typography variant="caption" color="text.secondary">{option.id} · {option.job_position || 'Chưa cập nhật chức danh'} · {option.department || 'Chưa cập nhật đơn vị'}</Typography></Box></li>;
 
+    const saveIncidentRecord = () => {
+        const record = saveAdministrativeIncidentHistory({
+            date: values.date, place: values.place, investigator: values.investigator, investigatorTitle: values.investigatorTitle,
+            investigatorUnit: values.investigatorUnit, violator: values.violator, violatorCode: values.violatorCode,
+            violatorTitle: values.violatorTitle, incidentTime: values.incidentTime, incidentDetail: values.incidentDetail,
+            incidentItems: values.incidentItems, cause: values.cause, faultAssessment: values.faultAssessment,
+            proposal: values.proposal, compensationDeadline: values.compensationDeadline,
+        });
+        setIncidentHistory(previous => [record, ...previous]);
+    };
+
+    const exportIncidentHistory = async () => {
+        const workbook = new ExcelJS.Workbook();
+        workbook.creator = 'QL Kho GGS';
+        const sheet = workbook.addWorksheet('Lịch sử biên bản hiện trường');
+        sheet.columns = [
+            { header: 'STT', key: 'stt', width: 8 }, { header: 'Thời điểm lưu', key: 'savedAt', width: 22 },
+            { header: 'Ngày lập', key: 'date', width: 14 }, { header: 'Địa điểm', key: 'place', width: 28 },
+            { header: 'Người kiểm tra', key: 'investigator', width: 24 }, { header: 'Chức danh', key: 'investigatorTitle', width: 24 },
+            { header: 'Đơn vị', key: 'investigatorUnit', width: 30 }, { header: 'Người liên quan', key: 'violator', width: 24 },
+            { header: 'Mã nhân viên', key: 'violatorCode', width: 16 }, { header: 'Thời gian sự việc', key: 'incidentTime', width: 22 },
+            { header: 'Diễn biến vụ việc', key: 'incidentDetail', width: 48 }, { header: 'Tài sản thiệt hại', key: 'incidentItems', width: 38 },
+            { header: 'Nguyên nhân', key: 'cause', width: 36 }, { header: 'Đánh giá lỗi', key: 'faultAssessment', width: 32 },
+            { header: 'Đề xuất, kiến nghị', key: 'proposal', width: 36 }, { header: 'Hạn bồi thường', key: 'compensationDeadline', width: 18 },
+        ];
+        incidentHistory.forEach((record, index) => sheet.addRow({ ...record, stt: index + 1, savedAt: new Date(record.savedAt).toLocaleString('vi-VN') }));
+        sheet.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        sheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1F416A' } };
+        sheet.views = [{ state: 'frozen', ySplit: 1 }];
+        sheet.eachRow(row => { row.alignment = { vertical: 'top', wrapText: true }; });
+        const buffer = await workbook.xlsx.writeBuffer();
+        saveAs(new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), `Lich_su_bien_ban_hien_truong_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    };
+
     const print = () => {
+        if (templateId === 'incident-record') saveIncidentRecord();
         const body = printRef.current?.innerHTML;
         if (!body) return;
         const popup = window.open('', '_blank', 'width=1100,height=800');
@@ -110,8 +153,9 @@ const AdministrativeForms = () => {
             <Stack direction="row" flexWrap="wrap" useFlexGap gap={0.75} mt={1.5}>{values.investigator && <Chip label={`Người kiểm tra: ${values.investigator} · ${values.investigatorTitle || 'chưa có chức danh'}`} />}{values.violator && <Chip color="warning" label={`Người liên quan: ${values.violator} · ${values.violatorCode || 'chưa có mã'}`} />}{values.writer && <Chip color="info" label={`Người tường trình: ${values.writer}`} />}</Stack>
         </Paper>
         <Grid container spacing={1.5} mb={2.5}>{administrativeDocumentTemplates.map((template, index) => <Grid key={template.id} size={{ xs: 12, md: 4 }}><Card variant="outlined" sx={{ borderColor: template.id === templateId ? 'primary.main' : 'divider', height: '100%' }}><CardActionArea onClick={() => setTemplateId(template.id)} sx={{ height: '100%' }}><CardContent><Stack direction="row" spacing={1.25} alignItems="center">{index === 1 ? <WarningAmberIcon color="warning" /> : index === 2 ? <DescriptionIcon color="info" /> : <AssignmentIcon color="primary" />}<Typography fontWeight={800}>{template.title}</Typography></Stack><Typography variant="body2" color="text.secondary" mt={1}>{template.description}</Typography></CardContent></CardActionArea></Card></Grid>)}</Grid>
-        <Card variant="outlined"><CardContent><Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ sm: 'center' }} spacing={1.5} mb={2}><Box><Typography variant="h6" fontWeight={800}>{selectedTemplate.title}</Typography><Typography variant="body2" color="text.secondary">Thông tin nhận diện có thể nhập tay hoặc được nạp từ Bảng nhân viên.</Typography></Box><Button variant="contained" startIcon={<PrintIcon />} onClick={print}>In biểu mẫu</Button></Stack><Divider sx={{ mb: 2.5 }} /><Typography fontWeight={800} mb={1}>THÔNG TIN NHẬN DIỆN</Typography><Grid container spacing={2}><Grid size={{ xs: 12, md: 3 }}><FormField label="Ngày lập" field="date" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 3 }}><FormField label="Người kiểm tra / phát hiện" field="investigator" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 3 }}><FormField label="Chức danh người kiểm tra" field="investigatorTitle" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 3 }}><FormField label="Đơn vị người kiểm tra" field="investigatorUnit" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 3 }}><FormField label="Số điện thoại người kiểm tra" field="investigatorPhone" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 3 }}><FormField label="Người liên quan / vi phạm" field="violator" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 2 }}><FormField label="Mã nhân sự" field="violatorCode" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 2 }}><FormField label="Chức danh người liên quan" field="violatorTitle" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 2 }}><FormField label="Đơn vị người liên quan" field="violatorUnit" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 3 }}><FormField label="Số điện thoại người liên quan" field="violatorPhone" values={values} setValues={setValues} /></Grid></Grid><Divider sx={{ my: 2.5 }} /><Typography fontWeight={800} mb={1}>NỘI DUNG BIỂU MẪU</Typography><Grid container spacing={2}>{extraTemplateFields || templateFields}</Grid></CardContent></Card>
+        <Card variant="outlined"><CardContent><Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ sm: 'center' }} spacing={1.5} mb={2}><Box><Typography variant="h6" fontWeight={800}>{selectedTemplate.title}</Typography><Typography variant="body2" color="text.secondary">Thông tin nhận diện có thể nhập tay hoặc được nạp từ Bảng nhân viên.</Typography></Box><Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>{templateId === 'incident-record' && <><Button variant="outlined" startIcon={<SaveIcon />} onClick={saveIncidentRecord}>Lưu lịch sử</Button><Button variant="outlined" startIcon={<HistoryIcon />} onClick={() => setHistoryOpen(true)}>Lịch sử ({incidentHistory.length})</Button><Button variant="outlined" startIcon={<FileDownloadIcon />} onClick={exportIncidentHistory} disabled={!incidentHistory.length}>Xuất Excel</Button></>}<Button variant="contained" startIcon={<PrintIcon />} onClick={print}>In biểu mẫu</Button></Stack></Stack><Divider sx={{ mb: 2.5 }} /><Typography fontWeight={800} mb={1}>THÔNG TIN NHẬN DIỆN</Typography><Grid container spacing={2}><Grid size={{ xs: 12, md: 3 }}><FormField label="Ngày lập" field="date" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 3 }}><FormField label="Người kiểm tra / phát hiện" field="investigator" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 3 }}><FormField label="Chức danh người kiểm tra" field="investigatorTitle" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 3 }}><FormField label="Đơn vị người kiểm tra" field="investigatorUnit" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 3 }}><FormField label="Số điện thoại người kiểm tra" field="investigatorPhone" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 3 }}><FormField label="Người liên quan / vi phạm" field="violator" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 2 }}><FormField label="Mã nhân sự" field="violatorCode" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 2 }}><FormField label="Chức danh người liên quan" field="violatorTitle" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 2 }}><FormField label="Đơn vị người liên quan" field="violatorUnit" values={values} setValues={setValues} /></Grid><Grid size={{ xs: 12, md: 3 }}><FormField label="Số điện thoại người liên quan" field="violatorPhone" values={values} setValues={setValues} /></Grid></Grid><Divider sx={{ my: 2.5 }} /><Typography fontWeight={800} mb={1}>NỘI DUNG BIỂU MẪU</Typography><Grid container spacing={2}>{extraTemplateFields || templateFields}</Grid></CardContent></Card>
         <Box ref={printRef} sx={{ display: 'none' }}>{templateId === 'incident-record' ? incidentPrint() : templateId === 'violation-record' ? violationPrint() : templateId === 'explanation-record' ? explanationPrint() : templateId === 'deployment-appointment' ? appointmentPrint() : templateId === 'acceptance-handover' ? acceptancePrint() : templateId === 'incident-checklist' ? checklistPrint() : serviceIncidentPrint()}</Box>
+        <Dialog open={historyOpen} onClose={() => setHistoryOpen(false)} fullWidth maxWidth="lg"><DialogTitle>LỊCH SỬ BIÊN BẢN HIỆN TRƯỜNG</DialogTitle><DialogContent dividers><Table size="small"><TableHead><TableRow><TableCell>Thời điểm lưu</TableCell><TableCell>Ngày lập</TableCell><TableCell>Địa điểm</TableCell><TableCell>Người kiểm tra</TableCell><TableCell>Người liên quan</TableCell><TableCell>Diễn biến</TableCell></TableRow></TableHead><TableBody>{incidentHistory.map(record => <TableRow key={record.id}><TableCell>{new Date(record.savedAt).toLocaleString('vi-VN')}</TableCell><TableCell>{record.date}</TableCell><TableCell>{record.place}</TableCell><TableCell>{record.investigator}</TableCell><TableCell>{record.violator}</TableCell><TableCell sx={{ maxWidth: 280, whiteSpace: 'pre-wrap' }}>{record.incidentDetail}</TableCell></TableRow>)}{!incidentHistory.length && <TableRow><TableCell colSpan={6} align="center">Chưa có biên bản nào được lưu.</TableCell></TableRow>}</TableBody></Table></DialogContent><DialogActions><Button startIcon={<FileDownloadIcon />} onClick={exportIncidentHistory} disabled={!incidentHistory.length}>Xuất Excel</Button><Button onClick={() => setHistoryOpen(false)}>Đóng</Button></DialogActions></Dialog>
     </Box>;
 };
 
