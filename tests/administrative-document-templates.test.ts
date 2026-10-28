@@ -10,6 +10,7 @@ import { administrativeIncidentSummaryColumns } from '../src/utils/administrativ
 import { administrativePrintTheme } from '../src/utils/administrativeDocumentTemplates.ts';
 import { administrativeIncidentSummaryRowCount } from '../src/utils/administrativeDocumentTemplates.ts';
 import { administrativeWritingDots } from '../src/utils/administrativeDocumentTemplates.ts';
+import { formatAdministrativeDate } from '../src/utils/administrativeDocumentTemplates.ts';
 
 test('registers the three requested administrative print templates', () => {
     assert.deepEqual(
@@ -69,6 +70,10 @@ test('uses the supplied formal navy print palette', () => {
         paleBlue: '#eef4fb',
         gridBlue: '#b7c9df',
     });
+});
+
+test('formats the header date in Vietnamese administrative form', () => {
+    assert.equal(formatAdministrativeDate('28/10/2026'), 'TP. Hồ Chí Minh, ngày 28 tháng 10 năm 2026');
 });
 
 test('fills administrative form identity fields from the employee directory', () => {

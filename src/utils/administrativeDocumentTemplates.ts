@@ -63,6 +63,13 @@ export const administrativePrintTheme = {
     gridBlue: '#b7c9df',
 } as const;
 
+export const formatAdministrativeDate = (value: string) => {
+    const match = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (!match) return 'TP. Hồ Chí Minh, ngày .... tháng .... năm ....';
+    const [, day, month, year] = match;
+    return `TP. Hồ Chí Minh, ngày ${day.padStart(2, '0')} tháng ${month.padStart(2, '0')} năm ${year}`;
+};
+
 type PersonnelFields = Record<string, string>;
 type DirectoryEmployee = { id: string; full_name: string; job_position?: string; department?: string; phone_number?: string; date_of_birth?: string };
 
