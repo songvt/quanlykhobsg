@@ -80,5 +80,5 @@ export const applyPersonnelToForm = (employee: DirectoryEmployee, role: 'investi
     return { writer: identity.name, birthday: formatBirthDate(employee.date_of_birth), position: identity.title, writerUnit: identity.unit };
 };
 
-// Blank values are represented by a ruled field in the print layout, not a long run of dots that can wrap across columns.
-export const administrativePrintPlaceholder = '';
+// A concise dot leader keeps every blank printable field visible without overflowing narrow columns.
+export const administrativePrintPlaceholder = '................................';

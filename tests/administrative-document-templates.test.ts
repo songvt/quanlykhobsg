@@ -22,8 +22,8 @@ test('registers the three requested administrative print templates', () => {
     );
 });
 
-test('uses a compact blank placeholder that cannot force an administrative form onto a new line', () => {
-    assert.equal(administrativePrintPlaceholder.length, 0);
+test('uses dot leaders for all blank administrative print fields', () => {
+    assert.match(administrativePrintPlaceholder, /^\.{20,}$/);
 });
 
 test('uses the source eight-column asset table for the incident appendix', () => {
