@@ -8,7 +8,7 @@
     "dev:api": "tsx watch server.ts",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "test": "tsx --test tests/api-error-message.test.ts && tsx --test tests/hr-profiles-import.test.ts && tsx --test tests/hr-employee-sync.test.ts && tsx --test tests/date-utils.test.ts && tsx --test tests/warehouse-refresh.test.ts",
+    "test": "tsx --test tests/api-error-message.test.ts && tsx --test tests/hr-profiles-import.test.ts && tsx --test tests/hr-employee-sync.test.ts && tsx --test tests/date-utils.test.ts && tsx --test tests/warehouse-refresh.test.ts && tsx --test tests/sync-queue.test.ts",
     "preview": "vite preview"
   },
   "dependencies": {
