@@ -59,7 +59,7 @@ test('uses a solid print rule with a fixed physical height', () => {
 });
 
 test('uses visible dot leaders for blank handwritten writing lines', () => {
-    assert.match(administrativeWritingDots, /^\.{40,}$/);
+    assert.match(administrativeWritingDots, /^\.{250,}$/);
 });
 
 test('uses the supplied formal navy print palette', () => {
