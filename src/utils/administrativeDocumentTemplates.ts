@@ -54,6 +54,8 @@ export const administrativeWritingRule = {
     heightMm: 8,
 } as const;
 
+export const administrativeWritingDots = '................................................................................................................................................................';
+
 export const administrativePrintTheme = {
     navy: '#1f416a',
     inkBlue: '#0f3b73',
