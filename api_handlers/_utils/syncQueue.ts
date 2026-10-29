@@ -13,9 +13,17 @@ const formatLocalDate = (date: Date | string) => {
 const sleep = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
 
 /** Convert a database record to the shape accepted by the Google Sheet. */
-const toSheetRow = (payload: any, tableName: string) => {
+export const toSheetRow = (payload: any, tableName: string) => {
     const item = { ...payload };
     delete item.product;
+
+    // Google Sheets only accepts scalar values. Keep JSON/JSONB fields intact
+    // by serializing them instead of silently dropping their contents.
+    for (const [key, value] of Object.entries(item)) {
+        if (value !== null && typeof value === 'object' && !(value instanceof Date)) {
+            item[key] = JSON.stringify(value);
+        }
+    }
 
     // Serial numbers are identifiers, never quantities or dates. Force text so
     // Google Sheets cannot coerce a 14-digit serial into a date/scientific value.
@@ -56,18 +64,32 @@ const addRowsInChunks = async (sheet: any, rows: any[]) => {
  * Supabase is the source of truth. A replace job is successful only after the
  * Google Sheets mirror contains exactly the same number of rows and keys.
  */
-const verifyReplacementMirror = async (sheet: any, items: any[], tableName: string) => {
+export const assertReplacementMirror = (mirroredRows: any[], items: any[], tableName: string) => {
     const primaryKey = tableName === 'district_storekeepers' ? 'district' : 'id';
     const expectedRows = items.map(item => toSheetRow(item, tableName));
-    const mirroredRows = await sheet.getRows();
     if (mirroredRows.length !== expectedRows.length) {
         throw new Error(`Đối soát Google Sheets thất bại: Supabase có ${expectedRows.length} dòng, Google Sheets có ${mirroredRows.length} dòng.`);
     }
+    const expectedKeys = new Set(expectedRows.map(row => String(row[primaryKey] || '')));
     const mirroredKeys = new Set(mirroredRows.map(row => String(row.get(primaryKey) || '')));
-    const missingKeys = expectedRows.filter(row => !mirroredKeys.has(String(row[primaryKey] || '')));
+    if (expectedKeys.size !== expectedRows.length) {
+        throw new Error(`Đối soát Google Sheets thất bại: Supabase có khóa ${primaryKey} trùng hoặc rỗng.`);
+    }
+    if (mirroredKeys.size !== mirroredRows.length || mirroredKeys.has('')) {
+        throw new Error(`Đối soát Google Sheets thất bại: Google Sheets có khóa ${primaryKey} trùng hoặc rỗng.`);
+    }
+    const missingKeys = [...expectedKeys].filter(key => !mirroredKeys.has(key));
     if (missingKeys.length) {
         throw new Error(`Đối soát Google Sheets thất bại: thiếu ${missingKeys.length} khóa ${primaryKey} từ Supabase.`);
     }
+    const staleKeys = [...mirroredKeys].filter(key => !expectedKeys.has(key));
+    if (staleKeys.length) {
+        throw new Error(`Đối soát Google Sheets thất bại: có ${staleKeys.length} khóa ${primaryKey} không còn tồn tại trong Supabase.`);
+    }
+};
+
+const verifyReplacementMirror = async (sheet: any, items: any[], tableName: string) => {
+    assertReplacementMirror(await sheet.getRows(), items, tableName);
 };
 
 let isSyncing = false;
