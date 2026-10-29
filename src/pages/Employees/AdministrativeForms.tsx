@@ -69,22 +69,52 @@ const AdministrativeForms = () => {
     const exportIncidentHistory = async () => {
         const workbook = new ExcelJS.Workbook();
         workbook.creator = 'QL Kho GGS';
+        workbook.created = new Date();
         const sheet = workbook.addWorksheet('Lịch sử biên bản hiện trường');
         sheet.columns = [
-            { header: 'STT', key: 'stt', width: 8 }, { header: 'Thời điểm lưu', key: 'savedAt', width: 22 },
-            { header: 'Ngày lập', key: 'date', width: 14 }, { header: 'Địa điểm', key: 'place', width: 28 },
-            { header: 'Người kiểm tra', key: 'investigator', width: 24 }, { header: 'Chức danh', key: 'investigatorTitle', width: 24 },
-            { header: 'Đơn vị', key: 'investigatorUnit', width: 30 }, { header: 'Người liên quan', key: 'violator', width: 24 },
-            { header: 'Mã nhân viên', key: 'violatorCode', width: 16 }, { header: 'Thời gian sự việc', key: 'incidentTime', width: 22 },
-            { header: 'Diễn biến vụ việc', key: 'incidentDetail', width: 48 }, { header: 'Tài sản thiệt hại', key: 'incidentItems', width: 38 },
-            { header: 'Nguyên nhân', key: 'cause', width: 36 }, { header: 'Đánh giá lỗi', key: 'faultAssessment', width: 32 },
-            { header: 'Đề xuất, kiến nghị', key: 'proposal', width: 36 }, { header: 'Hạn bồi thường', key: 'compensationDeadline', width: 18 },
+            { key: 'stt', width: 7 }, { key: 'savedAt', width: 20 }, { key: 'date', width: 13 }, { key: 'place', width: 27 },
+            { key: 'investigator', width: 22 }, { key: 'investigatorTitle', width: 23 }, { key: 'investigatorUnit', width: 28 }, { key: 'violator', width: 22 },
+            { key: 'violatorCode', width: 15 }, { key: 'incidentTime', width: 21 }, { key: 'incidentDetail', width: 42 }, { key: 'incidentItems', width: 36 },
+            { key: 'cause', width: 32 }, { key: 'faultAssessment', width: 28 }, { key: 'proposal', width: 32 }, { key: 'compensationDeadline', width: 17 },
         ];
+        const headers = ['STT', 'Thời điểm lưu', 'Ngày lập', 'Địa điểm', 'Người kiểm tra', 'Chức danh', 'Đơn vị', 'Người liên quan', 'Mã nhân viên', 'Thời gian sự việc', 'Diễn biến vụ việc', 'Tài sản thiệt hại\n(tên / SL / serial)', 'Nguyên nhân', 'Đánh giá lỗi', 'Đề xuất, kiến nghị', 'Hạn bồi thường'];
+        sheet.mergeCells('A1:P1');
+        sheet.getCell('A1').value = 'LỊCH SỬ BIÊN BẢN HIỆN TRƯỜNG';
+        sheet.getCell('A1').font = { name: 'Times New Roman', size: 16, bold: true, color: { argb: 'FFFFFFFF' } };
+        sheet.getCell('A1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1F416A' } };
+        sheet.getCell('A1').alignment = { horizontal: 'center', vertical: 'middle' };
+        sheet.getRow(1).height = 28;
+        sheet.mergeCells('A2:P2');
+        sheet.getCell('A2').value = `Ngày xuất: ${new Date().toLocaleString('vi-VN')}  |  Tổng số biên bản: ${incidentHistory.length}`;
+        sheet.getCell('A2').font = { name: 'Times New Roman', size: 11, italic: true, color: { argb: 'FF455A78' } };
+        sheet.getCell('A2').alignment = { horizontal: 'center', vertical: 'middle' };
+        sheet.getRow(2).height = 20;
+        sheet.getRow(3).values = headers;
+        const headerRow = sheet.getRow(3);
+        headerRow.height = 38;
+        headerRow.eachCell(cell => {
+            cell.font = { name: 'Times New Roman', size: 10, bold: true, color: { argb: 'FFFFFFFF' } };
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF315A8D' } };
+            cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+        });
         incidentHistory.forEach((record, index) => sheet.addRow({ ...record, stt: index + 1, savedAt: new Date(record.savedAt).toLocaleString('vi-VN') }));
-        sheet.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
-        sheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1F416A' } };
-        sheet.views = [{ state: 'frozen', ySplit: 1 }];
-        sheet.eachRow(row => { row.alignment = { vertical: 'top', wrapText: true }; });
+        const border = { top: { style: 'thin' as const, color: { argb: 'FFB6C5D8' } }, left: { style: 'thin' as const, color: { argb: 'FFB6C5D8' } }, bottom: { style: 'thin' as const, color: { argb: 'FFB6C5D8' } }, right: { style: 'thin' as const, color: { argb: 'FFB6C5D8' } } };
+        sheet.eachRow((row, rowNumber) => {
+            if (rowNumber < 3) return;
+            row.height = rowNumber === 3 ? 38 : 42;
+            row.eachCell(cell => {
+                cell.border = border;
+                if (rowNumber > 3) {
+                    cell.font = { name: 'Times New Roman', size: 10, color: { argb: 'FF172033' } };
+                    cell.alignment = { vertical: 'top', wrapText: true, horizontal: cell.column === 1 ? 'center' : 'left' };
+                    if (rowNumber % 2 === 0) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF4F8FC' } };
+                }
+            });
+        });
+        sheet.autoFilter = { from: 'A3', to: `P${Math.max(3, incidentHistory.length + 3)}` };
+        sheet.views = [{ state: 'frozen', ySplit: 3 }];
+        sheet.pageSetup = { orientation: 'landscape', paperSize: 9, fitToPage: true, fitToWidth: 1, fitToHeight: 0, margins: { left: 0.25, right: 0.25, top: 0.45, bottom: 0.45, header: 0.2, footer: 0.2 } };
+        sheet.headerFooter.oddFooter = '&LQL Kho GGS&CTrang &P / &N&RBiên bản hiện trường';
         const buffer = await workbook.xlsx.writeBuffer();
         saveAs(new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), `Lich_su_bien_ban_hien_truong_${new Date().toISOString().slice(0, 10)}.xlsx`);
     };
