@@ -12,6 +12,7 @@ import type { AppDispatch, RootState } from '../../store';
 import type { Asset } from '../../types';
 import { sortAssetsByNameAndUser } from '../../utils/assetSorting';
 import { administrativePageMargins, buildAssetDetailMonthlyMovement, buildAssetDetailMovementDates, getAssetConditionQuantities, getAssetDetailRowHeight, getFinalSignaturePageBreakRow, getSerialColumnWidths, sumAssetDetailTotals } from '../../utils/assetDetailReport';
+import { getPreviousReportMonth } from '../../utils/assetMonthlyReportMath';
 
 interface Props {
     reportType: 'CCDC' | 'TBVP';
@@ -118,6 +119,7 @@ const AssetDetailReport: React.FC<Props> = ({ reportType }) => {
     );
 
     const dateFooterStr = `TP. Hồ Chí Minh, ngày ${now.getDate().toString().padStart(2, '0')} tháng ${(now.getMonth() + 1).toString().padStart(2, '0')} năm ${now.getFullYear()}`;
+    const movementMonth = getPreviousReportMonth(month, year);
 
     const handleExportExcel = async () => {
         if (reportType === 'TBVP') {
@@ -156,7 +158,7 @@ const AssetDetailReport: React.FC<Props> = ({ reportType }) => {
             ws.mergeCells('A2:Z2'); ws.getCell('A2').value = 'DANH SÁCH TÀI SẢN TBVP TTKV BẮC SÀI GÒN';
             ws.getCell('A2').font = { name: 'Times New Roman', size: 13, bold: true };
             ws.getCell('A2').alignment = { horizontal: 'center' };
-            ws.mergeCells('A3:Z3'); ws.getCell('A3').value = `Báo cáo biến động tháng: ${String(month).padStart(2, '0')}/${year}`;
+            ws.mergeCells('A3:Z3'); ws.getCell('A3').value = `Báo cáo biến động tháng: ${movementMonth.label}/${movementMonth.year}`;
             ws.getCell('A3').font = { name: 'Times New Roman', size: 10, italic: true };
             ws.getCell('A3').alignment = { horizontal: 'center' };
             ws.getRow(1).height = 28; ws.getRow(2).height = 22; ws.getRow(3).height = 18;
@@ -167,7 +169,7 @@ const AssetDetailReport: React.FC<Props> = ({ reportType }) => {
                 ws.mergeCells(5, column, 7, column);
                 header(`${String.fromCharCode(64 + column)}5`, label);
             });
-            ws.mergeCells('M5:S5'); header('M5', `BIẾN ĐỘNG THÁNG:${String(month).padStart(2, '0')}`, 'FFFFFF00');
+            ws.mergeCells('M5:S5'); header('M5', `BIẾN ĐỘNG THÁNG:${movementMonth.label}`, 'FFFFFF00');
             ws.mergeCells('M6:M7'); header('M6', 'Mua\nmới', 'FFFFFF00');
             ws.mergeCells('N6:O6'); header('N6', 'Điều chuyển', 'FFFFFF00');
             ws.mergeCells('P6:R6'); header('P6', 'Trả kho', 'FFFFFF00');
@@ -438,7 +440,7 @@ const AssetDetailReport: React.FC<Props> = ({ reportType }) => {
                         {reportType === 'TBVP' ? 'DANH SÁCH TÀI SẢN TBVP TTKV BẮC SÀI GÒN' : 'BÁO CÁO CHI TIẾT TÀI SẢN CCDC-TSNT'}
                     </div>
                     <div style={{ fontStyle: 'italic', fontSize: '11pt' }}>
-                        {reportType === 'TBVP' ? `Báo cáo biến động tháng: ${String(month).padStart(2, '0')}/${year}` : `Kỳ báo cáo tháng ${String(month).padStart(2,'0')} năm ${year}`}
+                        {reportType === 'TBVP' ? `Báo cáo biến động tháng: ${movementMonth.label}/${movementMonth.year}` : `Kỳ báo cáo tháng ${String(month).padStart(2,'0')} năm ${year}`}
                     </div>
                 </div>
 
@@ -450,7 +452,7 @@ const AssetDetailReport: React.FC<Props> = ({ reportType }) => {
                     <thead>
                         <tr>
                             {['STT', 'Mã tài sản', 'Tên tài sản', 'Loại tài sản', 'ĐVT', 'Tình trạng', 'Mã NQL', 'Người quản lý', 'Mã NV SD', 'Nhân viên sử dụng', 'Số serial', 'Số lượng sổ sách'].map((label) => <th key={label} rowSpan={3} style={{ ...headerStyle, fontSize: '6pt' }}>{label}</th>)}
-                            <th colSpan={7} style={{ ...headerStyle, backgroundColor: '#ffff00', fontSize: '6pt' }}>BIẾN ĐỘNG THÁNG:{String(month).padStart(2, '0')}</th>
+                            <th colSpan={7} style={{ ...headerStyle, backgroundColor: '#ffff00', fontSize: '6pt' }}>BIẾN ĐỘNG THÁNG:{movementMonth.label}</th>
                             <th rowSpan={3} style={{ ...headerStyle, color: '#c00000', fontSize: '6pt' }}>Lý do: TT, QĐ, KH, PXK, BBBG</th>
                             <th rowSpan={3} style={{ ...headerStyle, fontSize: '6pt' }}>Số lượng kiểm thực tế</th>
                             <th colSpan={3} style={{ ...headerStyle, fontSize: '6pt' }}>Tình trạng</th>

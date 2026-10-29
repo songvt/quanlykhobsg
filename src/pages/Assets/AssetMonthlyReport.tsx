@@ -11,7 +11,7 @@ import ExcelJS from 'exceljs';
 import { fetchAssets, fetchAssetLogs } from '../../store/slices/assetsSlice';
 import type { AppDispatch, RootState } from '../../store';
 import type { Asset } from '../../types';
-import { calculateInspectionQuantity, calculateQuantityDifference } from '../../utils/assetMonthlyReportMath';
+import { calculateInspectionQuantity, calculateQuantityDifference, getPreviousReportMonth } from '../../utils/assetMonthlyReportMath';
 
 interface Props {
     reportType: 'CCDC' | 'TBVP';
@@ -222,6 +222,7 @@ const AssetMonthlyReport: React.FC<Props> = ({ reportType }) => {
     const currentMonth = (now.getMonth() + 1).toString().padStart(2, '0');
     const currentYear  = now.getFullYear();
     const dateFooterStr = `TP. Hồ Chí Minh, ngày ${currentDay} tháng ${currentMonth} năm ${currentYear}`;
+    const movementMonth = getPreviousReportMonth(month, year);
 
     const handleExportExcel = async () => {
         const wb = new ExcelJS.Workbook();
@@ -277,7 +278,7 @@ const AssetMonthlyReport: React.FC<Props> = ({ reportType }) => {
         };
         [
             ['A5', 'TT'], ['B5', 'Tên tài sản'], ['C5', 'Loại tài sản'], ['D5', 'ĐVT'], ['E5', 'Số lượng\nsổ sách'],
-            ['F5', `BIẾN ĐỘNG\nTHÁNG: ${month}`], ['H5', 'Số lượng\nkiểm'], ['I5', 'Tình trạng'], ['L5', 'Chênh\nlệch'], ['M5', 'Ghi chú'],
+            ['F5', `BIẾN ĐỘNG\nTHÁNG: ${movementMonth.label}`], ['H5', 'Số lượng\nkiểm'], ['I5', 'Tình trạng'], ['L5', 'Chênh\nlệch'], ['M5', 'Ghi chú'],
             ['F6', 'Tăng', 'FFFFFF00'], ['G6', 'Giảm', 'FFFFFF00'], ['I6', 'Tốt'], ['J6', 'Hỏng'], ['K6', 'Thất\nthoát'],
         ].forEach(([address, value, fill]) => setHeader(address, value, fill));
         for (let column = 1; column <= 13; column += 1) {
@@ -459,7 +460,7 @@ const AssetMonthlyReport: React.FC<Props> = ({ reportType }) => {
                             <th style={headerStyle} rowSpan={2}>Loại tài sản</th>
                             <th style={headerStyle} rowSpan={2}>ĐVT</th>
                             <th style={headerStyle} rowSpan={2}>Số lượng sổ sách</th>
-                            <th style={headerStyle} colSpan={2}>BIẾN ĐỘNG THÁNG: {month}</th>
+                            <th style={headerStyle} colSpan={2}>BIẾN ĐỘNG THÁNG: {movementMonth.label}</th>
                             <th style={headerStyle} rowSpan={2}>Số lượng kiểm</th>
                             <th style={headerStyle} colSpan={3}>Tình trạng</th>
                             <th style={headerStyle} rowSpan={2}>Chênh lệch</th>
