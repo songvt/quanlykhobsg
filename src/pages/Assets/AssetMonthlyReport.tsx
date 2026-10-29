@@ -224,6 +224,9 @@ const AssetMonthlyReport: React.FC<Props> = ({ reportType }) => {
     const currentYear  = now.getFullYear();
     const dateFooterStr = `TP. Hồ Chí Minh, ngày ${currentDay} tháng ${currentMonth} năm ${currentYear}`;
     const movementMonth = getPreviousReportMonth(month, year);
+    const reportPeriod = reportType === 'TBVP'
+        ? { month: movementMonth.month, year: movementMonth.year, label: movementMonth.label }
+        : { month, year, label: String(month).padStart(2, '0') };
 
     const handleExportExcel = async () => {
         const wb = new ExcelJS.Workbook();
@@ -259,7 +262,7 @@ const AssetMonthlyReport: React.FC<Props> = ({ reportType }) => {
         ws.getRow(2).height = 23;
 
         ws.mergeCells('A3:N3');
-        ws.getCell('A3').value = `Kỳ báo cáo tháng ${String(month).padStart(2,'0')} năm ${year}`;
+        ws.getCell('A3').value = `Kỳ báo cáo tháng ${reportPeriod.label} năm ${reportPeriod.year}`;
         ws.getCell('A3').font = { italic:true, size:11, name:'Times New Roman' };
         ws.getCell('A3').alignment = { horizontal:'center', vertical:'middle' };
         ws.getRow(3).height = 18;
@@ -443,7 +446,7 @@ const AssetMonthlyReport: React.FC<Props> = ({ reportType }) => {
                         {reportType === 'TBVP' ? 'TỔNG HỢP TBVP VÀ SỰ BIẾN ĐỘNG' : 'BÁO CÁO TỔNG HỢP TÀI SẢN CCDC-TSNT'}
                     </div>
                     <div style={{ fontStyle: 'italic', fontSize: '11pt' }}>
-                        Kỳ báo cáo tháng {String(month).padStart(2,'0')} năm {year}
+                        Kỳ báo cáo tháng {reportPeriod.label} năm {reportPeriod.year}
                     </div>
                 </div>
 
