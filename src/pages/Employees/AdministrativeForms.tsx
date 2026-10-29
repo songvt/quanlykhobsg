@@ -130,6 +130,7 @@ const AdministrativeForms = () => {
             .signatures { width: 100%; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; align-items: start; }
             .signatures > div { min-width: 0; text-align: center; }
             .signatures .line { margin: 2px 0; text-align: center; }
+            .signatures, .single-signature { break-inside: avoid; page-break-inside: avoid; }
         </style></head><body>${body}</body></html>`);
         popup.document.close(); popup.focus(); window.setTimeout(() => popup.print(), 450);
     };

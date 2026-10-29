@@ -11,7 +11,7 @@ import { fetchAssets, fetchAssetLogs } from '../../store/slices/assetsSlice';
 import type { AppDispatch, RootState } from '../../store';
 import type { Asset } from '../../types';
 import { sortAssetsByNameAndUser } from '../../utils/assetSorting';
-import { administrativeLandscapePrintPageMargin, administrativePageMargins, buildAssetDetailMonthlyMovement, buildAssetDetailMovementDates, getAssetConditionQuantities, getAssetDetailRowHeight, getFinalSignaturePageBreakRow, getSerialColumnWidths, sumAssetDetailTotals } from '../../utils/assetDetailReport';
+import { administrativeLandscapePrintPageMargin, administrativePageMargins, buildAssetDetailMonthlyMovement, buildAssetDetailMovementDates, getAssetConditionQuantities, getAssetDetailRowHeight, getFinalSignaturePageBreakRow, getSerialColumnWidths, signatureBlockKeepTogetherCss, sumAssetDetailTotals } from '../../utils/assetDetailReport';
 import { getPreviousReportMonth } from '../../utils/assetMonthlyReportMath';
 
 interface Props {
@@ -369,7 +369,7 @@ const AssetDetailReport: React.FC<Props> = ({ reportType }) => {
                 table { width: 100%; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
                 th, td { border: 1px solid #000; padding: 3px 2px; text-align: center; vertical-align: middle; word-wrap: break-word; font-size: 7.2pt; }
                 th { background: #e0e0e0; font-weight: bold; }
-                .footer-container { margin-top: 30px; }
+                .footer-container { margin-top: 12mm; ${signatureBlockKeepTogetherCss} }
                 .sig-date { width: 45%; margin-left: auto; text-align: center; font-style: italic; margin-bottom: 5px; font-size: 10pt; }
                 .sig-grid { display: flex; justify-content: space-between; text-align: center; width: 100%; }
                 .sig-box { width: 32%; display: inline-block; vertical-align: top; }

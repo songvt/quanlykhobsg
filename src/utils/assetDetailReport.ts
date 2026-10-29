@@ -23,6 +23,10 @@ type AssetLogLike = { asset_code?: string; action?: string; details?: string; cr
 export const administrativePageMargins = { top: 0.79, bottom: 0.79, left: 1.18, right: 0.79, header: 0.3, footer: 0.3 };
 export const administrativeLandscapePrintPageMargin = '20mm 15mm 20mm 30mm';
 
+// A sign-off must not be split between pages: browsers either keep the date
+// and signature headings together or move the whole block to the next page.
+export const signatureBlockKeepTogetherCss = 'break-inside: avoid; page-break-inside: avoid;';
+
 const emptyMovement = (): AssetDetailMonthlyMovement => ({
     purchased: 0,
     transferOut: 0,

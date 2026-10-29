@@ -11,7 +11,7 @@ import ExcelJS from 'exceljs';
 import { fetchAssets, fetchAssetLogs } from '../../store/slices/assetsSlice';
 import type { AppDispatch, RootState } from '../../store';
 import type { Asset } from '../../types';
-import { administrativeLandscapePrintPageMargin, administrativePageMargins } from '../../utils/assetDetailReport';
+import { administrativeLandscapePrintPageMargin, administrativePageMargins, signatureBlockKeepTogetherCss } from '../../utils/assetDetailReport';
 import { calculateInspectionQuantity, calculateQuantityDifference, getPreviousReportMonth } from '../../utils/assetMonthlyReportMath';
 
 interface Props {
@@ -371,8 +371,7 @@ const AssetMonthlyReport: React.FC<Props> = ({ reportType }) => {
                 .footer-container {
                     margin-top: 12mm;
                     min-height: 46mm;
-                    break-inside: avoid;
-                    page-break-inside: avoid;
+                    ${signatureBlockKeepTogetherCss}
                 }
                 .sig-date { width: 45%; margin-left: auto; text-align: center; font-style: italic; margin-bottom: 5px; font-size: 10pt; }
                 .sig-grid { display: flex; justify-content: space-between; text-align: center; width: 100%; }

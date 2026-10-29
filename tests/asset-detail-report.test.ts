@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { administrativeLandscapePrintPageMargin, administrativePageMargins, buildAssetDetailMonthlyMovement, buildAssetDetailMovementDates, getAssetConditionQuantities, getAssetDetailRowHeight, getFinalSignaturePageBreakRow, getSerialColumnWidths, sumAssetDetailTotals } from '../src/utils/assetDetailReport.ts';
+import { administrativeLandscapePrintPageMargin, administrativePageMargins, buildAssetDetailMonthlyMovement, buildAssetDetailMovementDates, getAssetConditionQuantities, getAssetDetailRowHeight, getFinalSignaturePageBreakRow, getSerialColumnWidths, signatureBlockKeepTogetherCss, sumAssetDetailTotals } from '../src/utils/assetDetailReport.ts';
 
 test('classifies the current TBVP condition into the three report columns', () => {
     assert.deepEqual(getAssetConditionQuantities('Đang sử dụng', 1), { good: 1, damaged: 0, lost: 0 });
@@ -70,4 +70,8 @@ test('uses administrative document margins for TBVP exports', () => {
 
 test('uses administrative A4 landscape margins for printed TBVP reports', () => {
     assert.equal(administrativeLandscapePrintPageMargin, '20mm 15mm 20mm 30mm');
+});
+
+test('keeps each printed TBVP date and signature block on the same page', () => {
+    assert.equal(signatureBlockKeepTogetherCss, 'break-inside: avoid; page-break-inside: avoid;');
 });

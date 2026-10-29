@@ -313,7 +313,7 @@ const AssetHandoverBhl: React.FC = () => {
                     th { background: #fff; border: 1px solid #000; padding: 5px 4px; text-align: center; font-weight: bold; }
                     td { border: 1px solid #000; padding: 4px; vertical-align: middle; }
                     .footer-note { font-style: italic; font-size: 13pt; margin-top: 8px; border-top: 1px solid #000; padding-top: 6px; text-align: justify; }
-                    .signatures { display: flex; justify-content: space-between; margin-top: 30px; text-align: center; }
+                    .signatures { display: flex; justify-content: space-between; margin-top: 30px; text-align: center; break-inside: avoid; page-break-inside: avoid; }
                     .sig-block { width: 30%; }
                     .sig-title, .sig-sub { font-size: 13pt; }
                     .sig-title { font-weight: bold; }
