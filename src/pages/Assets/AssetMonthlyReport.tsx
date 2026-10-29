@@ -11,6 +11,7 @@ import ExcelJS from 'exceljs';
 import { fetchAssets, fetchAssetLogs } from '../../store/slices/assetsSlice';
 import type { AppDispatch, RootState } from '../../store';
 import type { Asset } from '../../types';
+import { administrativeLandscapePrintPageMargin, administrativePageMargins } from '../../utils/assetDetailReport';
 import { calculateInspectionQuantity, calculateQuantityDifference, getPreviousReportMonth } from '../../utils/assetMonthlyReportMath';
 
 interface Props {
@@ -234,8 +235,8 @@ const AssetMonthlyReport: React.FC<Props> = ({ reportType }) => {
                 fitToPage: true,
                 fitToWidth: 1,
                 fitToHeight: 0,
-                horizontalCentered: true,
-                margins: { left: 0.25, right: 0.25, top: 0.35, bottom: 0.35, header: 0.15, footer: 0.15 }
+                horizontalCentered: false,
+                margins: administrativePageMargins,
             }
         });
         const border: Partial<ExcelJS.Borders> = { top:{style:'thin'}, bottom:{style:'thin'}, left:{style:'thin'}, right:{style:'thin'} };
@@ -362,7 +363,7 @@ const AssetMonthlyReport: React.FC<Props> = ({ reportType }) => {
             <html><head><meta charset="utf-8"/><title>In Báo Cáo Tổng Hợp</title>
             <style>
                 /* Reserve a stable bottom area for handwritten signatures. */
-                @page { size: A4 landscape; margin: 20mm 15mm 22mm 20mm; }
+                @page { size: A4 landscape; margin: ${administrativeLandscapePrintPageMargin}; }
                 body { font-family: 'Times New Roman', serif; font-size: 10.5pt; margin: 0; padding: 0; }
                 table { width: 100%; border-collapse: collapse; margin-top: 15px; table-layout: fixed; }
                 th, td { border: 1px solid #000; padding: 4px 3px; text-align: center; vertical-align: middle; word-wrap: break-word; font-size: 8.5pt; }

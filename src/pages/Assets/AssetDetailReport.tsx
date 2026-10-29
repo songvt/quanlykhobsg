@@ -11,7 +11,7 @@ import { fetchAssets, fetchAssetLogs } from '../../store/slices/assetsSlice';
 import type { AppDispatch, RootState } from '../../store';
 import type { Asset } from '../../types';
 import { sortAssetsByNameAndUser } from '../../utils/assetSorting';
-import { administrativePageMargins, buildAssetDetailMonthlyMovement, buildAssetDetailMovementDates, getAssetConditionQuantities, getAssetDetailRowHeight, getFinalSignaturePageBreakRow, getSerialColumnWidths, sumAssetDetailTotals } from '../../utils/assetDetailReport';
+import { administrativeLandscapePrintPageMargin, administrativePageMargins, buildAssetDetailMonthlyMovement, buildAssetDetailMovementDates, getAssetConditionQuantities, getAssetDetailRowHeight, getFinalSignaturePageBreakRow, getSerialColumnWidths, sumAssetDetailTotals } from '../../utils/assetDetailReport';
 import { getPreviousReportMonth } from '../../utils/assetMonthlyReportMath';
 
 interface Props {
@@ -364,13 +364,13 @@ const AssetDetailReport: React.FC<Props> = ({ reportType }) => {
         w.document.write(`
             <html><head><meta charset="utf-8"/><title>In Báo Cáo Chi Tiết</title>
             <style>
-                @page { size: A4 landscape; margin: 20mm 15mm 20mm 20mm; }
+                @page { size: A4 landscape; margin: ${administrativeLandscapePrintPageMargin}; }
                 body { font-family: 'Times New Roman', serif; font-size: 10pt; margin: 0; padding: 0; }
                 table { width: 100%; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
                 th, td { border: 1px solid #000; padding: 3px 2px; text-align: center; vertical-align: middle; word-wrap: break-word; font-size: 7.2pt; }
                 th { background: #e0e0e0; font-weight: bold; }
                 .footer-container { margin-top: 30px; }
-                .sig-date { text-align: right; font-style: italic; margin-bottom: 5px; padding-right: 50px; font-size: 10pt; }
+                .sig-date { width: 45%; margin-left: auto; text-align: center; font-style: italic; margin-bottom: 5px; font-size: 10pt; }
                 .sig-grid { display: flex; justify-content: space-between; text-align: center; width: 100%; }
                 .sig-box { width: 32%; display: inline-block; vertical-align: top; }
                 .sig-title { font-weight: bold; font-size: 10.5pt; }
@@ -539,7 +539,7 @@ const AssetDetailReport: React.FC<Props> = ({ reportType }) => {
                 )}
 
                 <div className="footer-container" style={{ marginTop: '30px', fontFamily: 'Times New Roman' }}>
-                    <div className="sig-date" style={{ textAlign: 'right', fontStyle: 'italic', marginBottom: '5px', paddingRight: '50px' }}>
+                    <div className="sig-date" style={{ width: '45%', marginLeft: 'auto', textAlign: 'center', fontStyle: 'italic', marginBottom: '5px' }}>
                         {dateFooterStr}
                     </div>
                     <div className="sig-grid" style={{ display: 'flex', justifyContent: 'space-around', textAlign: 'center' }}>

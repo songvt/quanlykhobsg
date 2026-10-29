@@ -21,6 +21,7 @@ type AssetLogLike = { asset_code?: string; action?: string; details?: string; cr
 // Nghị định 30/2020/NĐ-CP: top/bottom 20 mm, left 30 mm, right 20 mm.
 // ExcelJS stores page margins in inches.
 export const administrativePageMargins = { top: 0.79, bottom: 0.79, left: 1.18, right: 0.79, header: 0.3, footer: 0.3 };
+export const administrativeLandscapePrintPageMargin = '20mm 15mm 20mm 30mm';
 
 const emptyMovement = (): AssetDetailMonthlyMovement => ({
     purchased: 0,
