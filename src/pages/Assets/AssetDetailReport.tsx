@@ -369,7 +369,10 @@ const AssetDetailReport: React.FC<Props> = ({ reportType }) => {
                 table { width: 100%; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
                 th, td { border: 1px solid #000; padding: 3px 2px; text-align: center; vertical-align: middle; word-wrap: break-word; font-size: 7.2pt; }
                 th { background: #e0e0e0; font-weight: bold; }
-                .footer-container { margin-top: 12mm; ${signatureBlockKeepTogetherCss} }
+                .footer-container { display: block; width: 100%; margin-top: 10mm; ${signatureBlockKeepTogetherCss} }
+                .footer-container > *, .footer-container .sig-grid, .footer-container .sig-box { ${signatureBlockKeepTogetherCss} }
+                tbody.signature-tail-rows, tr.signature-row { ${signatureBlockKeepTogetherCss} }
+                tr.signature-row > td { border: 0 !important; padding: 0 !important; }
                 .sig-date { width: 45%; margin-left: auto; text-align: center; font-style: italic; margin-bottom: 5px; font-size: 10pt; }
                 .sig-grid { display: flex; justify-content: space-between; text-align: center; width: 100%; }
                 .sig-box { width: 32%; display: inline-block; vertical-align: top; }
@@ -388,6 +391,21 @@ const AssetDetailReport: React.FC<Props> = ({ reportType }) => {
 
     const colStyle: React.CSSProperties = { border: '1px solid #000', padding: '3px 2px', textAlign: 'center', fontSize: '7.2pt', fontFamily: 'Times New Roman' };
     const headerStyle: React.CSSProperties = { ...colStyle, backgroundColor: '#e0e0e0', fontWeight: 'bold' };
+    // Keep a small, useful part of the inventory with the sign-off block. This
+    // prevents Chrome from creating a last page containing only signatures.
+    const signatureTailRowCount = 6;
+    const signatureTailStart = Math.max(0, assets.length - signatureTailRowCount);
+    const renderTbvpRow = (asset: Asset, index: number) => {
+        const movement = tbvpDetailMovement[asset.asset_code] || { purchased: 0, transferOut: 0, transferIn: 0, returnedDamaged: 0, returnedLost: 0, returnedUnused: 0 };
+        const quantity = Number(asset.quantity) || 1;
+        const condition = getAssetConditionQuantities(asset.status, quantity);
+        const checkedQuantity = condition.good + condition.damaged + condition.lost;
+        const detailStyle = { ...colStyle, fontSize: '5.8pt', padding: '2px 1px', overflowWrap: 'anywhere' as const };
+        return <tr key={asset.id}>
+            <td style={detailStyle}>{index + 1}</td><td style={detailStyle}>{asset.asset_code || '-'}</td><td style={{ ...detailStyle, textAlign: 'left' }}>{asset.asset_name || '-'}</td><td style={{ ...detailStyle, textAlign: 'left' }}>{asset.asset_type || '-'}</td><td style={detailStyle}>{asset.unit || '-'}</td><td style={detailStyle}>{asset.status || '-'}</td><td style={detailStyle}>{asset.manager_code || '-'}</td><td style={{ ...detailStyle, textAlign: 'left' }}>{asset.manager_name || '-'}</td><td style={detailStyle}>{asset.user_employee_code || '-'}</td><td style={{ ...detailStyle, textAlign: 'left' }}>{asset.user_employee_name || '-'}</td><td style={{ ...detailStyle, textAlign: 'left' }}>{asset.serial_number || '-'}</td><td style={detailStyle}>{quantity}</td>
+            <td style={detailStyle}>{movement.purchased || '-'}</td><td style={detailStyle}>{movement.transferOut || '-'}</td><td style={detailStyle}>{movement.transferIn || '-'}</td><td style={detailStyle}>{movement.returnedDamaged || '-'}</td><td style={detailStyle}>{movement.returnedLost || '-'}</td><td style={detailStyle}>{movement.returnedUnused || '-'}</td><td style={detailStyle}>{tbvpDetailMovementDates[asset.asset_code] || '-'}</td><td style={{ ...detailStyle, textAlign: 'left' }}></td><td style={detailStyle}>{checkedQuantity}</td><td style={detailStyle}>{condition.good}</td><td style={detailStyle}>{condition.damaged}</td><td style={detailStyle}>{condition.lost}</td><td style={detailStyle}>{quantity - checkedQuantity}</td><td style={{ ...detailStyle, textAlign: 'left' }}>{asset.notes || '-'}</td>
+        </tr>;
+    };
 
     return (
         <Box sx={{ p: { xs: 1, sm: 3 } }}>
@@ -476,17 +494,21 @@ const AssetDetailReport: React.FC<Props> = ({ reportType }) => {
                             <td style={{ ...headerStyle, fontSize: '5.8pt' }}>{tbvpTotals.purchased}</td><td style={{ ...headerStyle, fontSize: '5.8pt' }}>{tbvpTotals.transferOut}</td><td style={{ ...headerStyle, fontSize: '5.8pt' }}>{tbvpTotals.transferIn}</td><td style={{ ...headerStyle, fontSize: '5.8pt' }}>{tbvpTotals.returnedDamaged}</td><td style={{ ...headerStyle, fontSize: '5.8pt' }}>{tbvpTotals.returnedLost}</td><td style={{ ...headerStyle, fontSize: '5.8pt' }}>{tbvpTotals.returnedUnused}</td><td style={{ ...headerStyle, fontSize: '5.8pt' }}></td><td style={{ ...headerStyle, fontSize: '5.8pt' }}></td>
                             <td style={{ ...headerStyle, fontSize: '5.8pt' }}>{tbvpTotals.checkedQuantity}</td><td style={{ ...headerStyle, fontSize: '5.8pt' }}>{tbvpTotals.good}</td><td style={{ ...headerStyle, fontSize: '5.8pt' }}>{tbvpTotals.damaged}</td><td style={{ ...headerStyle, fontSize: '5.8pt' }}>{tbvpTotals.lost}</td><td style={{ ...headerStyle, fontSize: '5.8pt' }}>{tbvpTotals.difference}</td><td style={{ ...headerStyle, fontSize: '5.8pt' }}></td>
                         </tr>
-                        {assets.map((asset, index) => {
-                            const movement = tbvpDetailMovement[asset.asset_code] || { purchased: 0, transferOut: 0, transferIn: 0, returnedDamaged: 0, returnedLost: 0, returnedUnused: 0 };
-                            const quantity = Number(asset.quantity) || 1;
-                            const condition = getAssetConditionQuantities(asset.status, quantity);
-                            const checkedQuantity = condition.good + condition.damaged + condition.lost;
-                            const detailStyle = { ...colStyle, fontSize: '5.8pt', padding: '2px 1px', overflowWrap: 'anywhere' as const };
-                            return <tr key={asset.id}>
-                                <td style={detailStyle}>{index + 1}</td><td style={detailStyle}>{asset.asset_code || '-'}</td><td style={{ ...detailStyle, textAlign: 'left' }}>{asset.asset_name || '-'}</td><td style={{ ...detailStyle, textAlign: 'left' }}>{asset.asset_type || '-'}</td><td style={detailStyle}>{asset.unit || '-'}</td><td style={detailStyle}>{asset.status || '-'}</td><td style={detailStyle}>{asset.manager_code || '-'}</td><td style={{ ...detailStyle, textAlign: 'left' }}>{asset.manager_name || '-'}</td><td style={detailStyle}>{asset.user_employee_code || '-'}</td><td style={{ ...detailStyle, textAlign: 'left' }}>{asset.user_employee_name || '-'}</td><td style={{ ...detailStyle, textAlign: 'left' }}>{asset.serial_number || '-'}</td><td style={detailStyle}>{quantity}</td>
-                                <td style={detailStyle}>{movement.purchased || '-'}</td><td style={detailStyle}>{movement.transferOut || '-'}</td><td style={detailStyle}>{movement.transferIn || '-'}</td><td style={detailStyle}>{movement.returnedDamaged || '-'}</td><td style={detailStyle}>{movement.returnedLost || '-'}</td><td style={detailStyle}>{movement.returnedUnused || '-'}</td><td style={detailStyle}>{tbvpDetailMovementDates[asset.asset_code] || '-'}</td><td style={{ ...detailStyle, textAlign: 'left' }}></td><td style={detailStyle}>{checkedQuantity}</td><td style={detailStyle}>{condition.good}</td><td style={detailStyle}>{condition.damaged}</td><td style={detailStyle}>{condition.lost}</td><td style={detailStyle}>{quantity - checkedQuantity}</td><td style={{ ...detailStyle, textAlign: 'left' }}>{asset.notes || '-'}</td>
-                            </tr>;
-                        })}
+                    </tbody>
+                    <tbody>
+                        {assets.slice(0, signatureTailStart).map(renderTbvpRow)}
+                    </tbody>
+                    <tbody className="signature-tail-rows">
+                        {assets.slice(signatureTailStart).map((asset, index) => renderTbvpRow(asset, signatureTailStart + index))}
+                        <tr className="signature-row"><td colSpan={26} style={{ border: 0, padding: 0 }}>
+                            <div className="footer-container" style={{ marginTop: '10mm', fontFamily: 'Times New Roman' }}>
+                                <div className="sig-date" style={{ width: '45%', marginLeft: 'auto', textAlign: 'center', fontStyle: 'italic', marginBottom: '5px' }}>{dateFooterStr}</div>
+                                <div className="sig-grid" style={{ display: 'flex', justifyContent: 'space-around', textAlign: 'center' }}>
+                                    <div className="sig-box" style={{ width: '45%' }}><div className="sig-title" style={{ fontWeight: 'bold' }}>LÃNH ĐẠO ĐƠN VỊ</div><div className="sig-note" style={{ fontStyle: 'italic', fontSize: '9pt' }}>(Ký, ghi rõ họ tên)</div></div>
+                                    <div className="sig-box" style={{ width: '45%' }}><div className="sig-title" style={{ fontWeight: 'bold' }}>NHÂN VIÊN QLTS ĐƠN VỊ</div><div className="sig-note" style={{ fontStyle: 'italic', fontSize: '9pt' }}>(Ký, ghi rõ họ tên)</div></div>
+                                </div>
+                            </div>
+                        </td></tr>
                     </tbody>
                 </table>
                 ) : (
@@ -538,7 +560,7 @@ const AssetDetailReport: React.FC<Props> = ({ reportType }) => {
                 </table>
                 )}
 
-                <div className="footer-container" style={{ marginTop: '30px', fontFamily: 'Times New Roman' }}>
+                {reportType !== 'TBVP' && <div className="footer-container" style={{ marginTop: '10mm', fontFamily: 'Times New Roman' }}>
                     <div className="sig-date" style={{ width: '45%', marginLeft: 'auto', textAlign: 'center', fontStyle: 'italic', marginBottom: '5px' }}>
                         {dateFooterStr}
                     </div>
@@ -552,7 +574,7 @@ const AssetDetailReport: React.FC<Props> = ({ reportType }) => {
                             <div className="sig-note" style={{ fontStyle: 'italic', fontSize: '9pt' }}>(Ký, ghi rõ họ tên)</div>
                         </div>
                     </div>
-                </div>
+                </div>}
             </Paper>
             </Box>
         </Box>

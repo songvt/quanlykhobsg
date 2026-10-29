@@ -25,7 +25,9 @@ export const administrativeLandscapePrintPageMargin = '20mm 15mm 20mm 30mm';
 
 // A sign-off must not be split between pages: browsers either keep the date
 // and signature headings together or move the whole block to the next page.
-export const signatureBlockKeepTogetherCss = 'break-inside: avoid; page-break-inside: avoid;';
+// `!important` is required because popup markup also carries inline layout
+// styles inherited from the on-screen preview.
+export const signatureBlockKeepTogetherCss = 'break-before: avoid; page-break-before: avoid; break-inside: avoid !important; page-break-inside: avoid !important;';
 
 const emptyMovement = (): AssetDetailMonthlyMovement => ({
     purchased: 0,

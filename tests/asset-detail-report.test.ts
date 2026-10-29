@@ -73,5 +73,5 @@ test('uses administrative A4 landscape margins for printed TBVP reports', () => 
 });
 
 test('keeps each printed TBVP date and signature block on the same page', () => {
-    assert.equal(signatureBlockKeepTogetherCss, 'break-inside: avoid; page-break-inside: avoid;');
+    assert.equal(signatureBlockKeepTogetherCss, 'break-before: avoid; page-break-before: avoid; break-inside: avoid !important; page-break-inside: avoid !important;');
 });
