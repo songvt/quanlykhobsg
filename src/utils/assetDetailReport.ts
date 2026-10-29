@@ -66,6 +66,17 @@ export const getAssetConditionQuantities = (status: string | undefined, quantity
     return { good: value, damaged: 0, lost: 0 };
 };
 
+export const getAssetOperationalConditionQuantities = (status: string | undefined, quantity = 1) => {
+    const normalized = (status || '').toLocaleLowerCase('vi-VN');
+    const value = Math.max(0, Number(quantity) || 0);
+
+    if (/(thất thoát|mất)/.test(normalized)) return { using: 0, broken: 0, unused: 0, repair: 0 };
+    if (/(sửa chữa|bảo dưỡng|maintenance)/.test(normalized)) return { using: 0, broken: 0, unused: 0, repair: value };
+    if (/(hỏng|broken)/.test(normalized)) return { using: 0, broken: value, unused: 0, repair: 0 };
+    if (/(chưa sử dụng|tồn kho|mới|new)/.test(normalized)) return { using: 0, broken: 0, unused: value, repair: 0 };
+    return { using: value, broken: 0, unused: 0, repair: 0 };
+};
+
 export const buildAssetDetailMovementDates = (logs: AssetLogLike[]) => {
     const latestDates: Record<string, Date> = {};
 
