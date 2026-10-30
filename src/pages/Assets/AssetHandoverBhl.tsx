@@ -64,9 +64,9 @@ const AssetHandoverBhl: React.FC = () => {
         giverName: 'NGUYỄN HẢI SƠN',
         giverTitle: 'GĐ TTKV BSG',
         giverPhone: '0988855186',
-        giverName2: 'VÕ THANH SONG',
-        giverTitle2: 'NV QLTS-KHO',
-        giverPhone2: '0988229082',
+        giverName2: 'TRẦN VIỆT BẮC',
+        giverTitle2: 'Trưởng bộ phận Tổng hợp',
+        giverPhone2: '0986306306',
     });
 
     // 10 Safety Protective Equipment (CCDC-BHLĐ) Items State
